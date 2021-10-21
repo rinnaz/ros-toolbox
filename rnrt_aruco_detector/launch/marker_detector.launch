@@ -1,0 +1,10 @@
+<launch>
+
+  <node name="marker_detector" 
+        pkg="rnrt_aruco_detector" 
+        type="aruco_detector" 
+        respawn="false" 
+        output="screen" >
+  </node>
+
+</launch> 

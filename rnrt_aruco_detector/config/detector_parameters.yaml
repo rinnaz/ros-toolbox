@@ -1,0 +1,40 @@
+%YAML 1.0
+---
+# default is 3 
+adaptiveThreshWinSizeMin: 33
+# default is 23
+adaptiveThreshWinSizeMax: 103
+# default is 10
+adaptiveThreshWinSizeStep: 10 
+# default is 7
+adaptiveThreshConstant: 7 
+# default is 0.03
+minMarkerPerimeterRate: 0.1 
+# default is 4
+maxMarkerPerimeterRate: 4. 
+# default is 0.03
+polygonalApproxAccuracyRate: 0.02
+# default is 0.05
+minCornerDistanceRate: 0.05
+# default is 3
+minDistanceToBorder: 3
+# default is 0.05
+minMarkerDistanceRate: 0.05
+# default is 5
+cornerRefinementWinSize: 5
+# default is 30
+cornerRefinementMaxIterations: 50
+# default is 0.1
+cornerRefinementMinAccuracy: 0.1
+# default is 1
+markerBorderBits: 1
+# default is 4
+perspectiveRemovePixelPerCell: 8
+# default is 0.13
+perspectiveRemoveIgnoredMarginPerCell: 0.13
+# default is 0.35
+maxErroneousBitsInBorderRate: 0.35
+# default is 5
+minOtsuStdDev: 5.0
+# default is 0.6
+errorCorrectionRate: 0.6
