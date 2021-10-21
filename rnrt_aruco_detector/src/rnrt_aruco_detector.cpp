@@ -10,7 +10,7 @@ MarkerDetector::MarkerDetector()
       m_dict{cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_100)}
 {
     //Topics to publish
-    m_pub_pose = m_nh.advertise<geometry_msgs::Pose>(m_markersTopicName, 1);
+    m_pub_markers = m_nh.advertise<rnrt_msgs::Markers>(m_markersTopicName, 1);
     m_pub_image = m_nh.advertise<sensor_msgs::Image>(m_imageTopicName, 1);
 
     //Topic to subscribe
@@ -92,6 +92,8 @@ void MarkerDetector::callback(const sensor_msgs::Image::ConstPtr& img) const
 {
     static tf2_ros::TransformBroadcaster tf_broadcaster;
     
+    rnrt_msgs::Markers markers_msg;
+    
     geometry_msgs::Pose marker_pose;
     geometry_msgs::Point marker_point;
     geometry_msgs::Quaternion marker_quat;
@@ -126,10 +128,12 @@ void MarkerDetector::callback(const sensor_msgs::Image::ConstPtr& img) const
     {
         cv::aruco::drawAxis(imageCopy, m_cameraMatrix, m_distCoeffs,
                             rvecs[i], tvecs[i], 0.05);
+        
+        markers_msg.markerIds.push_back(markerIds[i]);
     }
 
     // Take first marker
-    if (!markerIds.empty())
+    for (auto i{0}; i < markerIds.size(); i++)
     {
         marker_point.x = tvecs[0][0];
         marker_point.y = tvecs[0][1];
@@ -140,10 +144,12 @@ void MarkerDetector::callback(const sensor_msgs::Image::ConstPtr& img) const
         marker_pose.position = marker_point;
         marker_pose.orientation = rotMatToQuat(rotationMatrix);
 
-        m_pub_pose.publish(marker_pose);
+        markers_msg.poses.push_back(marker_pose);
 
         tf_broadcaster.sendTransform(makeTransformMsg(marker_pose));
     }
+
+    m_pub_markers.publish(marker_pose);
 
     cv_ptr->image = imageCopy;
     (*cv_ptr).toImageMsg(image_msg);

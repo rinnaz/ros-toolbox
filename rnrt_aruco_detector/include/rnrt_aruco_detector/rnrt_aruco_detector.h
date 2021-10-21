@@ -19,6 +19,7 @@
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <rnrt_msgs/Markers.h>
 
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2/LinearMath/Matrix3x3.h>
@@ -40,7 +41,7 @@ public:
 
 private:
     ros::NodeHandle m_nh;
-    ros::Publisher m_pub_pose, m_pub_image;
+    ros::Publisher m_pub_markers, m_pub_image;
     ros::Subscriber m_sub;
 
     const std::string m_package_path;
