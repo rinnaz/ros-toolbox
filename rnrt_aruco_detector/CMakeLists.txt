@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   tf2
   tf2_geometry_msgs
+  rnrt_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -32,15 +33,15 @@ include_directories(include
 )
 
 
-add_executable(aruco_detector src/main.cpp src/rnrt_aruco_detector.cpp)
+add_executable(rnrt_aruco_detector src/main.cpp src/rnrt_aruco_detector.cpp)
 
+add_dependencies(${PROJECT_NAME} rnrt_msgs_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(aruco_detector
+target_link_libraries(rnrt_aruco_detector
   ${OpenCV_LIBRARIES} 
   ${catkin_LIBRARIES}
-  ${rrt_cv_gibrid_LIBRARIES} ##gibrid
- )
+)
 
 
 
