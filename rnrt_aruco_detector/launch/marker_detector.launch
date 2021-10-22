@@ -1,10 +1,30 @@
 <launch>
+  <arg name="package_path" default="$(find rnrt_aruco_detector)" />
+  <arg name="camera_parameters_file" default="/config/head_camera.yaml" />
+  <arg name="detector_parameters_file" default="/config/detector_parameters.yaml" />
+  <arg name="source_camera_topic" default="/lbr_iiwa_14_r820/ee_camera/image_raw" />
+  <arg name="output_image_topic" default="/lbr_iiwa_14_r820/ee_camera/image_with_markers" />
+  <arg name="marker_pose_topic" default="/detected_markers" />
+  <arg name="tf_parent_frame" default="camera" />
+  <arg name="tf_child_frame_prefix" default="marker_" />
+  <arg name="aruco_dict_type" default="DICT_6X6_100" />
+
 
   <node name="marker_detector" 
         pkg="rnrt_aruco_detector" 
         type="aruco_detector" 
         respawn="false" 
         output="screen" >
+
+    <param name="package_path" value="$(arg package_path)" />
+    <param name="camera_parameters_file" value="$(arg camera_parameters)" />
+    <param name="detector_parameters_file" value="$(arg detector_parameters)" />
+    <param name="source_camera_topic" value="$(arg source_camera_topic)" />
+    <param name="output_image_topic" value="$(arg output_image_topic)" />
+    <param name="marker_pose_topic" value="$(arg marker_pose_topic)" />
+    <param name="tf_parent_frame" value="$(arg tf_parent_frame)" />
+    <param name="tf_child_frame_prefix" value="$(arg tf_child_frame_prefix)" />
+
   </node>
 
 </launch> 
