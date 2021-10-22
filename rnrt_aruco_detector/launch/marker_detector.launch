@@ -12,19 +12,19 @@
 
   <node name="marker_detector" 
         pkg="rnrt_aruco_detector" 
-        type="aruco_detector" 
+        type="rnrt_aruco_detector" 
         respawn="false" 
         output="screen" >
 
     <param name="package_path" value="$(arg package_path)" />
-    <param name="camera_parameters_file" value="$(arg camera_parameters)" />
-    <param name="detector_parameters_file" value="$(arg detector_parameters)" />
+    <param name="camera_parameters_file" value="$(arg camera_parameters_file)" />
+    <param name="detector_parameters_file" value="$(arg detector_parameters_file)" />
     <param name="source_camera_topic" value="$(arg source_camera_topic)" />
     <param name="output_image_topic" value="$(arg output_image_topic)" />
     <param name="marker_pose_topic" value="$(arg marker_pose_topic)" />
     <param name="tf_parent_frame" value="$(arg tf_parent_frame)" />
     <param name="tf_child_frame_prefix" value="$(arg tf_child_frame_prefix)" />
-
+    <param name="aruco_dict_type" value="$(arg aruco_dict_type)" />
   </node>
 
 </launch> 

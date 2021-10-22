@@ -1,6 +1,7 @@
 #include "rnrt_aruco_detector/rnrt_aruco_detector.h"
 
 MarkerDetector::MarkerDetector()
+    : m_node_name {ros::this_node::getName()}
 {
     // Get node parameters set by launch file
     initParameters();
@@ -32,15 +33,15 @@ MarkerDetector::~MarkerDetector() {}
 
 void MarkerDetector::initParameters()
 {
-    ros::param::get("package_path", m_package_path);
-    ros::param::get("camera_parameters_file", m_camera_parameters_file);
-    ros::param::get("detector_parameters_file", m_detector_parameters_file);
-    ros::param::get("source_camera_topic", m_source_camera_topic);
-    ros::param::get("output_image_topic", m_output_image_topic);
-    ros::param::get("marker_pose_topic", m_marker_pose_topic);
-    ros::param::get("tf_parent_frame", m_tf_parent_frame);
-    ros::param::get("tf_child_frame_prefix", m_tf_child_frame_prefix);
-    ros::param::get("aruco_dict_type", m_aruco_dict_type);
+    m_nh.getParam(m_node_name + "/package_path", m_package_path);
+    m_nh.getParam(m_node_name + "/camera_parameters_file", m_camera_parameters_file);
+    m_nh.getParam(m_node_name + "/detector_parameters_file", m_detector_parameters_file);
+    m_nh.getParam(m_node_name + "/source_camera_topic", m_source_camera_topic);
+    m_nh.getParam(m_node_name + "/output_image_topic", m_output_image_topic);
+    m_nh.getParam(m_node_name + "/marker_pose_topic", m_marker_pose_topic);
+    m_nh.getParam(m_node_name + "/tf_parent_frame", m_tf_parent_frame);
+    m_nh.getParam(m_node_name + "/tf_child_frame_prefix", m_tf_child_frame_prefix);
+    m_nh.getParam(m_node_name + "/aruco_dict_type", m_aruco_dict_type);
 }
 
 void MarkerDetector::initArucoDictSelector()

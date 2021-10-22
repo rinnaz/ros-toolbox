@@ -47,6 +47,7 @@ private:
     ros::Publisher m_pub_markers, m_pub_image;
     ros::Subscriber m_sub;
 
+    const std::string m_node_name;
     std::string m_package_path;
     std::string m_camera_parameters_file;
     std::string m_detector_parameters_file;
