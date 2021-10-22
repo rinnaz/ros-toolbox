@@ -33,27 +33,34 @@ class MarkerDetector
 public:
     MarkerDetector();
     ~MarkerDetector();
+    void initParameters();
+    void initArucoDictSelector();
     void readCameraParams();
     void readDetectorParams();
     void callback(const sensor_msgs::Image::ConstPtr& img) const;
     geometry_msgs::Quaternion rotMatToQuat(const cv::Mat& rot_mat) const;
-    geometry_msgs::TransformStamped makeTransformMsg(geometry_msgs::Pose& pose) const;
+    geometry_msgs::TransformStamped makeTransformMsg(geometry_msgs::Pose& pose, 
+                                                     int& marker_id) const;
 
 private:
     ros::NodeHandle m_nh;
     ros::Publisher m_pub_markers, m_pub_image;
     ros::Subscriber m_sub;
 
-    const std::string m_package_path;
-    const std::string m_cameraParamsFile;
-    const std::string m_detectorParamsFile;
-    const std::string m_cameraTopicName;
-    const std::string m_imageTopicName;
-    const std::string m_markersTopicName;
+    std::string m_package_path;
+    std::string m_camera_parameters_file;
+    std::string m_detector_parameters_file;
+    std::string m_source_camera_topic;
+    std::string m_output_image_topic;
+    std::string m_marker_pose_topic;
+    std::string m_tf_parent_frame;
+    std::string m_tf_child_frame_prefix;
+    std::string m_aruco_dict_type;
+    std::map<std::string, cv::aruco::PREDEFINED_DICTIONARY_NAME> m_aruco_dict_selector;
 
-    cv::Ptr<cv::aruco::DetectorParameters> m_detectorParams;
-    cv::Mat m_cameraMatrix;
-    cv::Mat m_distCoeffs;
+    cv::Ptr<cv::aruco::DetectorParameters> m_detector_parameters;
+    cv::Mat m_camera_matrix;
+    cv::Mat m_dist_coeffs;
 
     cv::Ptr<cv::aruco::Dictionary> m_dict;
 };
