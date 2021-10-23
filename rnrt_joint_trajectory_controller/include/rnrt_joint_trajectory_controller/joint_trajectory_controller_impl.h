@@ -182,7 +182,6 @@ gravityCB(const rnrt_msgs::JointGravity& source)
     }
     
     gravity_input_ = source.gravity_torque;
-    ROS_INFO("*** Got gravity msg! ***");
 }
 
 template <class SegmentImpl, class HardwareInterface>
