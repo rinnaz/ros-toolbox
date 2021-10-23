@@ -77,28 +77,28 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 ## Testing ##
 #############
 
-if(CATKIN_ENABLE_TESTING)
-  # Find packages required for tests
-  find_package(controller_manager REQUIRED)
-  find_package(rostest REQUIRED)
+# if(CATKIN_ENABLE_TESTING)
+#   # Find packages required for tests
+#   find_package(controller_manager REQUIRED)
+#   find_package(rostest REQUIRED)
 
-  # Include directories required for tests
-  include_directories(${controller_manager_INCLUDE_DIRS})
+#   # Include directories required for tests
+#   include_directories(${controller_manager_INCLUDE_DIRS})
 
-  # Build auxiliary tools for tests
-  add_executable(rrbot test/rrbot.cpp)
-  target_link_libraries(rrbot ${catkin_LIBRARIES} ${controller_manager_LIBRARIES})
+#   # Build auxiliary tools for tests
+#   add_executable(rrbot test/rrbot.cpp)
+#   target_link_libraries(rrbot ${catkin_LIBRARIES} ${controller_manager_LIBRARIES})
 
-  add_executable(rrbot_wrapping test/rrbot_wrapping.cpp)
-  target_link_libraries(rrbot_wrapping ${catkin_LIBRARIES} ${controller_manager_LIBRARIES})
+#   add_executable(rrbot_wrapping test/rrbot_wrapping.cpp)
+#   target_link_libraries(rrbot_wrapping ${catkin_LIBRARIES} ${controller_manager_LIBRARIES})
 
-  add_dependencies(tests rrbot)
-  add_dependencies(tests rrbot_wrapping)
-  add_dependencies(tests ${PROJECT_NAME})
+#   add_dependencies(tests rrbot)
+#   add_dependencies(tests rrbot_wrapping)
+#   add_dependencies(tests ${PROJECT_NAME})
 
-  # Test components
-  catkin_add_gtest(quintic_spline_segment_test test/quintic_spline_segment_test.cpp)
-  target_link_libraries(quintic_spline_segment_test ${catkin_LIBRARIES})
+#   # Test components
+#   catkin_add_gtest(quintic_spline_segment_test test/quintic_spline_segment_test.cpp)
+#   target_link_libraries(quintic_spline_segment_test ${catkin_LIBRARIES})
 
 #   catkin_add_gtest(trajectory_interface_test test/trajectory_interface_test.cpp)
 #   target_link_libraries(trajectory_interface_test ${catkin_LIBRARIES})
@@ -165,7 +165,7 @@ if(CATKIN_ENABLE_TESTING)
 #     add_code_coverage(NAME ${PROJECT_NAME}_coverage)
 #   endif()
 
-endif()
+# endif()
 
 
 #############
