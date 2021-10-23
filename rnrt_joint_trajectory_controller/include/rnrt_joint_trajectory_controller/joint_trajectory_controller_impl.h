@@ -304,7 +304,7 @@ bool JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>
 
   // ROS API: Subscribed topics
   trajectory_command_sub_ = controller_nh_.subscribe("command", 1, &JointTrajectoryControllerGravityCompensated::trajectoryCommandCB, this);
-  gravity_sub_ = controller_nh_.subscribe("/gravity_input", 1, &JointTrajectoryControllerGravityCompensated::gravityCB, this); 
+  gravity_sub_ = controller_nh_.subscribe("gravity_input", 1, &JointTrajectoryControllerGravityCompensated::gravityCB, this); 
 
   // ROS API: Published topics
   state_publisher_.reset(new StatePublisher(controller_nh_, "state", 1));
