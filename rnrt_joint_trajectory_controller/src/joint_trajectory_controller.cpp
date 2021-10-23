@@ -1,4 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2021, Rinat Nazarov
 // Copyright (C) 2013, PAL Robotics S.L.
 // Copyright (c) 2008, Willow Garage, Inc.
 //
