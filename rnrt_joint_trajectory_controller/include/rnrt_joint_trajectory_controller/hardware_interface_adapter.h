@@ -1,4 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2021, Rinat Nazarov
 // Copyright (C) 2013, PAL Robotics S.L.
 //
 // Redistribution and use in source and binary forms, with or without
