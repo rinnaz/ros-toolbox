@@ -180,8 +180,11 @@ gravityCB(const rnrt_msgs::JointGravity& source)
       ROS_ERROR_NAMED(name_, "Wrong gravity input size");
       return;
     }
-    
-    gravity_input_ = source.gravity_torque;
+
+    std::unique_lock lock(mutex_gravity_input_, std::try_to_lock);
+    if (lock.owns_lock()){
+        gravity_input_ = source.gravity_torque;
+    }
 }
 
 template <class SegmentImpl, class HardwareInterface>
@@ -477,7 +480,8 @@ update(const ros::Time& time, const ros::Duration& period)
   }
 
   updateFuncExtensionPoint(curr_traj, time_data);
-
+  
+  std::scoped_lock lock(mutex_gravity_input_);
   // Hardware interface adapter: Generate and send commands
   hw_iface_adapter_.updateCommand(time_data.uptime, time_data.period,
                                   desired_state_, state_error_, gravity_input_);

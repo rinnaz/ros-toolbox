@@ -190,6 +190,7 @@ protected:
   HwIfaceAdapter            hw_iface_adapter_;   ///< Adapts desired trajectory state to HW interface.
 
   RealtimeGoalHandlePtr     rt_active_goal_;     ///< Currently active action goal, if any.
+  std::mutex                mutex_gravity_input_;
 
   /**
    * Thread-safe container with a smart pointer to trajectory currently being followed.
