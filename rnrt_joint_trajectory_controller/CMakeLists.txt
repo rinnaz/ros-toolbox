@@ -3,7 +3,7 @@ project(rnrt_joint_trajectory_controller)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 
 # Load catkin and all dependencies required for this package
