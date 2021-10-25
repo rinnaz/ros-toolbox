@@ -183,7 +183,9 @@ gravityCB(const rnrt_msgs::JointGravity& source)
 
     std::unique_lock lock(mutex_gravity_input_, std::try_to_lock);
     if (lock.owns_lock()){
-        gravity_input_ = source.gravity_torque;
+      gravity_input_ = source.gravity_torque;
+    }else{
+      ROS_INFO("Gravity torques frame dropped");
     }
 }
 
@@ -481,7 +483,9 @@ update(const ros::Time& time, const ros::Duration& period)
 
   updateFuncExtensionPoint(curr_traj, time_data);
   
-  std::scoped_lock lock(mutex_gravity_input_);
+  // Since gravityCB is quite simple and doesn't take much time, 
+  // it seems ok to wait here
+  std::unique_lock lock(mutex_gravity_input_);
   // Hardware interface adapter: Generate and send commands
   hw_iface_adapter_.updateCommand(time_data.uptime, time_data.period,
                                   desired_state_, state_error_, gravity_input_);
