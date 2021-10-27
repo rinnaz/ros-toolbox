@@ -35,10 +35,10 @@ public:
     void solve(double computationTime, double stepValue, SolverType = SolverType::EULER, ostream &out = cout);
 
 private:
-    vector<double> equation;
-    vector<double> currentCondition;
-    uint32_t order;
-    double stepSize;
+    vector<double> m_equation;
+    vector<double> m_currentCondition;
+    uint32_t m_order;
+    double m_stepSize;
 
     vector<double> normalize(const vector<double> inputEquation);
     vector<double> computeDerivatives(const vector<double> condition);

@@ -2,33 +2,33 @@
 
 ostream &operator<<(ostream &out, const OdeSolver &a)
 {
-    out << a.equation << endl
-        << a.order;
+    out << a.m_equation << endl
+        << a.m_order;
 
     return out;
 }
 
 OdeSolver::OdeSolver(const vector<double> list)
 {
-    this->initialize(list);
+    initialize(list);
 }
 
 void OdeSolver::initialize(const vector<double> inputEquation)
 {
-    this->equation.reserve(inputEquation.size());
-    this->equation = this->normalize(inputEquation);
+    m_equation.reserve(inputEquation.size());
+    m_equation = normalize(inputEquation);
 
-    this->order = inputEquation.size() - 2;
-    this->currentCondition.reserve(this->order);
-    for (uint32_t i = 0; i < this->order; i++)
+    m_order = inputEquation.size() - 2;
+    m_currentCondition.reserve(m_order);
+    for (uint32_t i = 0; i < m_order; i++)
     {
-        this->currentCondition.push_back(0.0);
+        m_currentCondition.push_back(0.0);
     }
 }
 
 void OdeSolver::solve(double computationTime, double stepValue, SolverType solver, ostream &out)
 {
-    this->stepSize = stepValue;
+    m_stepSize = stepValue;
     cout << std::fixed;
 
     switch (solver)
@@ -42,10 +42,10 @@ void OdeSolver::solve(double computationTime, double stepValue, SolverType solve
         break;
     }
 
-    for (double i = this->stepSize; i <= computationTime; i += this->stepSize)
+    for (double i = m_stepSize; i <= computationTime; i += m_stepSize)
     {
         (this->*compute)();
-        cout << this->currentCondition << i << endl;
+        cout << m_currentCondition << i << endl;
     }
 }
 
@@ -70,34 +70,34 @@ vector<double> OdeSolver::computeDerivatives(const vector<double> condition)
     result = vector<double>(condition.begin() + 1, condition.end());
 
     //    temp = eq[1:-1] * condition
-    auto temp = vector<double>(this->equation.rbegin() + 1, this->equation.rend() - 1) * condition;
+    auto temp = vector<double>(m_equation.rbegin() + 1, m_equation.rend() - 1) * condition;
 
     //    result.append(-eq[last] - sum(temp))
-    result.push_back(-this->equation.back() - accumulate(temp.begin(), temp.end(), 0.0));
+    result.push_back(-m_equation.back() - accumulate(temp.begin(), temp.end(), 0.0));
 
     return result;
 }
 
 void OdeSolver::eulerCompute()
 {
-    this->currentCondition = this->currentCondition +
-                             this->stepSize * this->computeDerivatives(this->currentCondition);
+    m_currentCondition = m_currentCondition +
+                             m_stepSize * computeDerivatives(m_currentCondition);
 }
 
 void OdeSolver::rungekuttaCompute()
 {
     vector<double> k1, k2, k3, k4;
-    k1.reserve(this->currentCondition.size());
-    k2.reserve(this->currentCondition.size());
-    k3.reserve(this->currentCondition.size());
-    k4.reserve(this->currentCondition.size());
+    k1.reserve(m_currentCondition.size());
+    k2.reserve(m_currentCondition.size());
+    k3.reserve(m_currentCondition.size());
+    k4.reserve(m_currentCondition.size());
 
-    k1 = this->stepSize * this->computeDerivatives(this->currentCondition);
-    k2 = this->stepSize * this->computeDerivatives(this->currentCondition + k1 / 2.0);
-    k3 = this->stepSize * this->computeDerivatives(this->currentCondition + k2 / 2.0);
-    k4 = this->stepSize * this->computeDerivatives(this->currentCondition + k3);
+    k1 = m_stepSize * computeDerivatives(m_currentCondition);
+    k2 = m_stepSize * computeDerivatives(m_currentCondition + k1 / 2.0);
+    k3 = m_stepSize * computeDerivatives(m_currentCondition + k2 / 2.0);
+    k4 = m_stepSize * computeDerivatives(m_currentCondition + k3);
 
-    this->currentCondition = this->currentCondition +
+    m_currentCondition = m_currentCondition +
                              (k1 + 2.0 * k2 + 2.0 * k3 + k4) / 6;
 }
 
