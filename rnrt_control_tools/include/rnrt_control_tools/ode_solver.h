@@ -8,14 +8,14 @@
 
 using namespace std;
 
-ostream& operator<< (ostream& out, const vector<float>& right);
-const vector<float> operator* (const vector<float>& left, const vector<float>& right);
-const vector<float> operator* (const float& left, const vector<float>& right);
-const vector<float> operator* (const vector<float>& left, const float& right);
-const vector<float> operator/ (const vector<float>& right, const float& left);
-const vector<float> operator+ (const vector<float>& left, const vector<float>& right);
-const vector<float> operator- (const vector<float>& left, const vector<float>& right);
-const vector<float> operator- (int, const vector<float>& right);
+ostream& operator<< (ostream& out, const vector<double>& right);
+const vector<double> operator* (const vector<double>& left, const vector<double>& right);
+const vector<double> operator* (const double& left, const vector<double>& right);
+const vector<double> operator* (const vector<double>& left, const double& right);
+const vector<double> operator/ (const vector<double>& right, const double& left);
+const vector<double> operator+ (const vector<double>& left, const vector<double>& right);
+const vector<double> operator- (const vector<double>& left, const vector<double>& right);
+const vector<double> operator- (int, const vector<double>& right);
 
 
 class OdeSolver
@@ -28,19 +28,19 @@ public:
     friend ostream& operator<< (ostream& out, const OdeSolver& a);
 
     OdeSolver();
-    OdeSolver(const vector<float> list);
-    void            initialize(const vector<float> inputEquation);
-    void            solve(float computationTime, float stepValue, OdeSolver::Solver = EULER, ostream& out = cout);
+    OdeSolver(const vector<double> list);
+    void            initialize(const vector<double> inputEquation);
+    void            solve(double computationTime, double stepValue, OdeSolver::Solver = EULER, ostream& out = cout);
 
 
 private:
-    vector<float>   equation;
-    vector<float>   currentCondition;
+    vector<double>   equation;
+    vector<double>   currentCondition;
     uint32_t        order;
-    float           stepSize;
+    double           stepSize;
 
-    vector<float>   normalize(const vector<float> inputEquation);
-    vector<float>   computeDerivatives(const vector<float> condition);
+    vector<double>   normalize(const vector<double> inputEquation);
+    vector<double>   computeDerivatives(const vector<double> condition);
     void            eulerCompute();
     void            rungekuttaCompute();
     void            (OdeSolver::*compute)();

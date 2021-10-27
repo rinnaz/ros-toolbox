@@ -6,12 +6,12 @@ ostream& operator<<(ostream &out, const OdeSolver& a){
     return out;
 }
 
-OdeSolver::OdeSolver(const vector<float> list)
+OdeSolver::OdeSolver(const vector<double> list)
 {
     this->initialize(list);
 }
 
-void OdeSolver::initialize(const vector<float> inputEquation)
+void OdeSolver::initialize(const vector<double> inputEquation)
 {
     this->equation.reserve(inputEquation.size());
     this->equation = this->normalize(inputEquation);
@@ -24,7 +24,7 @@ void OdeSolver::initialize(const vector<float> inputEquation)
 
 }
 
-void OdeSolver::solve(float computationTime, float stepValue, OdeSolver::Solver solver, ostream& out)
+void OdeSolver::solve(double computationTime, double stepValue, OdeSolver::Solver solver, ostream& out)
 {
     this->stepSize = stepValue;
     cout << std::fixed;
@@ -39,16 +39,16 @@ void OdeSolver::solve(float computationTime, float stepValue, OdeSolver::Solver 
         break;
     }
 
-    for(float i = this->stepSize; i <= computationTime; i += this->stepSize){
+    for(double i = this->stepSize; i <= computationTime; i += this->stepSize){
         (this->*compute)();
         cout << this->currentCondition << i << endl;
     }
 
 }
 
-vector<float> OdeSolver::normalize(const vector<float> inputEquation)
+vector<double> OdeSolver::normalize(const vector<double> inputEquation)
 {
-    vector<float> result;
+    vector<double> result;
 
     for(auto i : inputEquation){
         result.push_back(i/inputEquation.at(0));
@@ -57,16 +57,16 @@ vector<float> OdeSolver::normalize(const vector<float> inputEquation)
     return result;
 }
 
-vector<float> OdeSolver::computeDerivatives(const vector<float> condition)
+vector<double> OdeSolver::computeDerivatives(const vector<double> condition)
 {
-    vector<float> result;
+    vector<double> result;
     result.reserve(condition.size());
 
 //    result = condition[1:]
-    result = vector<float>(condition.begin() + 1, condition.end());
+    result = vector<double>(condition.begin() + 1, condition.end());
 
 //    temp = eq[1:-1] * condition
-    auto temp = vector<float>(this->equation.rbegin() + 1, this->equation.rend() - 1) * condition;
+    auto temp = vector<double>(this->equation.rbegin() + 1, this->equation.rend() - 1) * condition;
 
 //    result.append(-eq[last] - sum(temp))
     result.push_back(-this->equation.back() - accumulate(temp.begin(), temp.end(), 0.0));
@@ -83,7 +83,7 @@ void OdeSolver::eulerCompute()
 
 void OdeSolver::rungekuttaCompute()
 {
-    vector<float> k1, k2, k3, k4;
+    vector<double> k1, k2, k3, k4;
     k1.reserve(this->currentCondition.size());
     k2.reserve(this->currentCondition.size());
     k3.reserve(this->currentCondition.size());
@@ -98,7 +98,7 @@ void OdeSolver::rungekuttaCompute()
             (k1 + 2.0*k2 + 2.0*k3 + k4)/6;
 }
 
-ostream& operator<<(ostream &out, const vector<float> &right)
+ostream& operator<<(ostream &out, const vector<double> &right)
 {
     cout << std::setprecision(5);
 
@@ -111,8 +111,8 @@ ostream& operator<<(ostream &out, const vector<float> &right)
     return out;
 }
 
-const vector<float> operator* (const vector<float>& left, const vector<float>& right){
-    vector<float> result;
+const vector<double> operator* (const vector<double>& left, const vector<double>& right){
+    vector<double> result;
 
     for (uint32_t i = 0; i < left.size(); i++){
         result.push_back(left.at(i) * right.at(i));
@@ -121,9 +121,9 @@ const vector<float> operator* (const vector<float>& left, const vector<float>& r
     return result;
 }
 
-const vector<float> operator*(const float &left, const vector<float> &right)
+const vector<double> operator*(const double &left, const vector<double> &right)
 {
-    vector<float> result;
+    vector<double> result;
     for (auto i : right){
         result.push_back(i * left);
     }
@@ -131,9 +131,9 @@ const vector<float> operator*(const float &left, const vector<float> &right)
     return result;
 }
 
-const vector<float> operator+(const vector<float> &left, const vector<float> &right)
+const vector<double> operator+(const vector<double> &left, const vector<double> &right)
 {
-    vector<float> result;
+    vector<double> result;
 
     for (uint32_t i = 0; i < left.size(); i++){
         result.push_back(left.at(i) + right.at(i));
@@ -142,22 +142,22 @@ const vector<float> operator+(const vector<float> &left, const vector<float> &ri
     return result;
 }
 
-const vector<float> operator/(const vector<float> &left, const float &right)
+const vector<double> operator/(const vector<double> &left, const double &right)
 {
     return (1/right) * left;
 }
 
-const vector<float> operator*(const vector<float> &left, const float &right)
+const vector<double> operator*(const vector<double> &left, const double &right)
 {
     return right * left;
 }
 
-const vector<float> operator-(const vector<float> &left, const vector<float> &right)
+const vector<double> operator-(const vector<double> &left, const vector<double> &right)
 {
     return left + (-1)*right;
 }
 
-const vector<float> operator-(int, const vector<float> &right)
+const vector<double> operator-(int, const vector<double> &right)
 {
     return (-1)*right;
 }
