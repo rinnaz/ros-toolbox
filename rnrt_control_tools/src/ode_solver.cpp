@@ -1,12 +1,12 @@
-#include "rnrt_control_tools/ode_solvers.h"
+#include "rnrt_control_tools/ode_solver.h"
 
-ostream& operator<<(ostream &out, const Ode& a){
+ostream& operator<<(ostream &out, const OdeSolver& a){
     out << a.equation << endl << a.order;
 
     return out;
 }
 
-OdeSolver::Ode(const vector<float> list)
+OdeSolver::OdeSolver(const vector<float> list)
 {
     this->initialize(list);
 }

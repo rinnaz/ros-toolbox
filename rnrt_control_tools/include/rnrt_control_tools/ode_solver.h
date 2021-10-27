@@ -25,12 +25,12 @@ public:
     enum Solver {EULER, RUNGEKUTTA};
 
 //    methods
-    friend ostream& operator<< (ostream& out, const Ode& a);
+    friend ostream& operator<< (ostream& out, const OdeSolver& a);
 
-    Ode();
-    Ode(const vector<float> list);
+    OdeSolver();
+    OdeSolver(const vector<float> list);
     void            initialize(const vector<float> inputEquation);
-    void            solve(float computationTime, float stepValue, Ode::Solver = EULER, ostream& out = cout);
+    void            solve(float computationTime, float stepValue, OdeSolver::Solver = EULER, ostream& out = cout);
 
 
 private:
@@ -43,7 +43,7 @@ private:
     vector<float>   computeDerivatives(const vector<float> condition);
     void            eulerCompute();
     void            rungekuttaCompute();
-    void            (Ode::*compute)();
+    void            (OdeSolver::*compute)();
 };
 
 #endif // ODE_SOLVER_H
