@@ -75,7 +75,8 @@ Eigen::RowVectorXd StateSpaceModel::setCRowVector()
     return result;
 }
 
-Eigen::VectorXd StateSpaceModel::getDerivatives(Eigen::VectorXd state, const double& input) const
+Eigen::VectorXd StateSpaceModel::getDerivatives(const Eigen::VectorXd& state, 
+                                                const double& input) const
 {
     return m_A_matrix * state + m_B_vector * input;
 }

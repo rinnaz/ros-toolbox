@@ -25,11 +25,13 @@ public:
     Eigen::MatrixXd setAMatrix();
     Eigen::VectorXd setBVector();
     Eigen::RowVectorXd setCRowVector();  
-    Eigen::VectorXd getDerivatives(Eigen::VectorXd state, const double& input) const;
+    Eigen::VectorXd getDerivatives(const Eigen::VectorXd& state, 
+                                   const double& input) const;
+
     double getResponse(const Eigen::VectorXd& last_state, 
                        const double& input,
                        const uint64_t& dt,
-                       SolverType = SolverType::EULER) const;
+                       const SolverType = SolverType::EULER) const;
 
     Eigen::VectorXd rungekuttaCompute(const Eigen::VectorXd& last_state, 
                                       const double& input,
