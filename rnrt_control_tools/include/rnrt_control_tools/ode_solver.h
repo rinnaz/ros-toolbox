@@ -7,15 +7,6 @@
 #include <numeric>
 #include "eigen3/Eigen/Core"
 
-std::ostream &operator<<(std::ostream &out, const std::vector<double> &right);
-const std::vector<double> operator*(const std::vector<double> &left, const std::vector<double> &right);
-const std::vector<double> operator*(const double &left, const std::vector<double> &right);
-const std::vector<double> operator*(const std::vector<double> &left, const double &right);
-const std::vector<double> operator/(const std::vector<double> &right, const double &left);
-const std::vector<double> operator+(const std::vector<double> &left, const std::vector<double> &right);
-const std::vector<double> operator-(const std::vector<double> &left, const std::vector<double> &right);
-const std::vector<double> operator-(int, const std::vector<double> &right);
-
 enum class SolverType
 {
     EULER,
@@ -25,14 +16,13 @@ enum class SolverType
 class OdeSolver
 {
 public:
-    //    methods
-    friend std::ostream &operator<<(std::ostream &out, const OdeSolver &a);
-
-    OdeSolver();
-    OdeSolver(const std::vector<double> inputEquation);
-    void initialize(const std::vector<double> inputEquation);
-    void solve(double computationTime, double stepValue, SolverType = SolverType::EULER, std::ostream &out = std::cout);
-    double getResponse(const std::vector<double>& u, uint64_t dt);
+    OdeSolver(){};
+    ~OdeSolver(){};
+    
+    void solve(Eigen::VectorXd& last_state, SolverType = SolverType::EULER, std::ostream &out = std::cout);
+    Eigen::VectorXd getResponse(Eigen::VectorXd& last_state, 
+                                uint64_t& dt,
+                                SolverType = SolverType::EULER);
 
 private:
     std::vector<double> m_equation;
@@ -41,10 +31,11 @@ private:
     double m_step_size;
     std::vector<double> m_k1, m_k2, m_k3, m_k4;
 
-    std::vector<double> normalize(const std::vector<double> inputEquation) const;
-    std::vector<double> computeDerivatives(const std::vector<double> state) const;
-    std::vector<double> eulerCompute();
-    std::vector<double> rungekuttaCompute();
-    std::vector<double> (OdeSolver::*compute)();
+    std::vector<double> eulerCompute(Eigen::VectorXd& last_state, 
+                                     uint64_t& dt);
+    Eigen::VectorXd rungekuttaCompute(Eigen::VectorXd& last_state, 
+                                      uint64_t& dt);
+    Eigen::VectorXd (OdeSolver::*compute)(Eigen::VectorXd& last_state, 
+                                          uint64_t& dt);
 };
 
