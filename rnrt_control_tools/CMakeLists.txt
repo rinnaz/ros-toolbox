@@ -8,19 +8,26 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp 
 )
 
-include_directories(include
+find_package(Eigen3 REQUIRED)
+
+include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
+  ${Eigen3_INCLUDE_DIRS}
 )
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES 
     ode_solver
+    transfer_fcn
+    state_space_model
 
   CATKIN_DEPENDS 
     roscpp 
 
   DEPENDS
+    Eigen3
 )
 
 # Libs
@@ -28,8 +35,16 @@ catkin_package(
 add_library(ode_solver src/ode_solver.cpp)
 target_link_libraries(ode_solver ${catkin_LIBRARIES})
 
+add_library(transfer_fcn src/transfer_fcn.cpp)
+target_link_libraries(transfer_fcn ${catkin_LIBRARIES})
+
+add_library(state_space_model src/state_space_model.cpp)
+target_link_libraries(state_space_model ${catkin_LIBRARIES})
+
 install(TARGETS 
   ode_solver
+  transfer_fcn
+  state_space_model
 
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

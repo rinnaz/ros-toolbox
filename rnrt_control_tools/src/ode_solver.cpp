@@ -1,22 +1,22 @@
 #include "rnrt_control_tools/ode_solver.h"
 
-ostream &operator<<(ostream &out, const OdeSolver &a)
+std::ostream &operator<<(std::ostream &out, const OdeSolver &a)
 {
-    out << a.m_equation << endl
+    out << a.m_equation << std::endl
         << a.m_order;
 
     return out;
 }
 
-OdeSolver::OdeSolver(const vector<double> inputEquation)
+OdeSolver::OdeSolver(const std::vector<double> inputEquation)
     : m_equation {normalize(inputEquation)},
       m_order {inputEquation.size() - 2},
-      m_currentCondition(m_order, 0.0)
+      m_current_state(m_order, 0.0)
 {
 
 }
 
-void OdeSolver::initialize(const vector<double> inputEquation)
+void OdeSolver::initialize(const std::vector<double> inputEquation)
 {
     m_equation = normalize(inputEquation);
 
@@ -24,14 +24,14 @@ void OdeSolver::initialize(const vector<double> inputEquation)
 
     for (auto i {0}; i < m_order; i++)
     {
-        m_currentCondition.push_back(0.0);
+        m_current_state.push_back(0.0);
     }
 }
 
-void OdeSolver::solve(double computationTime, double stepValue, SolverType solver, ostream &out)
+void OdeSolver::solve(double computationTime, double stepValue, SolverType solver, std::ostream &out)
 {
-    m_stepSize = stepValue;
-    cout << std::fixed;
+    m_step_size = stepValue;
+    out << std::fixed;
 
     switch (solver)
     {
@@ -44,16 +44,16 @@ void OdeSolver::solve(double computationTime, double stepValue, SolverType solve
         break;
     }
 
-    for (double i = m_stepSize; i <= computationTime; i += m_stepSize)
+    for (double i = m_step_size; i <= computationTime; i += m_step_size)
     {
-        (this->*compute)();
-        cout << m_currentCondition << i << endl;
+        m_current_state = (this->*compute)();
+        out << m_current_state << i << std::endl;
     }
 }
 
-vector<double> OdeSolver::normalize(const vector<double> inputEquation) const
+std::vector<double> OdeSolver::normalize(const std::vector<double> inputEquation) const
 {
-    vector<double> result;
+    std::vector<double> result;
 
     for (auto i : inputEquation)
     {
@@ -63,13 +63,13 @@ vector<double> OdeSolver::normalize(const vector<double> inputEquation) const
     return result;
 }
 
-vector<double> OdeSolver::computeDerivatives(const vector<double> condition) const
+std::vector<double> OdeSolver::computeDerivatives(const std::vector<double> state) const
 {
-    //    result = condition[1:]
-    auto result = vector<double>(condition.begin() + 1, condition.end());
+    //    result = state[1:]
+    auto result = std::vector<double>(state.begin() + 1, state.end());
 
-    //    temp = eq[1:-1] * condition
-    auto temp = vector<double>(m_equation.rbegin() + 1, m_equation.rend() - 1) * condition;
+    //    temp = eq[1:-1] * state
+    auto temp = std::vector<double>(m_equation.rbegin() + 1, m_equation.rend() - 1) * state;
 
     //    result.append(-eq[last] - sum(temp))
     result.push_back(-m_equation.back() - accumulate(temp.begin(), temp.end(), 0.0));
@@ -77,40 +77,38 @@ vector<double> OdeSolver::computeDerivatives(const vector<double> condition) con
     return result;
 }
 
-void OdeSolver::eulerCompute()
+std::vector<double> OdeSolver::eulerCompute()
 {
-    m_currentCondition = m_currentCondition +
-                         m_stepSize * computeDerivatives(m_currentCondition);
+    return m_current_state + m_step_size * computeDerivatives(m_current_state);
 }
 
-void OdeSolver::rungekuttaCompute()
+std::vector<double> OdeSolver::rungekuttaCompute()
 {
-    m_k1 = m_stepSize * computeDerivatives(m_currentCondition);
-    m_k2 = m_stepSize * computeDerivatives(m_currentCondition + m_k1 / 2.0);
-    m_k3 = m_stepSize * computeDerivatives(m_currentCondition + m_k2 / 2.0);
-    m_k4 = m_stepSize * computeDerivatives(m_currentCondition + m_k3);
+    m_k1 = m_step_size * computeDerivatives(m_current_state);
+    m_k2 = m_step_size * computeDerivatives(m_current_state + m_k1 / 2.0);
+    m_k3 = m_step_size * computeDerivatives(m_current_state + m_k2 / 2.0);
+    m_k4 = m_step_size * computeDerivatives(m_current_state + m_k3);
 
-    m_currentCondition = m_currentCondition +
-                         (m_k1 + 2.0 * m_k2 + 2.0 * m_k3 + m_k4) / 6;
+    return m_current_state + (m_k1 + 2.0 * m_k2 + 2.0 * m_k3 + m_k4) / 6;
 }
 
-ostream &operator<<(ostream &out, const vector<double> &right)
+std::ostream &operator<<(std::ostream &out, const std::vector<double> &right)
 {
-    cout << std::setprecision(5);
+    std::cout << std::setprecision(5);
 
     for (auto a : right)
     {
         out << a << " ";
     }
 
-    cout << std::setprecision(2);
+    std::cout << std::setprecision(2);
 
     return out;
 }
 
-const vector<double> operator*(const vector<double> &left, const vector<double> &right)
+const std::vector<double> operator*(const std::vector<double> &left, const std::vector<double> &right)
 {
-    vector<double> result;
+    std::vector<double> result;
 
     for (auto i{0}; i < left.size(); i++)
     {
@@ -120,9 +118,9 @@ const vector<double> operator*(const vector<double> &left, const vector<double> 
     return result;
 }
 
-const vector<double> operator*(const double &left, const vector<double> &right)
+const std::vector<double> operator*(const double &left, const std::vector<double> &right)
 {
-    vector<double> result;
+    std::vector<double> result;
     for (auto i : right)
     {
         result.push_back(i * left);
@@ -131,9 +129,9 @@ const vector<double> operator*(const double &left, const vector<double> &right)
     return result;
 }
 
-const vector<double> operator+(const vector<double> &left, const vector<double> &right)
+const std::vector<double> operator+(const std::vector<double> &left, const std::vector<double> &right)
 {
-    vector<double> result;
+    std::vector<double> result;
 
     for (auto i{0}; i < left.size(); i++)
     {
@@ -143,22 +141,22 @@ const vector<double> operator+(const vector<double> &left, const vector<double> 
     return result;
 }
 
-const vector<double> operator/(const vector<double> &left, const double &right)
+const std::vector<double> operator/(const std::vector<double> &left, const double &right)
 {
     return (1 / right) * left;
 }
 
-const vector<double> operator*(const vector<double> &left, const double &right)
+const std::vector<double> operator*(const std::vector<double> &left, const double &right)
 {
     return right * left;
 }
 
-const vector<double> operator-(const vector<double> &left, const vector<double> &right)
+const std::vector<double> operator-(const std::vector<double> &left, const std::vector<double> &right)
 {
     return left + (-1) * right;
 }
 
-const vector<double> operator-(int, const vector<double> &right)
+const std::vector<double> operator-(int, const std::vector<double> &right)
 {
     return (-1) * right;
 }
