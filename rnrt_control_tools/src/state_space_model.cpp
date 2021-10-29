@@ -32,10 +32,10 @@ StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
                       return ret;
                   }()}
 {
-    m_A_matrix = setAMatrix();
-    m_B_vector = setBVector();
-    m_C_vector = setCRowVector();
-    m_D = m_numerator(0);
+    m_A_matrix = calcAMatrix();
+    m_B_vector = calcBVector();
+    m_C_vector = calcCRowVector();
+    m_D        = m_numerator(0);
 
     m_integrators.push_back(std::bind(&StateSpaceModel::eulerCompute,
                                       this,
@@ -52,7 +52,7 @@ StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
 
 StateSpaceModel::~StateSpaceModel() {}
 
-Eigen::MatrixXd StateSpaceModel::setAMatrix()
+Eigen::MatrixXd StateSpaceModel::calcAMatrix() const
 {
     Eigen::MatrixXd result{Eigen::MatrixXd::Zero(m_matrix_size, m_matrix_size)};
 
@@ -72,7 +72,7 @@ Eigen::MatrixXd StateSpaceModel::setAMatrix()
     return result;
 }
 
-Eigen::VectorXd StateSpaceModel::setBVector()
+Eigen::VectorXd StateSpaceModel::calcBVector() const
 {
     Eigen::VectorXd result{Eigen::VectorXd::Zero(m_matrix_size)};
     result(m_matrix_size - 1) = 1.0;
@@ -80,7 +80,7 @@ Eigen::VectorXd StateSpaceModel::setBVector()
     return result;
 }
 
-Eigen::RowVectorXd StateSpaceModel::setCRowVector()
+Eigen::RowVectorXd StateSpaceModel::calcCRowVector() const
 {
     Eigen::RowVectorXd result;
 
