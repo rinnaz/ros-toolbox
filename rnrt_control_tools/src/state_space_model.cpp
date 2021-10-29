@@ -101,11 +101,18 @@ Eigen::VectorXd StateSpaceModel::getDerivatives(const Eigen::VectorXd &state,
 double StateSpaceModel::getResponse(const Eigen::VectorXd &last_state,
                                     const double &input,
                                     const uint64_t &dt,
-                                    SolverType solver) const
+                                    SolverType solver)
 {
     auto i{static_cast<int>(solver)};
+    m_current_state = m_integrators.at(i)(last_state, input, dt);
+    return m_C_vector * m_current_state + m_D * input;
+}
 
-    return m_C_vector * m_integrators.at(i)(last_state, input, dt) + m_D * input;
+double StateSpaceModel::getResponse(const double &input,
+                                    const uint64_t &dt,
+                                    SolverType solver)
+{
+    return getResponse(m_current_state, input, dt, solver);
 }
 
 Eigen::VectorXd StateSpaceModel::rungekuttaCompute(const Eigen::VectorXd &last_state,
@@ -125,4 +132,9 @@ Eigen::VectorXd StateSpaceModel::eulerCompute(const Eigen::VectorXd &last_state,
                                               const uint64_t &dt) const
 {
     return last_state + dt / 1e9 * getDerivatives(last_state, input);
+}
+
+void StateSpaceModel::resetState()
+{
+    m_current_state = Eigen::VectorXd::Zero(m_matrix_size);
 }

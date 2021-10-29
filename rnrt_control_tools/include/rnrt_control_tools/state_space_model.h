@@ -22,11 +22,16 @@ public:
     StateSpaceModel(const TransferFcn &tfcn);
     ~StateSpaceModel();
 
-
     double getResponse(const Eigen::VectorXd &last_state,
                        const double &input,
                        const uint64_t &dt,
-                       const SolverType = SolverType::EULER) const;
+                       const SolverType = SolverType::EULER);
+
+    double getResponse(const double &input,
+                       const uint64_t &dt,
+                       const SolverType = SolverType::EULER);
+
+    void resetState();
 
 private:
     Eigen::MatrixXd calcAMatrix() const;
@@ -34,7 +39,7 @@ private:
     Eigen::RowVectorXd calcCRowVector() const;
     Eigen::VectorXd getDerivatives(const Eigen::VectorXd &state,
                                    const double &input) const;
-    
+
     Eigen::VectorXd eulerCompute(const Eigen::VectorXd &last_state,
                                  const double &input,
                                  const uint64_t &dt) const;
@@ -42,8 +47,7 @@ private:
     Eigen::VectorXd rungekuttaCompute(const Eigen::VectorXd &last_state,
                                       const double &input,
                                       const uint64_t &dt) const;
-    
-    
+
     Eigen::VectorXd m_numerator, m_denominator;
     uint64_t m_denominator_size;
     uint64_t m_matrix_size;
