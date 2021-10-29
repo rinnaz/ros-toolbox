@@ -32,5 +32,4 @@ private:
     std::vector<double> m_denominator;
 
     void checkSizes();
-    void normalize();
 };

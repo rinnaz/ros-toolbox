@@ -11,7 +11,6 @@ TransferFcn::TransferFcn(const std::vector<double> &num, const std::vector<doubl
     try
     {
         checkSizes();
-        normalize();
     }
     catch (const std::invalid_argument &e)
     {
@@ -44,19 +43,4 @@ std::vector<double> TransferFcn::getNumerator() const
 std::vector<double> TransferFcn::getDenominator() const
 {
     return m_denominator;
-}
-
-void TransferFcn::normalize()
-{
-    double scaler {m_denominator.at(0)};
-
-    for (auto i : m_denominator)
-    {
-        i = i / scaler;
-    }
-
-    for (auto i : m_numerator)
-    {
-        i = i / scaler;
-    }
 }
