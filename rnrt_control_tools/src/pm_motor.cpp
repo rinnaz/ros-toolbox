@@ -1,7 +1,7 @@
 #include "rnrt_control_tools/pm_motor.h"
 
 PmMotor::PmMotor()
-    : m_l{1.0}, m_r{1.0}, m_te{m_l / m_r}, m_km{1.0}, m_ke{1.0}, m_u_lim{12.0},
+    : m_l{1.0}, m_r{1.0}, m_te{m_l / m_r}, m_km{1.0}, m_ke{1.0}, 
       m_pole_pairs{1}
 {
     initStateSpaceModel();
@@ -10,9 +10,8 @@ PmMotor::PmMotor()
 PmMotor::PmMotor(const double &ind,
                  const double &res,
                  const double &km,
-                 const double &ulim,
                  const uint64_t &pole_pairs)
-    : m_l{ind}, m_r{res}, m_te{m_l / m_r}, m_km{km}, m_ke{km}, m_u_lim{ulim},
+    : m_l{ind}, m_r{res}, m_te{m_l / m_r}, m_km{km}, m_ke{km}, 
       m_pole_pairs{pole_pairs}
 {
     initStateSpaceModel();
@@ -21,20 +20,39 @@ PmMotor::PmMotor(const double &ind,
 void PmMotor::setParameters(const double &ind,
                             const double &res,
                             const double &km,
-                            const double &ulim,
                             const uint64_t &pole_pairs)
 {
+    m_l = ind;
+    m_r = res;
+    m_km = km;
+    m_ke = km;
+    m_te = m_l / m_r;
+    m_pole_pairs = pole_pairs;
 }
 
-void PmMotor::setInductance(const double &ind) { m_l = ind; }
-void PmMotor::setResistance(const double &res) { m_r = res; }
+void PmMotor::setInductance(const double &ind)
+{
+    m_l = ind;
+    m_te = m_l / m_r;
+    initStateSpaceModel();
+}
+void PmMotor::setResistance(const double &res)
+{
+    m_r = res;
+    m_te = m_l / m_r;
+    initStateSpaceModel();
+}
 void PmMotor::setKm(const double &km)
 {
     m_km = km;
     m_ke = km;
 }
-void PmMotor::setTe(const double &te) { m_te = te; }
-void PmMotor::setUlimit(const double &ulim) { m_u_lim = ulim; }
+void PmMotor::setTe(const double &te)
+{
+    m_te = te;
+    initStateSpaceModel();
+}
+
 void PmMotor::setPolePairs(const uint64_t &pole_pairs) { m_pole_pairs = pole_pairs; }
 
 void PmMotor::initStateSpaceModel()
