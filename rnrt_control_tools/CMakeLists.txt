@@ -19,7 +19,7 @@ include_directories(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES 
-    # ode_solver
+    pm_motor
     transfer_fcn
     state_space_model
 
@@ -32,8 +32,8 @@ catkin_package(
 
 # Libs
 
-# add_library(ode_solver src/ode_solver.cpp)
-# target_link_libraries(ode_solver ${catkin_LIBRARIES})
+add_library(pm_motor src/pm_motor.cpp)
+target_link_libraries(pm_motor ${catkin_LIBRARIES})
 
 add_library(transfer_fcn src/transfer_fcn.cpp)
 target_link_libraries(transfer_fcn ${catkin_LIBRARIES})
@@ -42,7 +42,7 @@ add_library(state_space_model src/state_space_model.cpp)
 target_link_libraries(state_space_model ${catkin_LIBRARIES})
 
 install(TARGETS 
-#   ode_solver
+  pm_motor
   transfer_fcn
   state_space_model
 
