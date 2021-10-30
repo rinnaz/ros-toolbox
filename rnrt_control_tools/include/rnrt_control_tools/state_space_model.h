@@ -7,7 +7,6 @@
 #include <functional>
 
 #include "rnrt_control_tools/transfer_fcn.h"
-// #include "rnrt_control_tools/ode_solver.h"
 
 enum class SolverType
 {
@@ -16,6 +15,16 @@ enum class SolverType
 };
 
 // State space model representation of transfer function
+// Transfer function is defined with numerator and denominator
+//          b_n*s^n + ... + b_1*s + b_0
+//       ---------------------------------
+//          a_n*s^n + ... + a_1*s + a_0
+//
+// And state space model form is
+//              x' = A * x + B * u(t)
+//             y(t) = C * x + D * u(t)
+// where "x" is state (vector), "u" is input (scalar), "y" is response (scalar)
+// "A" is matrix, "B" - vector, "C" - row vector, D - scalar
 class StateSpaceModel
 {
 public:

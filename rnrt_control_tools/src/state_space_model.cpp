@@ -17,7 +17,8 @@ StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
                             ret << i / divisor;
                         }
                         return ret;
-                    }()},
+                    }()}, // converting from std::vector to Eigen::VectorXd 
+                          // and dividing dy denominators highest power value
       m_numerator{[&]
                   {
                       Eigen::VectorXd ret{Eigen::VectorXd::Zero(m_denominator_size)};
@@ -30,13 +31,15 @@ StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
                           ret(i) = input.at(i) / divisor;
                       }
                       return ret;
-                  }()}
+                  }()}    // converting from std::vector to Eigen::VectorXd 
+                          // and dividing dy denominators highest power value
 {
     m_A_matrix = calcAMatrix();
     m_B_vector = calcBVector();
     m_C_vector = calcCRowVector();
     m_D        = m_numerator(0);
 
+    // Filling the container of integration methods
     m_integrators.push_back(std::bind(&StateSpaceModel::eulerCompute,
                                       this,
                                       std::placeholders::_1,
@@ -54,6 +57,13 @@ StateSpaceModel::~StateSpaceModel() {}
 
 Eigen::MatrixXd StateSpaceModel::calcAMatrix() const
 {
+    // "A" matrix looks like
+    //  
+    //  |   0   1   0   0   |
+    //  |   0   0   1   0   |
+    //  |   0   0   0   1   |
+    //  | -a0 -a1 -a2 -a3   |
+    
     Eigen::MatrixXd result{Eigen::MatrixXd::Zero(m_matrix_size, m_matrix_size)};
 
     for (auto i{0}; i < m_matrix_size; i++)
@@ -74,6 +84,7 @@ Eigen::MatrixXd StateSpaceModel::calcAMatrix() const
 
 Eigen::VectorXd StateSpaceModel::calcBVector() const
 {
+    // "B" is [0, 0, ... 0, 1].T
     Eigen::VectorXd result{Eigen::VectorXd::Zero(m_matrix_size)};
     result(m_matrix_size - 1) = 1.0;
 
@@ -82,6 +93,7 @@ Eigen::VectorXd StateSpaceModel::calcBVector() const
 
 Eigen::RowVectorXd StateSpaceModel::calcCRowVector() const
 {
+    // "C" is [b0-a0*bn, b1-a1*bn ... b(n-1)-a(n-1)*bn]
     Eigen::RowVectorXd result;
 
     for (auto i{0}; i < m_matrix_size; i++)
