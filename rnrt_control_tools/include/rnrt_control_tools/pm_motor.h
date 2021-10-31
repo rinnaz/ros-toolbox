@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <vector>
-#include <algorithm>
 #include "eigen3/Eigen/Core"
 
 #include "rnrt_control_tools/state_space_model.h" 

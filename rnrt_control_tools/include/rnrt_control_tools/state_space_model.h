@@ -28,6 +28,7 @@ enum class SolverType
 class StateSpaceModel
 {
 public:
+    StateSpaceModel();
     StateSpaceModel(const TransferFcn &tfcn);
     ~StateSpaceModel();
 

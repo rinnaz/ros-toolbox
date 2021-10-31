@@ -1,5 +1,7 @@
 #include "rnrt_control_tools/state_space_model.h"
 
+StateSpaceModel::StateSpaceModel() {}
+
 StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
     : m_denominator_size{tfcn.getDenominator().size()},
       m_matrix_size{m_denominator_size - 1},
@@ -17,7 +19,7 @@ StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
                             ret << i / divisor;
                         }
                         return ret;
-                    }()}, // converting from std::vector to Eigen::VectorXd 
+                    }()}, // converting from std::vector to Eigen::VectorXd
                           // and dividing dy denominators highest power value
       m_numerator{[&]
                   {
@@ -31,13 +33,32 @@ StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
                           ret(i) = input.at(i) / divisor;
                       }
                       return ret;
-                  }()}    // converting from std::vector to Eigen::VectorXd 
-                          // and dividing dy denominators highest power value
+                  }()} // converting from std::vector to Eigen::VectorXd
+                       // and dividing dy denominators highest power value
 {
+    if (!tfcn.isValid() && !tfcn.getDenominator().empty())
+    {
+        m_numerator = Eigen::VectorXd(1);
+        m_numerator(0) = 1.0;
+        std::cerr << "Invalid transfer function input,"
+                  << " setting numerator to 1.0" << std::endl;
+    }
+
+    if (!tfcn.isValid() && tfcn.getDenominator().empty())
+    {
+        m_numerator = Eigen::VectorXd(1);
+        m_numerator(0) = 1.0;
+        m_denominator = Eigen::VectorXd(2);
+        m_denominator << 1.0, 1.0;
+        std::cerr << "Invalid transfer function input,"
+                  << " setting numerator to 1.0,"
+                  << " setting denominator to 1.0s + 1.0" << std::endl;
+    }
+
     m_A_matrix = calcAMatrix();
     m_B_vector = calcBVector();
     m_C_vector = calcCRowVector();
-    m_D        = m_numerator(0);
+    m_D = m_numerator(0);
 
     // Filling the container of integration methods
     m_integrators.push_back(std::bind(&StateSpaceModel::eulerCompute,
@@ -58,12 +79,12 @@ StateSpaceModel::~StateSpaceModel() {}
 Eigen::MatrixXd StateSpaceModel::calcAMatrix() const
 {
     // "A" matrix looks like
-    //  
+    //
     //  |   0   1   0   0   |
     //  |   0   0   1   0   |
     //  |   0   0   0   1   |
     //  | -a0 -a1 -a2 -a3   |
-    
+
     Eigen::MatrixXd result{Eigen::MatrixXd::Zero(m_matrix_size, m_matrix_size)};
 
     for (auto i{0}; i < m_matrix_size; i++)
