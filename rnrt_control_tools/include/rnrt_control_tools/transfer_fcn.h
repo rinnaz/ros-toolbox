@@ -13,6 +13,7 @@ class TransferFcn
 public:
     TransferFcn();
     TransferFcn(const std::vector<double>& num, const std::vector<double>& den);
+    TransferFcn(const TransferFcn& tf);
 
     ~TransferFcn(){};
     
@@ -23,6 +24,8 @@ public:
     // For denominator defined as a_n*s^n + ... + a_1*s + a_0
     // vector values should be {a_n, ..., a_1, a_0}
     void setDenominator(const std::vector<double>& den);
+
+    bool isValid() const;
     
     std::vector<double> getNumerator() const;
     std::vector<double> getDenominator() const;
@@ -30,6 +33,5 @@ public:
 private:
     std::vector<double> m_numerator;
     std::vector<double> m_denominator;
-
-    void checkSizes();
+    std::vector<double> removeLeadingZeros(const std::vector<double>&) const;
 };

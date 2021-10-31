@@ -5,35 +5,25 @@ TransferFcn::TransferFcn()
 }
 
 TransferFcn::TransferFcn(const std::vector<double> &num, const std::vector<double> &den)
-    : m_numerator{num},
-      m_denominator{den}
+    : m_numerator{removeLeadingZeros(num)},
+      m_denominator{removeLeadingZeros(den)}
 {
-    try
-    {
-        checkSizes();
-    }
-    catch (const std::invalid_argument &e)
-    {
-        std::cerr << "exception: " << e.what() << std::endl;
-    }
 }
 
-void TransferFcn::checkSizes()
+TransferFcn::TransferFcn(const TransferFcn &tf)
 {
-    if (m_numerator.size() > m_denominator.size() - 1)
-    {
-        throw std::invalid_argument("Numerator is greater than denominator");
-    }
+    m_numerator = tf.m_numerator;
+    m_denominator = tf.m_denominator;
 }
 
 void TransferFcn::setNumerator(const std::vector<double> &num)
 {
-    m_numerator = num;
+    m_numerator = removeLeadingZeros(num);
 }
 
 void TransferFcn::setDenominator(const std::vector<double> &den)
 {
-    m_denominator = den;
+    m_denominator = removeLeadingZeros(den);
 }
 
 std::vector<double> TransferFcn::getNumerator() const
@@ -43,4 +33,37 @@ std::vector<double> TransferFcn::getNumerator() const
 std::vector<double> TransferFcn::getDenominator() const
 {
     return m_denominator;
+}
+
+std::vector<double> TransferFcn::removeLeadingZeros(const std::vector<double> &input) const
+{
+    std::vector<double> result;
+
+    for (auto i = input.begin();
+         i != input.end();
+         i++)
+    {
+        if (*i != 0.0 || std::abs(*i) > std::numeric_limits<double>::epsilon())
+        {
+            result = std::vector<double>(i, input.end());
+            break;
+        }
+    }
+    return result;
+}
+
+bool TransferFcn::isValid() const
+{
+    if (m_numerator.size() > m_denominator.size())
+    {
+        return false;
+    }
+
+
+    if (m_numerator.empty() || m_denominator.empty())
+    {
+        return false;
+    }
+
+    return true;
 }

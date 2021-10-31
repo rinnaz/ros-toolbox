@@ -41,6 +41,14 @@ target_link_libraries(transfer_fcn ${catkin_LIBRARIES})
 add_library(state_space_model src/state_space_model.cpp)
 target_link_libraries(state_space_model ${catkin_LIBRARIES})
 
+# if(CATKIN_ENABLE_TESTING)
+  # Tests
+  catkin_add_gtest(transfer_fcn_tests test/transfer_fcn_tests.cpp)
+  target_link_libraries(transfer_fcn_tests ${catkin_LIBRARIES} transfer_fcn)
+
+# endif()
+
+
 install(TARGETS 
   pm_motor
   transfer_fcn
