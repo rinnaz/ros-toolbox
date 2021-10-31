@@ -181,11 +181,11 @@ void MarkerDetector::callback(const sensor_msgs::Image::ConstPtr &img) const
     // Take first marker
     for (auto i{0}; i < marker_ids.size(); i++)
     {
-        marker_point.x = tvecs[0][0];
-        marker_point.y = tvecs[0][1];
-        marker_point.z = tvecs[0][2];
+        marker_point.x = tvecs[i][0];
+        marker_point.y = tvecs[i][1];
+        marker_point.z = tvecs[i][2];
 
-        cv::Rodrigues(rvecs[0], rotation_matrix);
+        cv::Rodrigues(rvecs[i], rotation_matrix);
 
         marker_pose.position = marker_point;
         marker_pose.orientation = rotMatToQuat(rotation_matrix);
@@ -195,7 +195,7 @@ void MarkerDetector::callback(const sensor_msgs::Image::ConstPtr &img) const
         tf_broadcaster.sendTransform(makeTransformMsg(marker_pose, marker_ids[i]));
     }
 
-    m_pub_markers.publish(marker_pose);
+    m_pub_markers.publish(markers_msg);
 
     cv_ptr->image = image_copy;
     (*cv_ptr).toImageMsg(image_msg);
