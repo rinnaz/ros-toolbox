@@ -25,6 +25,7 @@ public:
     // vector values should be {a_n, ..., a_1, a_0}
     void setDenominator(const std::vector<double>& den);
 
+    bool isProper() const;
     bool isValid() const;
     
     std::vector<double> getNumerator() const;

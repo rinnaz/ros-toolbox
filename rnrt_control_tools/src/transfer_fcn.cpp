@@ -54,16 +54,19 @@ std::vector<double> TransferFcn::removeLeadingZeros(const std::vector<double> &i
 
 bool TransferFcn::isValid() const
 {
-    if (m_numerator.size() > m_denominator.size())
-    {
-        return false;
-    }
-
-
     if (m_numerator.empty() || m_denominator.empty())
     {
         return false;
     }
 
+    return true;
+}
+
+bool TransferFcn::isProper() const
+{
+    if (m_numerator.size() > m_denominator.size())
+    {
+        return false;
+    }
     return true;
 }
