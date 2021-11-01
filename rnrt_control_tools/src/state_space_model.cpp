@@ -6,17 +6,14 @@ StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
     : m_denominator_size{tfcn.getDenominator().size()},
       m_matrix_size{m_denominator_size - 1},
       m_current_state(Eigen::VectorXd::Zero(m_matrix_size)),
-      m_A_matrix(m_matrix_size, m_matrix_size),
-      m_B_vector(m_matrix_size),
-      m_C_vector(m_matrix_size),
       m_denominator{[&]
                     {
                         Eigen::VectorXd ret{Eigen::VectorXd::Zero(m_denominator_size)};
                         auto input{tfcn.getDenominator()};
                         auto divisor{tfcn.getDenominator().at(0)};
-                        for (auto i : input)
+                        for (auto i{0}; i < m_denominator_size; i++)
                         {
-                            ret << i / divisor;
+                            ret(i) = input.at(i) / divisor;
                         }
                         return ret;
                     }()}, // converting from std::vector to Eigen::VectorXd
@@ -26,17 +23,16 @@ StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
                       Eigen::VectorXd ret{Eigen::VectorXd::Zero(m_denominator_size)};
                       auto input{tfcn.getNumerator()};
                       auto divisor{tfcn.getDenominator().at(0)};
-                      for (auto i{m_denominator_size - 1};
-                           i >= 0;
-                           i--)
+                      auto offset = m_denominator_size - input.size();
+                      for (auto i{offset}; i < m_denominator_size; i++)
                       {
-                          ret(i) = input.at(i) / divisor;
+                          ret(i) = input.at(i - offset) / divisor;
                       }
                       return ret;
                   }()} // converting from std::vector to Eigen::VectorXd
                        // and dividing dy denominators highest power value
 {
-    if (!tfcn.isValid() && !tfcn.getDenominator().empty())
+    if (!tfcn.isProper() && !tfcn.getDenominator().empty())
     {
         m_numerator = Eigen::VectorXd(1);
         m_numerator(0) = 1.0;
@@ -44,22 +40,25 @@ StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
                   << " setting numerator to 1.0" << std::endl;
     }
 
-    if (!tfcn.isValid() && tfcn.getDenominator().empty())
+    if (!tfcn.isProper() && tfcn.getDenominator().empty())
     {
         m_numerator = Eigen::VectorXd(1);
         m_numerator(0) = 1.0;
         m_denominator = Eigen::VectorXd(2);
         m_denominator << 1.0, 1.0;
+        m_denominator_size = m_denominator.size();
+        m_matrix_size = m_denominator_size - 1;
         std::cerr << "Invalid transfer function input,"
                   << " setting numerator to 1.0,"
                   << " setting denominator to 1.0s + 1.0" << std::endl;
     }
-
+    
+    // Setting state model matrices and vectors
     m_A_matrix = calcAMatrix();
     m_B_vector = calcBVector();
     m_C_vector = calcCRowVector();
     m_D = m_numerator(0);
-
+    
     // Filling the container of integration methods
     m_integrators.push_back(std::bind(&StateSpaceModel::eulerCompute,
                                       this,
@@ -99,7 +98,6 @@ Eigen::MatrixXd StateSpaceModel::calcAMatrix() const
             result(i, i + 1) = 1.0;
         }
     }
-
     return result;
 }
 
@@ -108,20 +106,18 @@ Eigen::VectorXd StateSpaceModel::calcBVector() const
     // "B" is [0, 0, ... 0, 1].T
     Eigen::VectorXd result{Eigen::VectorXd::Zero(m_matrix_size)};
     result(m_matrix_size - 1) = 1.0;
-
     return result;
 }
 
 Eigen::RowVectorXd StateSpaceModel::calcCRowVector() const
 {
     // "C" is [b0-a0*bn, b1-a1*bn ... b(n-1)-a(n-1)*bn]
-    Eigen::RowVectorXd result;
+    Eigen::RowVectorXd result{Eigen::RowVectorXd::Zero(m_matrix_size)};
 
     for (auto i{0}; i < m_matrix_size; i++)
     {
         result(i) = m_numerator(m_matrix_size - i) - m_denominator(m_matrix_size - i) * m_numerator(0);
     }
-
     return result;
 }
 
@@ -152,10 +148,10 @@ Eigen::VectorXd StateSpaceModel::rungekuttaCompute(const Eigen::VectorXd &last_s
                                                    const double &input,
                                                    const uint64_t &dt) const
 {
-    auto k1 = dt / 1e9 * getDerivatives(last_state, input);
-    auto k2 = dt / 1e9 * getDerivatives(last_state + k1 / 2.0, input);
-    auto k3 = dt / 1e9 * getDerivatives(last_state + k2 / 2.0, input);
-    auto k4 = dt / 1e9 * getDerivatives(last_state + k3, input);
+    Eigen::VectorXd k1 = dt / 1e9 * getDerivatives(last_state, input);
+    Eigen::VectorXd k2 = dt / 1e9 * getDerivatives(last_state + k1 / 2.0, input);
+    Eigen::VectorXd k3 = dt / 1e9 * getDerivatives(last_state + k2 / 2.0, input);
+    Eigen::VectorXd k4 = dt / 1e9 * getDerivatives(last_state + k3, input);
 
     return last_state + (k1 + 2.0 * k2 + 2.0 * k3 + k4) / 6;
 }
