@@ -40,10 +40,12 @@ public:
     double getResponse(const double &input,
                        const uint64_t &dt,
                        const SolverType = SolverType::EULER);
-
+    
     void resetState();
 
 private:
+    Eigen::VectorXd makeNumerator(const TransferFcn &tfcn) const;
+    Eigen::VectorXd makeDenominator(const TransferFcn &tfcn) const;
     Eigen::MatrixXd calcAMatrix() const;
     Eigen::VectorXd calcBVector() const;
     Eigen::RowVectorXd calcCRowVector() const;
@@ -59,7 +61,6 @@ private:
                                       const uint64_t &dt) const;
 
     Eigen::VectorXd m_numerator, m_denominator;
-    uint64_t m_denominator_size;
     uint64_t m_matrix_size;
     Eigen::VectorXd m_current_state;
     Eigen::MatrixXd m_A_matrix;

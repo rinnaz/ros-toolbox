@@ -3,62 +3,33 @@
 StateSpaceModel::StateSpaceModel() {}
 
 StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
-    : m_denominator_size{tfcn.getDenominator().size()},
-      m_matrix_size{m_denominator_size - 1},
-      m_current_state(Eigen::VectorXd::Zero(m_matrix_size)),
-      m_denominator{[&]
-                    {
-                        Eigen::VectorXd ret{Eigen::VectorXd::Zero(m_denominator_size)};
-                        auto input{tfcn.getDenominator()};
-                        auto divisor{tfcn.getDenominator().at(0)};
-                        for (auto i{0}; i < m_denominator_size; i++)
-                        {
-                            ret(i) = input.at(i) / divisor;
-                        }
-                        return ret;
-                    }()}, // converting from std::vector to Eigen::VectorXd
-                          // and dividing dy denominators highest power value
-      m_numerator{[&]
-                  {
-                      Eigen::VectorXd ret{Eigen::VectorXd::Zero(m_denominator_size)};
-                      auto input{tfcn.getNumerator()};
-                      auto divisor{tfcn.getDenominator().at(0)};
-                      auto offset = m_denominator_size - input.size();
-                      for (auto i{offset}; i < m_denominator_size; i++)
-                      {
-                          ret(i) = input.at(i - offset) / divisor;
-                      }
-                      return ret;
-                  }()} // converting from std::vector to Eigen::VectorXd
-                       // and dividing dy denominators highest power value
 {
-    if (!tfcn.isProper() && !tfcn.getDenominator().empty())
+    if (!tfcn.isProper())
     {
-        m_numerator = Eigen::VectorXd(1);
-        m_numerator(0) = 1.0;
-        std::cerr << "Invalid transfer function input,"
-                  << " setting numerator to 1.0" << std::endl;
+        throw std::invalid_argument("Not proper transfer function input");
     }
 
-    if (!tfcn.isProper() && tfcn.getDenominator().empty())
+    if (!tfcn.isValid())
     {
-        m_numerator = Eigen::VectorXd(1);
-        m_numerator(0) = 1.0;
-        m_denominator = Eigen::VectorXd(2);
-        m_denominator << 1.0, 1.0;
-        m_denominator_size = m_denominator.size();
-        m_matrix_size = m_denominator_size - 1;
-        std::cerr << "Invalid transfer function input,"
-                  << " setting numerator to 1.0,"
-                  << " setting denominator to 1.0s + 1.0" << std::endl;
+        throw std::invalid_argument("Invalid transfer function input");
     }
-    
+
+    // converting from std::vector to Eigen::VectorXd
+    // and dividing dy denominators highest power value
+    m_matrix_size = tfcn.getDenominator().size() - 1;
+
+    m_numerator = makeNumerator(tfcn);
+    m_denominator = makeDenominator(tfcn);
+
     // Setting state model matrices and vectors
     m_A_matrix = calcAMatrix();
     m_B_vector = calcBVector();
     m_C_vector = calcCRowVector();
     m_D = m_numerator(0);
-    
+
+    // Setting
+    m_current_state = Eigen::VectorXd::Zero(m_matrix_size);
+
     // Filling the container of integration methods
     m_integrators.push_back(std::bind(&StateSpaceModel::eulerCompute,
                                       this,
@@ -74,6 +45,35 @@ StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
 }
 
 StateSpaceModel::~StateSpaceModel() {}
+
+Eigen::VectorXd StateSpaceModel::makeNumerator(const TransferFcn &tfcn) const
+{
+    auto input{tfcn.getNumerator()};
+    auto divisor{tfcn.getDenominator().at(0)};
+    auto offset{tfcn.getDenominator().size() - input.size()};
+
+    Eigen::VectorXd ret{Eigen::VectorXd::Zero(tfcn.getDenominator().size())};
+
+    for (auto i{offset}; i < tfcn.getDenominator().size(); i++)
+    {
+        ret(i) = input.at(i - offset) / divisor;
+    }
+    return ret;
+}
+
+Eigen::VectorXd StateSpaceModel::makeDenominator(const TransferFcn &tfcn) const
+{
+    auto input{tfcn.getDenominator()};
+    auto divisor{tfcn.getDenominator().at(0)};
+
+    Eigen::VectorXd ret{Eigen::VectorXd::Zero(input.size())};
+
+    for (auto i{0}; i < input.size(); i++)
+    {
+        ret(i) = input.at(i) / divisor;
+    }
+    return ret;
+}
 
 Eigen::MatrixXd StateSpaceModel::calcAMatrix() const
 {
