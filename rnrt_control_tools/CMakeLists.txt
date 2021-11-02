@@ -19,9 +19,7 @@ include_directories(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES 
-    pm_motor
-    transfer_fcn
-    state_space_model
+    ${PROJECT_NAME}
 
   CATKIN_DEPENDS 
     roscpp 
@@ -32,34 +30,29 @@ catkin_package(
 
 # Libs
 
-add_library(pm_motor src/pm_motor.cpp)
-target_link_libraries(pm_motor ${catkin_LIBRARIES})
-
-add_library(transfer_fcn src/transfer_fcn.cpp)
-target_link_libraries(transfer_fcn ${catkin_LIBRARIES})
-
-add_library(state_space_model src/state_space_model.cpp)
-target_link_libraries(state_space_model ${catkin_LIBRARIES})
-
-add_executable(ssm src/main.cpp)
-target_link_libraries(ssm ${catkin_LIBRARIES} state_space_model transfer_fcn)
-
+add_library(${PROJECT_NAME} 
+    src/transfer_fcn.cpp
+    src/state_space_model.cpp
+    src/pm_motor.cpp
+    )
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
 #   Tests
   catkin_add_gtest(transfer_fcn_tests test/transfer_fcn_tests.cpp)
-  target_link_libraries(transfer_fcn_tests ${catkin_LIBRARIES} transfer_fcn)
+  target_link_libraries(transfer_fcn_tests ${catkin_LIBRARIES} ${PROJECT_NAME})
 
   catkin_add_gtest(state_space_model_tests test/state_space_model_tests.cpp)
-  target_link_libraries(state_space_model_tests ${catkin_LIBRARIES} transfer_fcn state_space_model)
+  target_link_libraries(state_space_model_tests ${catkin_LIBRARIES} ${PROJECT_NAME})
+
+  catkin_add_gtest(pm_motor_tests test/pm_motor_tests.cpp)
+  target_link_libraries(pm_motor_tests ${catkin_LIBRARIES} ${PROJECT_NAME})
 
 endif()
 
 
 install(TARGETS 
-  pm_motor
-  transfer_fcn
-  state_space_model
+  ${PROJECT_NAME}
 
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
