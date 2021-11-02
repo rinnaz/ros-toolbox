@@ -9,11 +9,6 @@ StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
         throw std::invalid_argument("Not proper transfer function input");
     }
 
-    if (!tfcn.isValid())
-    {
-        throw std::invalid_argument("Invalid transfer function input");
-    }
-
     // converting from std::vector to Eigen::VectorXd
     // and dividing dy denominators highest power value
     m_matrix_size = tfcn.getDenominator().size() - 1;

@@ -10,25 +10,30 @@ TEST(StateSpaceModelTest, ConstructorTest)
         "description",
         "This test check if Constructor works fine");
 
-    TransferFcn tfcn{{1.0}, {0.05, 1.0}};
+    TransferFcn tfcn{{1.0}, 
+                     {0.05, 1.0}};
 
-    EXPECT_NO_THROW(StateSpaceModel ssm{tfcn});
+    EXPECT_NO_THROW(StateSpaceModel ssm0{tfcn});
 
-    TransferFcn tfcn1{{1.0, 1.0}, {0.05, 1.0}};
+    tfcn = TransferFcn({{1.0, 1.0}, 
+                        {0.05, 1.0}});
 
-    EXPECT_NO_THROW(StateSpaceModel ssm1{tfcn1});
+    EXPECT_NO_THROW(StateSpaceModel ssm1{tfcn});
 
-    TransferFcn tfcn2{{1.0, 1.0, 1.0}, {0.05, 1.0}};
+    tfcn = TransferFcn({{1.0, 1.0, 1.0}, 
+                        {0.05, 1.0}});
 
-    EXPECT_THROW(StateSpaceModel ssm2{tfcn2}, std::invalid_argument);
-    
-    TransferFcn tfcn3{{}, {0.05, 1.0}};
+    EXPECT_THROW(StateSpaceModel ssm2{tfcn}, std::invalid_argument);
 
-    EXPECT_THROW(StateSpaceModel ssm3{tfcn3}, std::invalid_argument);
+    tfcn = TransferFcn({{1.0, 1.0, 1.0}, 
+                        {0.0, 0.05, 1.0}});
 
-    TransferFcn tfcn4{{1.0, 1.0}, {0.0, 0.0}};
+    EXPECT_THROW(StateSpaceModel ssm3{tfcn}, std::invalid_argument);
 
-    EXPECT_THROW(StateSpaceModel ssm4{tfcn4}, std::invalid_argument);
+    tfcn = TransferFcn({{1.0, 1.0, 1.0}, 
+                        {0.0, 0.0, 0.05, 1.0}});
+
+    EXPECT_THROW(StateSpaceModel ssm4{tfcn}, std::invalid_argument);
 }
 
 TEST(StateSpaceModelTest, EulerTest)
@@ -37,7 +42,8 @@ TEST(StateSpaceModelTest, EulerTest)
         "description",
         "This test check if Euler solver works fine");
 
-    TransferFcn tfcn{{1.0}, {0.05, 1.0}};
+    TransferFcn tfcn{{1.0}, 
+                     {0.05, 1.0}};
     StateSpaceModel ssm{tfcn};
 
     double value{0.0};
@@ -52,8 +58,6 @@ TEST(StateSpaceModelTest, EulerTest)
     double epsilon{1.0e-8};
 
     EXPECT_TRUE(abs(value - 1.0) < epsilon);
-
-
 }
 
 TEST(StateSpaceModelTest, RungeKuttaTest)
@@ -62,7 +66,8 @@ TEST(StateSpaceModelTest, RungeKuttaTest)
         "description",
         "This test check if RungeKutta solver works fine");
 
-    TransferFcn tfcn{{1.0}, {0.05, 1.0}};
+    TransferFcn tfcn{{1.0}, 
+                     {0.05, 1.0}};
     StateSpaceModel ssm{tfcn};
 
     double value{0.0};

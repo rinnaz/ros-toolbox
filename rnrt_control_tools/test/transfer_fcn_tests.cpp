@@ -3,41 +3,43 @@
 #include "rnrt_control_tools/transfer_fcn.h"
 #include "gtest/gtest.h"
 
-TEST(TransferFcnTest, ValidationTest)
+TEST(TransferFcnTest, ConstructorTest)
 {
     RecordProperty(
         "description",
         "This test check if Transfer function validation works fine");
 
-    TransferFcn tfcn{{1.0, 1.0}, {10.0, 1.0}};
-    EXPECT_TRUE(tfcn.isValid());
+    TransferFcn tfcn;
 
-    tfcn = TransferFcn({{0.0, 1.0, 1.0}, {10.0, 1.0}});
-    EXPECT_TRUE(tfcn.isValid());
+    EXPECT_NO_THROW(tfcn = TransferFcn({{1.0, 1.0}, 
+                                        {10.0, 1.0}}));
 
-    tfcn = TransferFcn({{1.0, 1.0, 1.0}, {10.0, 1.0}});
-    EXPECT_TRUE(tfcn.isValid());
+    EXPECT_NO_THROW(tfcn = TransferFcn({{0.0, 1.0, 1.0}, 
+                                        {10.0, 1.0}}));
 
-    tfcn = TransferFcn({{1.0, 1.0}, {0.0, 1.0}});
-    EXPECT_TRUE(tfcn.isValid());
+    EXPECT_NO_THROW(tfcn = TransferFcn({{1.0, 1.0, 1.0}, 
+                                        {10.0, 1.0}}));
 
-    tfcn = TransferFcn({{0.0, 0.0}, {0.0, 1.0}});
-    EXPECT_FALSE(tfcn.isValid());
+    EXPECT_NO_THROW(tfcn = TransferFcn({{1.0, 1.0}, 
+                                        {0.0, 1.0}}));
 
-    tfcn = TransferFcn({{0.0, 0.0}, {0.0, 0.0}});
-    EXPECT_FALSE(tfcn.isValid());
+    EXPECT_THROW(tfcn = TransferFcn({{0.0, 0.0}, 
+                                     {0.0, 1.0}}), std::invalid_argument);
 
-    tfcn = TransferFcn({{1.0, 0.0}, {0.0, 0.0}});
-    EXPECT_FALSE(tfcn.isValid());
+    EXPECT_THROW(tfcn = TransferFcn({{0.0, 0.0}, 
+                                     {0.0, 0.0}}), std::invalid_argument);
 
-    tfcn = TransferFcn({{}, {1.0}});
-    EXPECT_FALSE(tfcn.isValid());
+    EXPECT_THROW(tfcn = TransferFcn({{1.0, 0.0}, 
+                                     {0.0, 0.0}}), std::invalid_argument);
 
-    tfcn = TransferFcn({{1.0}, {}});
-    EXPECT_FALSE(tfcn.isValid());
+    EXPECT_THROW(tfcn = TransferFcn({{}, 
+                                     {1.0}}), std::invalid_argument);
 
-    tfcn = TransferFcn({{}, {}});
-    EXPECT_FALSE(tfcn.isValid());
+    EXPECT_THROW(tfcn = TransferFcn({{1.0}, 
+                                     {}}), std::invalid_argument);
+
+    EXPECT_THROW(tfcn = TransferFcn({{}, 
+                                     {}}), std::invalid_argument);
 }
 
 TEST(TransferFcnTest, ProperTest)
@@ -46,19 +48,23 @@ TEST(TransferFcnTest, ProperTest)
         "description",
         "This test check if Transfer function proper check works fine");
 
-    TransferFcn tfcn{{1.0, 1.0}, {10.0, 1.0}};
+    TransferFcn tfcn{{1.0, 1.0}, 
+                     {10.0, 1.0}};
     EXPECT_TRUE(tfcn.isProper());
 
-    tfcn = TransferFcn({{0.0, 1.0, 1.0}, {10.0, 1.0}});
+    tfcn = TransferFcn({{0.0, 1.0, 1.0}, 
+                        {10.0, 1.0}});
     EXPECT_TRUE(tfcn.isProper());
 
-    tfcn = TransferFcn({{1.0, 1.0, 1.0}, {10.0, 1.0}});
+    tfcn = TransferFcn({{1.0, 1.0, 1.0}, 
+                        {10.0, 1.0}});
     EXPECT_FALSE(tfcn.isProper());
 
-    tfcn = TransferFcn({{1.0, 1.0}, {0.0, 1.0}});
+    tfcn = TransferFcn({{1.0, 1.0}, 
+                        {0.0, 1.0}});
+                        
     EXPECT_FALSE(tfcn.isProper());
 }
-
 
 int main(int argc, char **argv)
 {

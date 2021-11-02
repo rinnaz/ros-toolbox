@@ -8,6 +8,10 @@ TransferFcn::TransferFcn(const std::vector<double> &num, const std::vector<doubl
     : m_numerator{removeLeadingZeros(num)},
       m_denominator{removeLeadingZeros(den)}
 {
+    if (!isValid())
+    {
+        throw std::invalid_argument("Invalid transfer function input");
+    }
 }
 
 TransferFcn::TransferFcn(const TransferFcn &tf)
