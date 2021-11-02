@@ -1,7 +1,7 @@
 #include "rnrt_control_tools/pm_motor.h"
 
 PmMotor::PmMotor()
-    : m_l{1.0}, m_r{1.0}, m_te{m_l / m_r}, m_km{1.0}, m_ke{1.0}, 
+    : m_l{1.0}, m_r{1.0}, m_te{m_l / m_r}, m_km{1.0}, m_ke{1.0},
       m_pole_pairs{1}
 {
     initStateSpaceModel();
@@ -11,9 +11,13 @@ PmMotor::PmMotor(const double &ind,
                  const double &res,
                  const double &km,
                  const uint64_t &pole_pairs)
-    : m_l{ind}, m_r{res}, m_te{m_l / m_r}, m_km{km}, m_ke{km}, 
+    : m_l{ind}, m_r{res}, m_te{m_l / m_r}, m_km{km}, m_ke{km},
       m_pole_pairs{pole_pairs}
 {
+    if (ind <= 0.0 || res <= 0.0 || km <= 0.0 || pole_pairs <= 0)
+    {
+        throw std::range_error("Negative input is not allowed");
+    }
     initStateSpaceModel();
 }
 
@@ -22,6 +26,10 @@ void PmMotor::setParameters(const double &ind,
                             const double &km,
                             const uint64_t &pole_pairs)
 {
+    if (ind <= 0.0 || res <= 0.0 || km <= 0.0 || pole_pairs <= 0)
+    {
+        throw std::range_error("Negative input is not allowed");
+    }
     m_l = ind;
     m_r = res;
     m_km = km;
@@ -32,28 +40,47 @@ void PmMotor::setParameters(const double &ind,
 
 void PmMotor::setInductance(const double &ind)
 {
+    if (ind <= 0.0)
+    {
+        throw std::range_error("Negative input is not allowed");
+    }
     m_l = ind;
     m_te = m_l / m_r;
     initStateSpaceModel();
 }
 void PmMotor::setResistance(const double &res)
 {
+    if (res <= 0.0)
+    {
+        throw std::range_error("Negative input is not allowed");
+    }
     m_r = res;
     m_te = m_l / m_r;
     initStateSpaceModel();
 }
 void PmMotor::setKm(const double &km)
 {
+    if (km <= 0.0)
+    {
+        throw std::range_error("Negative input is not allowed");
+    }
     m_km = km;
     m_ke = km;
 }
 void PmMotor::setTe(const double &te)
 {
+    if (te <= 0.0)
+    {
+        throw std::range_error("Negative input is not allowed");
+    }
     m_te = te;
     initStateSpaceModel();
 }
 
-void PmMotor::setPolePairs(const uint64_t &pole_pairs) { m_pole_pairs = pole_pairs; }
+void PmMotor::setPolePairs(const uint64_t &pole_pairs)
+{
+    m_pole_pairs = pole_pairs;
+}
 
 void PmMotor::initStateSpaceModel()
 {

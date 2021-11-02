@@ -1,7 +1,5 @@
 #include <cmath>
-#include <limits>
 #include <iostream>
-#include <memory>
 #include "rnrt_control_tools/transfer_fcn.h"
 #include "rnrt_control_tools/state_space_model.h"
 #include "gtest/gtest.h"
@@ -39,8 +37,8 @@ TEST(StateSpaceModelTest, EulerTest)
         "description",
         "This test check if Euler solver works fine");
 
-    TransferFcn tfcn1{{1.0}, {0.05, 1.0}};
-    StateSpaceModel ssm1{tfcn1};
+    TransferFcn tfcn{{1.0}, {0.05, 1.0}};
+    StateSpaceModel ssm{tfcn};
 
     double value{0.0};
 
@@ -48,12 +46,14 @@ TEST(StateSpaceModelTest, EulerTest)
 
     for (auto i{0}; i < 100; i++)
     {
-        value = ssm1.getResponse(1.0, 10 * msec, SolverType::EULER);
+        value = ssm.getResponse(1.0, 10 * msec, SolverType::EULER);
     }
 
     double epsilon{1.0e-8};
 
     EXPECT_TRUE(abs(value - 1.0) < epsilon);
+
+
 }
 
 TEST(StateSpaceModelTest, RungeKuttaTest)
