@@ -42,6 +42,7 @@ void MarkerDetector::initParameters()
     m_nh.getParam(m_node_name + "/tf_parent_frame", m_tf_parent_frame);
     m_nh.getParam(m_node_name + "/tf_child_frame_prefix", m_tf_child_frame_prefix);
     m_nh.getParam(m_node_name + "/aruco_dict_type", m_aruco_dict_type);
+    m_nh.getParam(m_node_name + "/aruco_marker_size", m_marker_size);
 }
 
 void MarkerDetector::initArucoDictSelector()
@@ -160,7 +161,7 @@ void MarkerDetector::callback(const sensor_msgs::Image::ConstPtr &img) const
     cv::aruco::drawDetectedMarkers(image_copy, marker_corners, marker_ids);
     std::vector<cv::Vec3d> rvecs, tvecs;
 
-    cv::aruco::estimatePoseSingleMarkers(marker_corners, 0.06,
+    cv::aruco::estimatePoseSingleMarkers(marker_corners, m_marker_size,
                                          m_camera_matrix, m_dist_coeffs,
                                          rvecs, tvecs);
 

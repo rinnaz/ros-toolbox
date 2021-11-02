@@ -8,6 +8,7 @@
   <arg name="tf_parent_frame" default="camera" />
   <arg name="tf_child_frame_prefix" default="marker_" />
   <arg name="aruco_dict_type" default="DICT_6X6_100" />
+  <arg name="aruco_marker_size" default="0.06" />
 
 
   <node name="marker_detector" 
@@ -25,6 +26,7 @@
     <param name="tf_parent_frame" value="$(arg tf_parent_frame)" />
     <param name="tf_child_frame_prefix" value="$(arg tf_child_frame_prefix)" />
     <param name="aruco_dict_type" value="$(arg aruco_dict_type)" />
+    <param name="aruco_marker_size" value="$(arg aruco_marker_size)" type="double" />
   </node>
 
 </launch> 

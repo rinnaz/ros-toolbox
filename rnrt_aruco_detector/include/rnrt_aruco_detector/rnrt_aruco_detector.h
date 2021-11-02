@@ -63,6 +63,7 @@ private:
     std::string m_tf_parent_frame;
     std::string m_tf_child_frame_prefix;
     std::string m_aruco_dict_type;
+    double m_marker_size;
     std::map<std::string, cv::aruco::PREDEFINED_DICTIONARY_NAME> m_aruco_dict_selector;
 
     cv::Ptr<cv::aruco::DetectorParameters> m_detector_parameters;
