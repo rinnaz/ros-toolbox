@@ -33,16 +33,22 @@ class MarkerDetector
 public:
     MarkerDetector();
     ~MarkerDetector();
+    void callback(const sensor_msgs::Image::ConstPtr &img) const;
+
+private:
     void initParameters();
     void initArucoDictSelector();
     void readCameraParams();
     void readDetectorParams();
-    void callback(const sensor_msgs::Image::ConstPtr& img) const;
-    geometry_msgs::Quaternion rotMatToQuat(const cv::Mat& rot_mat) const;
-    geometry_msgs::TransformStamped makeTransformMsg(geometry_msgs::Pose& pose, 
-                                                     int& marker_id) const;
 
-private:
+    geometry_msgs::Pose makeMarkerPose(const int &marker_id,
+                                       const cv::Vec3d &rvec,
+                                       const cv::Vec3d &tvec) const;
+
+    geometry_msgs::Quaternion rotMatToQuat(const cv::Mat &rot_mat) const;
+    geometry_msgs::TransformStamped makeTransformMsg(geometry_msgs::Pose &pose,
+                                                     int &marker_id) const;
+
     ros::NodeHandle m_nh;
     ros::Publisher m_pub_markers, m_pub_image;
     ros::Subscriber m_sub;
