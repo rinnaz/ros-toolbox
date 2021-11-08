@@ -77,7 +77,7 @@
 #include <joint_trajectory_controller/hold_trajectory_builder.h>
 #include <joint_trajectory_controller/stop_trajectory_builder.h>
 
-#include <rnrt_msgs/JointGravity.h>
+#include <rnrt_msgs/JointEffortFeedForward.h>
 
 namespace joint_trajectory_controller
 {
@@ -128,11 +128,11 @@ namespace joint_trajectory_controller
  * out-of-the-box.
  */
 template <class SegmentImpl, class HardwareInterface>
-class JointTrajectoryControllerGravityCompensated : public controller_interface::Controller<HardwareInterface>
+class JointTrajectoryControllerEffortFF : public controller_interface::Controller<HardwareInterface>
 {
 public:
 
-  JointTrajectoryControllerGravityCompensated();
+  JointTrajectoryControllerEffortFF();
 
   /** \name Non Real-Time Safe Functions
    *\{*/
@@ -190,7 +190,7 @@ protected:
   HwIfaceAdapter            hw_iface_adapter_;   ///< Adapts desired trajectory state to HW interface.
 
   RealtimeGoalHandlePtr     rt_active_goal_;     ///< Currently active action goal, if any.
-  std::mutex                mutex_gravity_input_;
+  std::mutex                mutex_effort_ff_input_;
 
   /**
    * Thread-safe container with a smart pointer to trajectory currently being followed.
@@ -224,18 +224,18 @@ protected:
   // ROS API
   ros::NodeHandle    controller_nh_;
   ros::Subscriber    trajectory_command_sub_;
-  ros::Subscriber    gravity_sub_;
+  ros::Subscriber    effort_ff_sub_;
   ActionServerPtr    action_server_;
   ros::ServiceServer query_state_service_;
   StatePublisherPtr  state_publisher_;
 
   ros::Timer         goal_handle_timer_;
   ros::Time          last_state_publish_time_;
-  std::vector<double> gravity_input_;
+  std::vector<double> effort_ff_input_;
 
   virtual bool updateTrajectoryCommand(const JointTrajectoryConstPtr& msg, RealtimeGoalHandlePtr gh, std::string* error_string = nullptr);
   virtual void trajectoryCommandCB(const JointTrajectoryConstPtr& msg);
-  virtual void gravityCB(const rnrt_msgs::JointGravity& source);
+  virtual void effortFeedForwardCB(const rnrt_msgs::JointEffortFeedForward& source);
   virtual void goalCB(GoalHandle gh);
   virtual void cancelCB(GoalHandle gh);
   virtual void preemptActiveGoal();

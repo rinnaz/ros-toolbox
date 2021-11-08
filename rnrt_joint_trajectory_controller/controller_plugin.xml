@@ -18,8 +18,8 @@
     </description>
   </class> -->
 
-  <class name="effort_controllers/JointTrajectoryControllerGravityCompensated"
-         type="effort_controllers::JointTrajectoryControllerGravityCompensated"
+  <class name="effort_controllers/JointTrajectoryControllerEffortFF"
+         type="effort_controllers::JointTrajectoryControllerEffortFF"
          base_class_type="controller_interface::ControllerBase">
     <description>
       The JointTrajectoryController executes joint-space trajectories on a set of joints.

@@ -62,9 +62,9 @@ namespace effort_controllers
    * \brief Joint trajectory controller that represents trajectory segments as <b>quintic splines</b> and sends
    * commands to an \b effort interface.
    */
-  typedef joint_trajectory_controller::JointTrajectoryControllerGravityCompensated<trajectory_interface::QuinticSplineSegment<double>,
+  typedef joint_trajectory_controller::JointTrajectoryControllerEffortFF<trajectory_interface::QuinticSplineSegment<double>,
                                                                  hardware_interface::EffortJointInterface>
-          JointTrajectoryControllerGravityCompensated;
+          JointTrajectoryControllerEffortFF;
 }
 
 // namespace pos_vel_controllers
@@ -91,6 +91,6 @@ namespace effort_controllers
 
 // PLUGINLIB_EXPORT_CLASS(position_controllers::JointTrajectoryController, controller_interface::ControllerBase)
 // PLUGINLIB_EXPORT_CLASS(velocity_controllers::JointTrajectoryController, controller_interface::ControllerBase)
-PLUGINLIB_EXPORT_CLASS(effort_controllers::JointTrajectoryControllerGravityCompensated,   controller_interface::ControllerBase)
+PLUGINLIB_EXPORT_CLASS(effort_controllers::JointTrajectoryControllerEffortFF,   controller_interface::ControllerBase)
 // PLUGINLIB_EXPORT_CLASS(pos_vel_controllers::JointTrajectoryController,   controller_interface::ControllerBase)
 // PLUGINLIB_EXPORT_CLASS(pos_vel_acc_controllers::JointTrajectoryController,   controller_interface::ControllerBase)
