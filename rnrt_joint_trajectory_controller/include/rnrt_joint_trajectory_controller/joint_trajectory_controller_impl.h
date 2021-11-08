@@ -130,7 +130,7 @@ std::string getLeafNamespace(const ros::NodeHandle& nh)
 } // namespace
 
 template <class SegmentImpl, class HardwareInterface>
-inline void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+inline void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 starting(const ros::Time& time)
 {
   // Update time data
@@ -157,14 +157,14 @@ starting(const ros::Time& time)
 }
 
 template <class SegmentImpl, class HardwareInterface>
-inline void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+inline void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 stopping(const ros::Time& /*time*/)
 {
   preemptActiveGoal();
 }
 
 template <class SegmentImpl, class HardwareInterface>
-inline void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+inline void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 trajectoryCommandCB(const JointTrajectoryConstPtr& msg)
 {
   const bool update_ok = updateTrajectoryCommand(msg, RealtimeGoalHandlePtr());
@@ -172,25 +172,25 @@ trajectoryCommandCB(const JointTrajectoryConstPtr& msg)
 }
 
 template <class SegmentImpl, class HardwareInterface>
-inline void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
-gravityCB(const rnrt_msgs::JointGravity& source)
+inline void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
+effortFeedForwardCB(const rnrt_msgs::JointEffortFeedForward& source)
 {
     if (source.name.size() != joint_names_.size())
     {
-      ROS_ERROR_NAMED(name_, "Wrong gravity input size");
+      ROS_ERROR_NAMED(name_, "Wrong effort feed forward input size");
       return;
     }
 
-    std::unique_lock lock(mutex_gravity_input_, std::try_to_lock);
+    std::unique_lock lock(mutex_effort_ff_input_, std::try_to_lock);
     if (lock.owns_lock()){
-      gravity_input_ = source.gravity_torque;
+      effort_ff_input_ = source.effort_feed_forward;
     }else{
-      ROS_INFO("Gravity torques frame dropped");
+      ROS_INFO("Effort feed forward frame dropped");
     }
 }
 
 template <class SegmentImpl, class HardwareInterface>
-inline void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+inline void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 preemptActiveGoal()
 {
   RealtimeGoalHandlePtr current_active_goal(rt_active_goal_);
@@ -205,8 +205,8 @@ preemptActiveGoal()
 }
 
 template <class SegmentImpl, class HardwareInterface>
-JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
-JointTrajectoryControllerGravityCompensated()
+JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
+JointTrajectoryControllerEffortFF()
   : verbose_(false) // Set to true during debugging
 {
   // The verbose parameter is for advanced use as it breaks real-time safety
@@ -221,7 +221,7 @@ JointTrajectoryControllerGravityCompensated()
 }
 
 template <class SegmentImpl, class HardwareInterface>
-bool JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::init(HardwareInterface* hw,
+bool JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::init(HardwareInterface* hw,
                                                                      ros::NodeHandle&   root_nh,
                                                                      ros::NodeHandle&   controller_nh)
 {
@@ -272,7 +272,7 @@ bool JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>
 
   // Initialize members
   joints_.resize(n_joints);
-  gravity_input_.resize(n_joints);
+  effort_ff_input_.resize(n_joints);
   angle_wraparound_.resize(n_joints);
   for (unsigned int i = 0; i < n_joints; ++i)
   {
@@ -291,7 +291,7 @@ bool JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>
 
     ROS_DEBUG_STREAM_NAMED(name_, "Found " << not_if << "continuous joint '" << joint_names_[i] << "' in '" <<
                                   this->getHardwareInterfaceType() << "'.");
-    gravity_input_[i] = 0.0;
+    effort_ff_input_[i] = 0.0;
   }
 
   assert(joints_.size() == angle_wraparound_.size());
@@ -308,22 +308,22 @@ bool JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>
   hw_iface_adapter_.init(joints_, controller_nh_);
 
   // ROS API: Subscribed topics
-  trajectory_command_sub_ = controller_nh_.subscribe("command", 1, &JointTrajectoryControllerGravityCompensated::trajectoryCommandCB, this);
-  gravity_sub_ = controller_nh_.subscribe("gravity_input", 1, &JointTrajectoryControllerGravityCompensated::gravityCB, this); 
+  trajectory_command_sub_ = controller_nh_.subscribe("command", 1, &JointTrajectoryControllerEffortFF::trajectoryCommandCB, this);
+  effort_ff_sub_ = controller_nh_.subscribe("effort_feed_forward", 1, &JointTrajectoryControllerEffortFF::effortFeedForwardCB, this); 
 
   // ROS API: Published topics
   state_publisher_.reset(new StatePublisher(controller_nh_, "state", 1));
 
   // ROS API: Action interface
   action_server_.reset(new ActionServer(controller_nh_, "follow_joint_trajectory",
-                                        boost::bind(&JointTrajectoryControllerGravityCompensated::goalCB,   this, _1),
-                                        boost::bind(&JointTrajectoryControllerGravityCompensated::cancelCB, this, _1),
+                                        boost::bind(&JointTrajectoryControllerEffortFF::goalCB,   this, _1),
+                                        boost::bind(&JointTrajectoryControllerEffortFF::cancelCB, this, _1),
                                         false));
   action_server_->start();
 
   // ROS API: Provided services
   query_state_service_ = controller_nh_.advertiseService("query_state",
-                                                         &JointTrajectoryControllerGravityCompensated::queryStateService,
+                                                         &JointTrajectoryControllerEffortFF::queryStateService,
                                                          this);
 
   // Preeallocate resources
@@ -365,7 +365,7 @@ bool JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>
 }
 
 template <class SegmentImpl, class HardwareInterface>
-void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 update(const ros::Time& time, const ros::Duration& period)
 {
   // Get currently followed trajectory
@@ -483,12 +483,12 @@ update(const ros::Time& time, const ros::Duration& period)
 
   updateFuncExtensionPoint(curr_traj, time_data);
   
-  // Since gravityCB is quite simple and doesn't take much time, 
+  // Since effortFeedForwardCB is quite simple and doesn't take much time, 
   // it seems ok to wait here
-  std::unique_lock lock(mutex_gravity_input_);
+  std::unique_lock lock(mutex_effort_ff_input_);
   // Hardware interface adapter: Generate and send commands
   hw_iface_adapter_.updateCommand(time_data.uptime, time_data.period,
-                                  desired_state_, state_error_, gravity_input_);
+                                  desired_state_, state_error_, effort_ff_input_);
 
   setActionFeedback();
 
@@ -496,7 +496,7 @@ update(const ros::Time& time, const ros::Duration& period)
 }
 
 template <class SegmentImpl, class HardwareInterface>
-bool JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+bool JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 updateTrajectoryCommand(const JointTrajectoryConstPtr& msg, RealtimeGoalHandlePtr gh, std::string* error_string)
 {
   typedef InitJointTrajectoryOptions<Trajectory> Options;
@@ -582,7 +582,7 @@ updateTrajectoryCommand(const JointTrajectoryConstPtr& msg, RealtimeGoalHandlePt
 }
 
 template <class SegmentImpl, class HardwareInterface>
-void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 goalCB(GoalHandle gh)
 {
   ROS_DEBUG_STREAM_NAMED(name_,"Received new action goal");
@@ -655,7 +655,7 @@ goalCB(GoalHandle gh)
 }
 
 template <class SegmentImpl, class HardwareInterface>
-void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 cancelCB(GoalHandle gh)
 {
   RealtimeGoalHandlePtr current_active_goal(rt_active_goal_);
@@ -679,7 +679,7 @@ cancelCB(GoalHandle gh)
 }
 
 template <class SegmentImpl, class HardwareInterface>
-bool JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+bool JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 queryStateService(control_msgs::QueryTrajectoryState::Request&  req,
                   control_msgs::QueryTrajectoryState::Response& resp)
 {
@@ -727,7 +727,7 @@ queryStateService(control_msgs::QueryTrajectoryState::Request&  req,
 }
 
 template <class SegmentImpl, class HardwareInterface>
-void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 publishState(const ros::Time& time)
 {
   // Check if it's time to publish
@@ -755,7 +755,7 @@ publishState(const ros::Time& time)
 }
 
 template <class SegmentImpl, class HardwareInterface>
-inline void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+inline void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 setHoldPosition(const ros::Time& time, RealtimeGoalHandlePtr gh)
 {
   hold_traj_builder_
@@ -767,21 +767,21 @@ setHoldPosition(const ros::Time& time, RealtimeGoalHandlePtr gh)
 }
 
 template <class SegmentImpl, class HardwareInterface>
-inline void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+inline void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 updateFuncExtensionPoint(const Trajectory& curr_traj, const TimeData& time_data)
 {
   // To be implemented by derived class
 }
 
 template <class SegmentImpl, class HardwareInterface>
-inline unsigned int JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+inline unsigned int JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 getNumberOfJoints() const
 {
   return joints_.size();
 }
 
 template <class SegmentImpl, class HardwareInterface>
-void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 updateStates(const ros::Time& sample_time, const Trajectory* const traj)
 {
   old_desired_state_ = desired_state_;
@@ -813,7 +813,7 @@ updateStates(const ros::Time& sample_time, const Trajectory* const traj)
 }
 
 template <class SegmentImpl, class HardwareInterface>
-void JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::
+void JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::
 setActionFeedback()
 {
   RealtimeGoalHandlePtr current_active_goal(rt_active_goal_);
@@ -838,8 +838,8 @@ setActionFeedback()
 }
 
 template <class SegmentImpl, class HardwareInterface>
-typename JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::TrajectoryPtr
-JointTrajectoryControllerGravityCompensated<SegmentImpl, HardwareInterface>::createHoldTrajectory(const unsigned int& number_of_joints)
+typename JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::TrajectoryPtr
+JointTrajectoryControllerEffortFF<SegmentImpl, HardwareInterface>::createHoldTrajectory(const unsigned int& number_of_joints)
 {
   TrajectoryPtr hold_traj {new Trajectory()};
 

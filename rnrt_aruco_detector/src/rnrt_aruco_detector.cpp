@@ -1,7 +1,7 @@
 #include "rnrt_aruco_detector/rnrt_aruco_detector.h"
 
 MarkerDetector::MarkerDetector()
-    : m_node_name {ros::this_node::getName()}
+    : m_node_name{ros::this_node::getName()}
 {
     // Get node parameters set by launch file
     initParameters();
@@ -42,29 +42,30 @@ void MarkerDetector::initParameters()
     m_nh.getParam(m_node_name + "/tf_parent_frame", m_tf_parent_frame);
     m_nh.getParam(m_node_name + "/tf_child_frame_prefix", m_tf_child_frame_prefix);
     m_nh.getParam(m_node_name + "/aruco_dict_type", m_aruco_dict_type);
+    m_nh.getParam(m_node_name + "/aruco_marker_size", m_marker_size);
 }
 
 void MarkerDetector::initArucoDictSelector()
 {
     m_aruco_dict_selector = {
-        {"DICT_4X4_50",   cv::aruco::DICT_4X4_50},
-        {"DICT_4X4_100",  cv::aruco::DICT_4X4_100},
-        {"DICT_4X4_250",  cv::aruco::DICT_4X4_250},
+        {"DICT_4X4_50", cv::aruco::DICT_4X4_50},
+        {"DICT_4X4_100", cv::aruco::DICT_4X4_100},
+        {"DICT_4X4_250", cv::aruco::DICT_4X4_250},
         {"DICT_4X4_1000", cv::aruco::DICT_4X4_1000},
 
-        {"DICT_5X5_50",   cv::aruco::DICT_5X5_50},
-        {"DICT_5X5_100",  cv::aruco::DICT_5X5_100},
-        {"DICT_5X5_250",  cv::aruco::DICT_5X5_250},
+        {"DICT_5X5_50", cv::aruco::DICT_5X5_50},
+        {"DICT_5X5_100", cv::aruco::DICT_5X5_100},
+        {"DICT_5X5_250", cv::aruco::DICT_5X5_250},
         {"DICT_5X5_1000", cv::aruco::DICT_5X5_1000},
 
-        {"DICT_6X6_50",   cv::aruco::DICT_6X6_50},
-        {"DICT_6X6_100",  cv::aruco::DICT_6X6_100},
-        {"DICT_6X6_250",  cv::aruco::DICT_6X6_250},
+        {"DICT_6X6_50", cv::aruco::DICT_6X6_50},
+        {"DICT_6X6_100", cv::aruco::DICT_6X6_100},
+        {"DICT_6X6_250", cv::aruco::DICT_6X6_250},
         {"DICT_6X6_1000", cv::aruco::DICT_6X6_1000},
 
-        {"DICT_7X7_50",   cv::aruco::DICT_7X7_50},
-        {"DICT_7X7_100",  cv::aruco::DICT_7X7_100},
-        {"DICT_7X7_250",  cv::aruco::DICT_7X7_250},
+        {"DICT_7X7_50", cv::aruco::DICT_7X7_50},
+        {"DICT_7X7_100", cv::aruco::DICT_7X7_100},
+        {"DICT_7X7_250", cv::aruco::DICT_7X7_250},
         {"DICT_7X7_1000", cv::aruco::DICT_7X7_1000}};
 }
 
@@ -139,16 +140,11 @@ void MarkerDetector::callback(const sensor_msgs::Image::ConstPtr &img) const
     static tf2_ros::TransformBroadcaster tf_broadcaster;
 
     rnrt_msgs::Markers markers_msg;
-
     geometry_msgs::Pose marker_pose;
-    geometry_msgs::Point marker_point;
-    geometry_msgs::Quaternion marker_quat;
 
     sensor_msgs::Image image_msg;
 
     auto cv_ptr = cv_bridge::toCvCopy(img, sensor_msgs::image_encodings::BGR8);
-
-    cv::Mat rotation_matrix;
 
     cv::Mat image_copy;
     (cv_ptr->image).copyTo(image_copy);
@@ -165,7 +161,7 @@ void MarkerDetector::callback(const sensor_msgs::Image::ConstPtr &img) const
     cv::aruco::drawDetectedMarkers(image_copy, marker_corners, marker_ids);
     std::vector<cv::Vec3d> rvecs, tvecs;
 
-    cv::aruco::estimatePoseSingleMarkers(marker_corners, 0.06,
+    cv::aruco::estimatePoseSingleMarkers(marker_corners, m_marker_size,
                                          m_camera_matrix, m_dist_coeffs,
                                          rvecs, tvecs);
 
@@ -174,30 +170,42 @@ void MarkerDetector::callback(const sensor_msgs::Image::ConstPtr &img) const
     {
         cv::aruco::drawAxis(image_copy, m_camera_matrix, m_dist_coeffs,
                             rvecs[i], tvecs[i], 0.05);
-
-        markers_msg.marker_ids.push_back(marker_ids[i]);
     }
 
-    // Take first marker
     for (auto i{0}; i < marker_ids.size(); i++)
     {
-        marker_point.x = tvecs[0][0];
-        marker_point.y = tvecs[0][1];
-        marker_point.z = tvecs[0][2];
-
-        cv::Rodrigues(rvecs[0], rotation_matrix);
-
-        marker_pose.position = marker_point;
-        marker_pose.orientation = rotMatToQuat(rotation_matrix);
-
+        markers_msg.marker_ids.push_back(marker_ids[i]);
+        marker_pose = makeMarkerPose(marker_ids[i],
+                                     rvecs[i],  
+                                     tvecs[i]);
         markers_msg.poses.push_back(marker_pose);
-
+        
         tf_broadcaster.sendTransform(makeTransformMsg(marker_pose, marker_ids[i]));
     }
 
-    m_pub_markers.publish(marker_pose);
+    m_pub_markers.publish(markers_msg);
 
     cv_ptr->image = image_copy;
     (*cv_ptr).toImageMsg(image_msg);
     m_pub_image.publish(image_msg);
+}
+
+geometry_msgs::Pose MarkerDetector::makeMarkerPose(const int &marker_id,
+                                                    const cv::Vec3d &rvec,
+                                                    const cv::Vec3d &tvec) const
+{
+    geometry_msgs::Pose marker_pose;
+    geometry_msgs::Point marker_point;
+    cv::Mat rotation_matrix;
+
+    marker_point.x = tvec[0];
+    marker_point.y = tvec[1];
+    marker_point.z = tvec[2];
+
+    cv::Rodrigues(rvec, rotation_matrix);
+
+    marker_pose.position = marker_point;
+    marker_pose.orientation = rotMatToQuat(rotation_matrix);
+
+    return marker_pose;
 }
