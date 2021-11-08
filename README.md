@@ -7,8 +7,8 @@ ROS node for detecting aruco markers. Publishes markers poses and tfs, so they c
 ## rnrt_control_tools
 At the moment it contains classes for: 
  - transfer function
- - state space model
+ - state space model (Euler and Runge-Kutta solvers)
  - permanent magnet brushed motor
 
 ## rnrt_joint_trajectory_controller
-Implementation of joint_trajectory_controller with gravity torque input for gravity compensated control
+Implementation of joint_trajectory_controller with effort feed forward input
