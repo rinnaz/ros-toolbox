@@ -6,11 +6,9 @@
 #include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit/robot_model/robot_model.h>
 #include <moveit/robot_state/robot_state.h>
-#include <moveit/dynamics_solver/dynamics_solver.h>
 
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/Vector3.h>
-#include <geometry_msgs/Wrench.h>
 #include "rnrt_msgs/JointEffortFeedForward.h"
 
 #include <string>
@@ -25,11 +23,6 @@ public:
 
 protected:
     virtual rnrt_msgs::JointEffortFeedForward composeEffortFFMsg();
-    geometry_msgs::Wrench composeZeroWrenchMsg();
-
-    geometry_msgs::Vector3 composeGravityMsg(const double &x,
-                                             const double &y,
-                                             const double &z);
 
     void initRosParameters();
     void initMoveitCore();
@@ -52,10 +45,5 @@ protected:
     robot_state::RobotStatePtr m_kinematic_state;
     std::shared_ptr<robot_state::JointModelGroup> m_joint_model_group;
     std::vector<std::string> m_joint_names;
-
-    dynamics_solver::DynamicsSolverPtr m_dynamic_solver;
-    geometry_msgs::Vector3 m_gravity;
-    std::vector<geometry_msgs::Wrench> m_wrenches;
-
     std::vector<double> m_joint_values_current;
 };

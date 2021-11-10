@@ -14,17 +14,6 @@ EffortFFController::EffortFFController()
                                         this);
 
     m_pub_effort_ff = m_nh.advertise<rnrt_msgs::JointEffortFeedForward>(m_effort_ff_topic, 1);
-
-    for (auto i : m_joint_values_current)
-    {
-        m_wrenches.push_back(composeZeroWrenchMsg());
-    }
-
-    m_gravity = composeGravityMsg(0.0, 0.0, -9.8);
-
-    m_dynamic_solver = std::make_shared<dynamics_solver::DynamicsSolver>(m_kinematic_model,
-                                                                         m_planning_group_name,
-                                                                         m_gravity);
 }
 
 void EffortFFController::initRosParameters()
@@ -46,7 +35,6 @@ void EffortFFController::initMoveitCore()
     m_joint_model_group = std::shared_ptr<robot_state::JointModelGroup>(m_kinematic_model->getJointModelGroup("iiwa_arm"));
     m_joint_names = m_joint_model_group->getJointModelNames();
     m_joint_values_current = {0., 0., 0., 0., 0., 0., 0.};
-    m_dynamic_solver = nullptr;
 }
 
 void EffortFFController::callbackJointStates(const sensor_msgs::JointState &pose)
@@ -65,29 +53,5 @@ rnrt_msgs::JointEffortFeedForward EffortFFController::composeEffortFFMsg()
     {
         ret.effort_feed_forward.push_back(0.0);
     }
-    return ret;
-}
-
-geometry_msgs::Wrench EffortFFController::composeZeroWrenchMsg()
-{
-    geometry_msgs::Wrench ret;
-    geometry_msgs::Vector3 temp_v3;
-    temp_v3.x = 0.0;
-    temp_v3.y = 0.0;
-    temp_v3.z = 0.0;
-
-    ret.force = temp_v3;
-    ret.torque = temp_v3;
-    return ret;
-}
-
-geometry_msgs::Vector3 EffortFFController::composeGravityMsg(const double &x,
-                                                                  const double &y,
-                                                                  const double &z)
-{
-    geometry_msgs::Vector3 ret;
-    ret.x = x;
-    ret.y = y;
-    ret.z = z;
     return ret;
 }
