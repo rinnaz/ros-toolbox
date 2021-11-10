@@ -1,0 +1,20 @@
+<launch>
+  <arg name="robot_description" default="/robot_description" />
+  <arg name="planning_group_name" default="planning_group_name" />
+  <arg name="joint_states_topic" default="/joint_states" />
+  <arg name="effort_ff_topic" default="/effort_ff_topic" />
+  <arg name="base_frame_id" default="base_link" />
+
+  <node name="gravity_compensator" 
+        pkg="rnrt_robot_controllers" 
+        type="gravity_compensation_controller_node" 
+        respawn="false" 
+        output="screen" >
+
+    <param name="robot_description" value="$(arg robot_description)" />
+    <param name="planning_group_name" value="$(arg planning_group_name)" />
+    <param name="joint_states_topic" value="$(arg joint_states_topic)" />
+    <param name="effort_ff_topic" value="$(arg effort_ff_topic)" />
+    <param name="base_frame_id" value="$(arg base_frame_id)" />
+  </node>
+</launch> 
