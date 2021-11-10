@@ -12,3 +12,7 @@ At the moment it contains classes for:
 
 ## rnrt_joint_trajectory_controller
 Implementation of joint_trajectory_controller with effort feed forward input
+
+## rnrt_robot_controllers
+Robot-level controllers. Currently has:
+ - gravity compensation controller
