@@ -8,15 +8,12 @@
 #include <moveit/robot_state/robot_state.h>
 #include <moveit/dynamics_solver/dynamics_solver.h>
 
-#include <trajectory_msgs/JointTrajectory.h>
-#include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/Wrench.h>
 #include "rnrt_msgs/JointEffortFeedForward.h"
 
 #include <string>
-#include <utility>
 
 class EffortFFController
 {
@@ -48,9 +45,9 @@ protected:
     std::string m_joint_states_topic;
     std::string m_effort_ff_topic;
     std::string m_base_frame_id;
-    
+
     std::shared_ptr<robot_model_loader::RobotModelLoader> m_robot_model_loader;
-    
+
     robot_model::RobotModelPtr m_kinematic_model;
     robot_state::RobotStatePtr m_kinematic_state;
     std::shared_ptr<robot_state::JointModelGroup> m_joint_model_group;

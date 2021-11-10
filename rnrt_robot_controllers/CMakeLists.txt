@@ -4,10 +4,8 @@ project(rnrt_robot_controllers)
 add_compile_options(-std=c++17)
 
 find_package(catkin REQUIRED COMPONENTS
-  rospy
   std_msgs
   sensor_msgs
-  trajectory_msgs
   moveit_core
   moveit_ros_planning_interface
   rnrt_msgs
