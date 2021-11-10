@@ -1,7 +1,4 @@
-## Joint Trajectory Controller with gravity compensation interface ##
+# Joint Trajectory Controller with effort feed forward input
 
 Controller for executing joint-space trajectories on a group of joints.
-
-Detailed user documentation can be found in the controller's [ROS wiki page](http://wiki.ros.org/joint_trajectory_controller).
-
-
+Basically it is ROS deafault Joint Trajectory Controller but it also subscribes to effort FF topic and adds effort_FF to command
