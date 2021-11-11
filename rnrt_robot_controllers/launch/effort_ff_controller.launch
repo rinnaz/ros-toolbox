@@ -4,6 +4,7 @@
   <arg name="joint_states_topic" default="/joint_states" />
   <arg name="effort_ff_topic" default="/effort_ff_topic" />
   <arg name="base_frame_id" default="base_link" />
+  <arg name="gravity_vector" default="[0.0, 0.0, -9.8]" />
 
   <node name="gravity_compensator" 
         pkg="rnrt_robot_controllers" 
@@ -16,5 +17,6 @@
     <param name="joint_states_topic" value="$(arg joint_states_topic)" />
     <param name="effort_ff_topic" value="$(arg effort_ff_topic)" />
     <param name="base_frame_id" value="$(arg base_frame_id)" />
+    <rosparam param="gravity_vector" subst_value="True">$(arg gravity_vector)</rosparam>
   </node>
 </launch> 

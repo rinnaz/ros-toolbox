@@ -8,13 +8,12 @@ class GravityCompenationController : public EffortFFController
 {
 public:
     GravityCompenationController();
-    rnrt_msgs::JointEffortFeedForward composeEffortFFMsg() override;
+    rnrt_msgs::JointEffortFeedForward
+    composeEffortFFMsg(const sensor_msgs::JointState &joint_state) override;
 
 protected:
     geometry_msgs::Wrench composeZeroWrenchMsg();
-    geometry_msgs::Vector3 composeGravityMsg(const double &x,
-                                             const double &y,
-                                             const double &z);
+    geometry_msgs::Vector3 composeGravityMsg(const std::vector<double> &gravity_vector);
     geometry_msgs::Vector3 m_gravity;
     dynamics_solver::DynamicsSolverPtr m_dynamic_solver;
     std::vector<geometry_msgs::Wrench> m_wrenches;
