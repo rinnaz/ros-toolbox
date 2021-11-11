@@ -19,10 +19,11 @@ public:
     EffortFFController();
     ~EffortFFController(){};
 
-    void callbackJointStates(const sensor_msgs::JointState &pose);
+    void callbackJointStates(const sensor_msgs::JointState &joint_state);
 
 protected:
-    virtual rnrt_msgs::JointEffortFeedForward composeEffortFFMsg();
+    virtual rnrt_msgs::JointEffortFeedForward
+    composeEffortFFMsg(const sensor_msgs::JointState &joint_state) = 0;
 
     void initRosParameters();
     void initMoveitCore();
@@ -45,5 +46,4 @@ protected:
     robot_state::RobotStatePtr m_kinematic_state;
     std::shared_ptr<robot_state::JointModelGroup> m_joint_model_group;
     std::vector<std::string> m_joint_names;
-    std::vector<double> m_joint_values_current;
 };

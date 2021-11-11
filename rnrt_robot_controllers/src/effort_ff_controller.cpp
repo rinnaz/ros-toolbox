@@ -34,24 +34,9 @@ void EffortFFController::initMoveitCore()
 
     m_joint_model_group = std::shared_ptr<robot_state::JointModelGroup>(m_kinematic_model->getJointModelGroup("iiwa_arm"));
     m_joint_names = m_joint_model_group->getJointModelNames();
-    m_joint_values_current = {0., 0., 0., 0., 0., 0., 0.};
 }
 
-void EffortFFController::callbackJointStates(const sensor_msgs::JointState &pose)
+void EffortFFController::callbackJointStates(const sensor_msgs::JointState &joint_state)
 {
-    m_joint_values_current = pose.position;
-    m_pub_effort_ff.publish(composeEffortFFMsg());
-}
-
-rnrt_msgs::JointEffortFeedForward EffortFFController::composeEffortFFMsg()
-{
-    rnrt_msgs::JointEffortFeedForward ret;
-    ret.header.stamp = ros::Time::now();
-    ret.header.frame_id = m_base_frame_id;
-    ret.name = m_joint_names;
-    for (auto i{0}; i < m_joint_names.size(); i++)
-    {
-        ret.effort_feed_forward.push_back(0.0);
-    }
-    return ret;
+    m_pub_effort_ff.publish(composeEffortFFMsg(joint_state));
 }
