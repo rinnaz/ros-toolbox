@@ -39,7 +39,10 @@ public:
                              const uint64_t &dt,
                              const SolverType = SolverType::EULER);
 
-private:
+    double getKm() { return m_km; }
+    double getKe() { return m_ke; }
+
+protected:
     double m_l;  // inductance
     double m_r;  // resistance
     double m_te; // electrical time constant
