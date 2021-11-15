@@ -28,6 +28,7 @@ include_directories(
 add_library(${PROJECT_NAME} 
     src/effort_ff_controller.cpp
     src/gravity_compensation_controller.cpp
+    src/dynamics_compensation_controller.cpp
     )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 

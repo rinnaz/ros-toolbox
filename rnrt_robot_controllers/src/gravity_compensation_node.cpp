@@ -1,4 +1,6 @@
 #include "rnrt_robot_controllers/gravity_compensation_controller.h"
+#include "rnrt_robot_controllers/dynamics_compensation_controller.h"
+
 
 int main(int argc, char **argv)
 {
@@ -9,7 +11,8 @@ int main(int argc, char **argv)
 
   ROS_WARN("gravity_compensation_controller process started");
 
-  GravityCompenationController controller;
+  // GravityCompenationController controller;
+  DynamicsCompenationController controller;
 
   ros::waitForShutdown();
   return 0;
