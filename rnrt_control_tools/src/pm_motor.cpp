@@ -11,13 +11,8 @@ PmMotor::PmMotor(const double &ind,
                  const double &res,
                  const double &km,
                  const uint64_t &pole_pairs)
-    : m_l{ind}, m_r{res}, m_te{m_l / m_r}, m_km{km}, m_ke{km},
-      m_pole_pairs{pole_pairs}
 {
-    if (ind <= 0.0 || res <= 0.0 || km <= 0.0 || pole_pairs <= 0)
-    {
-        throw std::range_error("Negative input is not allowed");
-    }
+    setParameters(ind, res, km, pole_pairs);
     initStateSpaceModel();
 }
 
@@ -103,7 +98,5 @@ double PmMotor::getTorqueResponse(const double &input_voltage,
                                   const uint64_t &dt,
                                   const SolverType solver)
 {
-    return m_km * m_state_space_model_ptr->getResponse(input_voltage - current_velocity * m_ke,
-                                                       dt,
-                                                       solver);
+    return m_km * getCurrentResponse(input_voltage, current_velocity, dt, solver);
 }
