@@ -5,9 +5,23 @@ CurrentServo::CurrentServo()
 {
 }
 
+bool CurrentServo::init(const ros::NodeHandle &n, std::string &joint_name)
+{
+    double u_max, gear_ratio, eff;
+
+    n.param("inverter/" + joint_name + "umax", u_max);
+    n.param("gear/" + joint_name + "ratio", gear_ratio);
+    n.param("gear/" + joint_name + "eff", eff);
+
+    init(u_max, gear_ratio, n, joint_name, eff);
+
+    return true;
+}
+
 void CurrentServo::init(double &u_max,
                         double &gear_ratio,
                         const ros::NodeHandle &n,
+                        std::string &joint_name,
                         const double &efficiency)
 {
     if (u_max <= 0.0)
@@ -32,8 +46,11 @@ void CurrentServo::init(double &u_max,
         m_efficiency = 1.0;
     }
 
-    initPid(n);
-    initMotor(n);
+    ros::NodeHandle motor_nh(n, std::string("motor_parameters/") + joint_name);
+    ros::NodeHandle pid_nh(n, std::string("current_loop_gains/") + joint_name);
+
+    initPid(pid_nh);
+    initMotor(motor_nh);
 }
 
 void CurrentServo::initPid(const ros::NodeHandle &n)

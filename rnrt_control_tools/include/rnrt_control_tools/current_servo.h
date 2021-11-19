@@ -14,9 +14,12 @@ public:
     CurrentServo();
     ~CurrentServo(){};
 
+    bool init(const ros::NodeHandle &n, std::string &joint_name);
+
     void init(double &u_max,
               double &gear_ratio,
               const ros::NodeHandle &n,
+              std::string &joint_name,
               const double &efficiency = 1.0);
     void initPid(const ros::NodeHandle &n);
     void initMotor(const ros::NodeHandle &n);
