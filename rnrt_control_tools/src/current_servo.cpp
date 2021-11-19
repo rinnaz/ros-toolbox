@@ -10,7 +10,18 @@ void CurrentServo::init(double &u_max,
                         const ros::NodeHandle &n,
                         const double &efficiency)
 {
-    // TODO: add range checks
+    if (u_max <= 0.0)
+    {
+        ROS_WARN_STREAM("U_max is out of range");
+        return;
+    }
+
+    if (gear_ratio <= 0.0)
+    {
+        ROS_WARN_STREAM("Gear_ratio is out of range");
+        return;
+    }
+
     m_u_max = u_max;
     m_gear_ratio = gear_ratio;
     m_efficiency = efficiency;
@@ -27,6 +38,7 @@ void CurrentServo::init(double &u_max,
 
 void CurrentServo::initPid(const ros::NodeHandle &n)
 {
+    m_pid_current = std::make_shared<control_toolbox::Pid>();
     if (!m_pid_current->init(n))
     {
         ROS_WARN_STREAM("Failed to initialize PID gains from ROS parameter server.");
@@ -36,6 +48,7 @@ void CurrentServo::initPid(const ros::NodeHandle &n)
 
 void CurrentServo::initMotor(const ros::NodeHandle &n)
 {
+    m_motor = std::make_shared<PmMotor>();
     if (!m_motor->init(n))
     {
         ROS_WARN_STREAM("Failed to initialize motor from ROS parameter server.");
@@ -46,7 +59,6 @@ void CurrentServo::initMotor(const ros::NodeHandle &n)
 double CurrentServo::getEffortResponse(const double &effort_command,
                                        const double &velocity,
                                        ros::Duration period)
-
 {
     auto current_command = effort_command / m_motor->getKm() - m_current_last;
 
