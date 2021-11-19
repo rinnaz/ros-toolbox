@@ -34,6 +34,7 @@ add_library(${PROJECT_NAME}
     src/transfer_fcn.cpp
     src/state_space_model.cpp
     src/pm_motor.cpp
+    src/current_servo.cpp
     )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 

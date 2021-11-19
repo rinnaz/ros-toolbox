@@ -22,21 +22,21 @@ TEST(PmMotorTest, ConstructorTest)
     EXPECT_THROW(PmMotor motor4(1.0, 1.0, 1.0, 0), std::range_error);
 }
 
-TEST(PmMotorTest, SettersTest)
+TEST(PmMotorTest, InitTest)
 {
     RecordProperty(
         "description",
-        "This test check if setters throw exceptions on incorrect input");
+        "This test check if init() throws exception on incorrect input");
 
     PmMotor motor;
 
-    EXPECT_THROW(motor.setInductance(-1.0), std::range_error);
+    EXPECT_THROW(motor.init(1.0, 1.0, 1.0, 0), std::range_error);
 
-    EXPECT_THROW(motor.setResistance(-1.0), std::range_error);
+    EXPECT_THROW(motor.init(-1.0, 1.0, 1.0, 1), std::range_error);
 
-    EXPECT_THROW(motor.setKm(-1.0), std::range_error);
+    EXPECT_THROW(motor.init(1.0, -1.0, 1.0, 1), std::range_error);
 
-    EXPECT_THROW(motor.setTe(-1.0), std::range_error);
+    EXPECT_THROW(motor.setTe(1.0, 1.0, -1.0, 1), std::range_error);
 
 }
 

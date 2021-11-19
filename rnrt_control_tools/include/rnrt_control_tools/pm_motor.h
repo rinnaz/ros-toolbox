@@ -4,6 +4,7 @@
 #include <vector>
 #include "eigen3/Eigen/Core"
 
+#include <ros/ros.h>
 #include "rnrt_control_tools/state_space_model.h"
 
 class PmMotor
@@ -16,17 +17,14 @@ public:
             const uint64_t &pole_pairs = 1);
     ~PmMotor(){};
 
-    void setParameters(const double &ind,
-                       const double &res,
-                       const double &km,
+    bool init(const ros::NodeHandle &n);
+    
+    void init(const double &ind,
+              const double &res,
+              const double &km,
 
-                       const uint64_t &pole_pairs = 1);
+              const int &pole_pairs = 1);
 
-    void setInductance(const double &ind);
-    void setResistance(const double &res);
-    void setKm(const double &km);
-    void setTe(const double &te);
-    void setPolePairs(const uint64_t &pole_pairs = 1);
     void initStateSpaceModel();
 
     double getCurrentResponse(const double &input_voltage,
@@ -48,7 +46,7 @@ protected:
     double m_te; // electrical time constant
     double m_km; // torque constant
     double m_ke; // electromechanical constant
-    uint64_t m_pole_pairs;
+    int m_pole_pairs;
 
     std::shared_ptr<StateSpaceModel> m_state_space_model_ptr;
 };
