@@ -11,20 +11,14 @@ PmMotor::PmMotor(const double &ind,
                  const double &res,
                  const double &km,
                  const uint64_t &pole_pairs)
-    : m_l{ind}, m_r{res}, m_te{m_l / m_r}, m_km{km}, m_ke{km},
-      m_pole_pairs{pole_pairs}
 {
-    if (ind <= 0.0 || res <= 0.0 || km <= 0.0 || pole_pairs <= 0)
-    {
-        throw std::range_error("Negative input is not allowed");
-    }
-    initStateSpaceModel();
+    init(ind, res, km, pole_pairs);
 }
 
-void PmMotor::setParameters(const double &ind,
-                            const double &res,
-                            const double &km,
-                            const uint64_t &pole_pairs)
+void PmMotor::init(const double &ind,
+                   const double &res,
+                   const double &km,
+                   const uint64_t &pole_pairs)
 {
     if (ind <= 0.0 || res <= 0.0 || km <= 0.0 || pole_pairs <= 0)
     {
@@ -36,50 +30,8 @@ void PmMotor::setParameters(const double &ind,
     m_ke = km;
     m_te = m_l / m_r;
     m_pole_pairs = pole_pairs;
-}
 
-void PmMotor::setInductance(const double &ind)
-{
-    if (ind <= 0.0)
-    {
-        throw std::range_error("Negative input is not allowed");
-    }
-    m_l = ind;
-    m_te = m_l / m_r;
     initStateSpaceModel();
-}
-void PmMotor::setResistance(const double &res)
-{
-    if (res <= 0.0)
-    {
-        throw std::range_error("Negative input is not allowed");
-    }
-    m_r = res;
-    m_te = m_l / m_r;
-    initStateSpaceModel();
-}
-void PmMotor::setKm(const double &km)
-{
-    if (km <= 0.0)
-    {
-        throw std::range_error("Negative input is not allowed");
-    }
-    m_km = km;
-    m_ke = km;
-}
-void PmMotor::setTe(const double &te)
-{
-    if (te <= 0.0)
-    {
-        throw std::range_error("Negative input is not allowed");
-    }
-    m_te = te;
-    initStateSpaceModel();
-}
-
-void PmMotor::setPolePairs(const uint64_t &pole_pairs)
-{
-    m_pole_pairs = pole_pairs;
 }
 
 void PmMotor::initStateSpaceModel()
@@ -103,7 +55,5 @@ double PmMotor::getTorqueResponse(const double &input_voltage,
                                   const uint64_t &dt,
                                   const SolverType solver)
 {
-    return m_km * m_state_space_model_ptr->getResponse(input_voltage - current_velocity * m_ke,
-                                                       dt,
-                                                       solver);
+    return m_km * getCurrentResponse(input_voltage, current_velocity, dt, solver);
 }
