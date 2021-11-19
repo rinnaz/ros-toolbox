@@ -15,10 +15,43 @@ PmMotor::PmMotor(const double &ind,
     init(ind, res, km, pole_pairs);
 }
 
+bool PmMotor::init(const ros::NodeHandle &n)
+{
+    ros::NodeHandle nh(n);
+    double l, r, km;
+    int pole_pairs;
+
+    // Load PID gains from parameter server
+    if (!nh.getParam("l", l))
+    {
+        ROS_ERROR("No inductance specified for motor.  Namespace: %s", nh.getNamespace().c_str());
+        return false;
+    }
+
+    if (!nh.getParam("r", r))
+    {
+        ROS_ERROR("No resistance specified for motor.  Namespace: %s", nh.getNamespace().c_str());
+        return false;
+    }
+
+    if (!nh.getParam("km", km))
+    {
+        ROS_ERROR("No torque constant specified for motor.  Namespace: %s", nh.getNamespace().c_str());
+        return false;
+    }
+
+    // Pole pairs number is optional and default to 1:
+    nh.param("pole_pairs", pole_pairs, 1);
+
+    init(l, r, km, pole_pairs);
+
+    return true;
+}
+
 void PmMotor::init(const double &ind,
                    const double &res,
                    const double &km,
-                   const uint64_t &pole_pairs)
+                   const int &pole_pairs)
 {
     if (ind <= 0.0 || res <= 0.0 || km <= 0.0 || pole_pairs <= 0)
     {

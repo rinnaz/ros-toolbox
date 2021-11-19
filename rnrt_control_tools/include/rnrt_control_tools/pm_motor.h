@@ -23,7 +23,7 @@ public:
               const double &res,
               const double &km,
 
-              const uint64_t &pole_pairs = 1);
+              const int &pole_pairs = 1);
 
     void initStateSpaceModel();
 
@@ -46,7 +46,7 @@ protected:
     double m_te; // electrical time constant
     double m_km; // torque constant
     double m_ke; // electromechanical constant
-    uint64_t m_pole_pairs;
+    int m_pole_pairs;
 
     std::shared_ptr<StateSpaceModel> m_state_space_model_ptr;
 };
