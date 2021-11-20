@@ -32,6 +32,8 @@ add_library(${PROJECT_NAME}
     )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
+add_dependencies(${PROJECT_NAME} rnrt_msgs_generate_messages_cpp)
+
 # add_library(effort_ff_controller src/effort_ff_controller.cpp)
 # target_link_libraries(effort_ff_controller ${catkin_LIBRARIES})
 
