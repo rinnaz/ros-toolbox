@@ -72,7 +72,7 @@ add_library(${PROJECT_NAME} src/joint_trajectory_controller.cpp
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
-
+add_dependencies(${PROJECT_NAME} rnrt_msgs_generate_messages_cpp)
 #############
 ## Testing ##
 #############
