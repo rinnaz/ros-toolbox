@@ -37,7 +37,22 @@ TEST(PmMotorTest, InitTest)
     EXPECT_THROW(motor.init(1.0, -1.0, 1.0, 1), std::range_error);
 
     EXPECT_THROW(motor.setTe(1.0, 1.0, -1.0, 1), std::range_error);
+}
 
+TEST(PmMotorTest, RunTest)
+{
+    RecordProperty(
+        "description",
+        "This test check if init() throws exception on incorrect input");
+
+    double ind{0.001};
+    double res{0.8};
+    double km{1.5};
+
+    PmMotor motor(ind, res, km);
+
+    auto result = motor.getCurrentResponse(48.0, 0.0, 1000000, SolverType::RUNGEKUTTA);
+    EXPECT_DOUBLE_EQ(result, 0.1);
 }
 
 int main(int argc, char **argv)
