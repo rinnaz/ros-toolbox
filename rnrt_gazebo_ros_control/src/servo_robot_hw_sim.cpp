@@ -313,6 +313,9 @@ namespace gazebo_ros_control
         const double effort_servo = servo_drives_[j].getEffortResponse(effort,
                                                                        joint_velocity_[j],
                                                                        period);
+        ROS_INFO_STREAM("Joint a" << j+1);
+        // ROS_INFO_STREAM("Command = " << effort);
+        // ROS_INFO_STREAM("Servo = " << effort_servo);
         sim_joints_[j]->SetForce(0, effort_servo);
       }
       break;
