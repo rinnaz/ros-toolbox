@@ -5,22 +5,39 @@ CurrentServo::CurrentServo()
 {
 }
 
-bool CurrentServo::init(const ros::NodeHandle &n, std::string &joint_name)
+bool CurrentServo::init(const ros::NodeHandle &nh, std::string &joint_name)
 {
     double u_max, gear_ratio, eff;
 
-    n.param("inverter/" + joint_name + "umax", u_max);
-    n.param("gear/" + joint_name + "ratio", gear_ratio);
-    n.param("gear/" + joint_name + "eff", eff);
+    const ros::NodeHandle nh_inv(nh, "inverter/" + joint_name);
+    const ros::NodeHandle nh_gear(nh, "gear/" + joint_name);
 
-    init(u_max, gear_ratio, n, joint_name, eff);
+    if (!nh_inv.getParam("umax", u_max))
+    {
+        ROS_ERROR("No U_max specified for motor.  Namespace: %s", nh_inv.getNamespace().c_str());
+        return false;
+    }
+
+    if (!nh_gear.getParam("ratio", gear_ratio))
+    {
+        ROS_ERROR("No gear_ratio specified for motor.  Namespace: %s", nh_gear.getNamespace().c_str());
+        return false;
+    }
+
+    if (!nh_gear.getParam("eff", eff))
+    {
+        ROS_ERROR("No efficiency specified for motor.  Namespace: %s", nh_gear.getNamespace().c_str());
+        return false;
+    }
+
+    init(u_max, gear_ratio, nh, joint_name, eff);
 
     return true;
 }
 
 void CurrentServo::init(double &u_max,
                         double &gear_ratio,
-                        const ros::NodeHandle &n,
+                        const ros::NodeHandle &nh,
                         std::string &joint_name,
                         const double &efficiency)
 {
@@ -46,8 +63,8 @@ void CurrentServo::init(double &u_max,
         m_efficiency = 1.0;
     }
 
-    ros::NodeHandle motor_nh(n, std::string("motor_parameters/") + joint_name);
-    ros::NodeHandle pid_nh(n, std::string("current_loop_gains/") + joint_name);
+    ros::NodeHandle motor_nh(nh, "motor_parameters/" + joint_name);
+    ros::NodeHandle pid_nh(nh, "current_loop_gains/" + joint_name);
 
     initPid(pid_nh);
     initMotor(motor_nh);
@@ -77,9 +94,9 @@ double CurrentServo::getEffortResponse(const double &effort_command,
                                        const double &velocity,
                                        ros::Duration period)
 {
-    auto current_command = effort_command / m_motor->getKm() - m_current_last;
+    auto current_command{((effort_command / m_gear_ratio) / m_motor->getKm()) - m_current_last};
 
-    auto voltage_command = m_pid_current->computeCommand(current_command, period);
+    auto voltage_command{m_pid_current->computeCommand(current_command, period)};
 
     voltage_command = std::clamp(voltage_command, -m_u_max, m_u_max);
 
@@ -88,5 +105,10 @@ double CurrentServo::getEffortResponse(const double &effort_command,
                                                  period.toNSec(),
                                                  SolverType::RUNGEKUTTA);
 
+    ROS_INFO_STREAM("current_command = " << current_command);
+    ROS_INFO_STREAM("effort_command = " << effort_command);
+    ROS_INFO_STREAM("voltage_command = " << voltage_command);
+    ROS_INFO_STREAM("m_current_last = " << m_current_last);
+    ROS_INFO_STREAM("velocity = " << velocity);
     return m_current_last * m_motor->getKm() * m_gear_ratio * m_efficiency;
 }
