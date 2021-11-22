@@ -27,6 +27,8 @@ public:
 
     void initStateSpaceModel();
 
+    void reset();
+
     double getCurrentResponse(const double &input_voltage,
                               const double &current_velocity,
                               const uint64_t &dt,

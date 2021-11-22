@@ -90,3 +90,8 @@ double PmMotor::getTorqueResponse(const double &input_voltage,
 {
     return m_km * getCurrentResponse(input_voltage, current_velocity, dt, solver);
 }
+
+void PmMotor::reset()
+{
+    m_state_space_model_ptr->resetState();
+}
