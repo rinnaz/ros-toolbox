@@ -98,10 +98,12 @@ double CurrentServo::getEffortResponse(const double &effort_command,
 
     auto voltage_command{m_pid_current->computeCommand(current_command, period)};
 
+    auto rotor_velocity = velocity * m_gear_ratio;
+
     voltage_command = std::clamp(voltage_command, -m_u_max, m_u_max);
 
     m_current_last = m_motor->getCurrentResponse(voltage_command,
-                                                 velocity * m_gear_ratio,
+                                                 rotor_velocity,
                                                  period.toNSec(),
                                                  SolverType::RUNGEKUTTA);
 
@@ -112,3 +114,11 @@ double CurrentServo::getEffortResponse(const double &effort_command,
     ROS_INFO_STREAM("velocity = " << velocity);
     return m_current_last * m_motor->getKm() * m_gear_ratio * m_efficiency;
 }
+
+void CurrentServo::reset()
+{
+    m_current_last = 0.0;
+    m_pid_current->reset();
+    m_motor->reset();
+}
+

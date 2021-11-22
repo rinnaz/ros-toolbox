@@ -27,6 +27,8 @@ public:
     double getEffortResponse(const double &effort_command,
                              const double &velocity,
                              ros::Duration period);
+    
+    void reset();
 
 protected:
     double m_u_max;
