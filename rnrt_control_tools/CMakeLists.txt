@@ -5,7 +5,8 @@ project(rnrt_control_tools)
 add_compile_options(-std=c++17)
 
 find_package(catkin REQUIRED COMPONENTS 
-  roscpp 
+  roscpp
+  control_toolbox 
 )
 
 find_package(Eigen3 REQUIRED)
@@ -22,7 +23,8 @@ catkin_package(
     ${PROJECT_NAME}
 
   CATKIN_DEPENDS 
-    roscpp 
+    roscpp
+    control_toolbox 
 
   DEPENDS
     Eigen3

@@ -34,6 +34,7 @@
   <depend>urdf</depend>
   <depend>moveit_msgs</depend>
   <depend>rrt_srvs</depend>
+  <depend>control_toolbox</depend>
 
   <build_export_depend>message_runtime</build_export_depend>
   <exec_depend>message_runtime</exec_depend>
