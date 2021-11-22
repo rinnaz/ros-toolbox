@@ -4,6 +4,7 @@
 #include "rnrt_control_tools/state_space_model.h"
 #include "rnrt_control_tools/pm_motor.h"
 #include "gtest/gtest.h"
+#include "control_toolbox/pid.h"
 
 TEST(PmMotorTest, ConstructorTest)
 {
@@ -36,7 +37,7 @@ TEST(PmMotorTest, InitTest)
 
     EXPECT_THROW(motor.init(1.0, -1.0, 1.0, 1), std::range_error);
 
-    EXPECT_THROW(motor.setTe(1.0, 1.0, -1.0, 1), std::range_error);
+    EXPECT_THROW(motor.init(1.0, 1.0, -1.0, 1), std::range_error);
 }
 
 TEST(PmMotorTest, RunTest)
@@ -52,7 +53,37 @@ TEST(PmMotorTest, RunTest)
     PmMotor motor(ind, res, km);
 
     auto result = motor.getCurrentResponse(48.0, 0.0, 1000000, SolverType::RUNGEKUTTA);
-    EXPECT_DOUBLE_EQ(result, 0.1);
+    EXPECT_DOUBLE_EQ(result, 32.896);
+
+    result = motor.getCurrentResponse(48.0, 0.0, 1000000, SolverType::RUNGEKUTTA);
+    EXPECT_DOUBLE_EQ(result, 47.756219733333330);
+
+    result = motor.getCurrentResponse(48.0, 0.0, 1000000, SolverType::RUNGEKUTTA);
+    EXPECT_DOUBLE_EQ(result, 54.469076327537780);
+
+    // Check if reset works
+    motor.reset();
+
+    result = motor.getCurrentResponse(48.0, 0.0, 1000000, SolverType::RUNGEKUTTA);
+    EXPECT_DOUBLE_EQ(result, 32.896);
+
+    result = motor.getCurrentResponse(48.0, 0.0, 1000000, SolverType::RUNGEKUTTA);
+    EXPECT_DOUBLE_EQ(result, 47.756219733333330);
+
+    result = motor.getCurrentResponse(48.0, 0.0, 1000000, SolverType::RUNGEKUTTA);
+    EXPECT_DOUBLE_EQ(result, 54.469076327537780);
+
+    // Check if reset works
+    motor.reset();
+
+    result = motor.getCurrentResponse(48.0, 10.0, 1000000, SolverType::RUNGEKUTTA);
+    EXPECT_DOUBLE_EQ(result, 22.615999999999996);
+
+    result = motor.getCurrentResponse(48.0, 10.0, 1000000, SolverType::RUNGEKUTTA);
+    EXPECT_DOUBLE_EQ(result, 32.832401066666660);
+
+    result = motor.getCurrentResponse(48.0, 10.0, 1000000, SolverType::RUNGEKUTTA);
+    EXPECT_DOUBLE_EQ(result, 37.447489975182220);
 }
 
 int main(int argc, char **argv)
