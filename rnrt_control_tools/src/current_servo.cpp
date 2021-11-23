@@ -68,6 +68,9 @@ void CurrentServo::init(double &u_max,
 
     initPid(pid_nh);
     initMotor(motor_nh);
+    TransferFcn tfcn{{1.0},
+                     {0.01, 1.0}};
+    m_input_velocity_filter = std::make_shared<StateSpaceModel>(tfcn);
 }
 
 void CurrentServo::initPid(const ros::NodeHandle &n)
@@ -100,6 +103,10 @@ double CurrentServo::getEffortResponse(const double &effort_command,
 
     auto rotor_velocity = velocity * m_gear_ratio;
 
+    rotor_velocity = m_input_velocity_filter->getResponse(rotor_velocity,
+                                                          period.toNSec(),
+                                                          SolverType::RUNGEKUTTA);
+
     voltage_command = std::clamp(voltage_command, -m_u_max, m_u_max);
 
     m_current_last = m_motor->getCurrentResponse(voltage_command,
@@ -107,11 +114,13 @@ double CurrentServo::getEffortResponse(const double &effort_command,
                                                  period.toNSec(),
                                                  SolverType::RUNGEKUTTA);
 
-    ROS_INFO_STREAM("current_command = " << current_command);
-    ROS_INFO_STREAM("effort_command = " << effort_command);
-    ROS_INFO_STREAM("voltage_command = " << voltage_command);
-    ROS_INFO_STREAM("m_current_last = " << m_current_last);
-    ROS_INFO_STREAM("velocity = " << velocity);
+    // m_current_last = std::clamp(m_current_last, -m_u_max/2, m_u_max/2);
+
+    // ROS_INFO_STREAM("effort_command = " << effort_command);
+    // ROS_INFO_STREAM("current_command = " << current_command);
+    // ROS_INFO_STREAM("voltage_command = " << voltage_command);
+    // ROS_INFO_STREAM("m_current_last = " << m_current_last);
+    // ROS_INFO_STREAM("velocity = " << velocity);
     return m_current_last * m_motor->getKm() * m_gear_ratio * m_efficiency;
 }
 
@@ -121,4 +130,3 @@ void CurrentServo::reset()
     m_pid_current->reset();
     m_motor->reset();
 }
-

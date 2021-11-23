@@ -38,7 +38,11 @@ protected:
 
     using MotorPtr = std::shared_ptr<PmMotor>;
     using PidPtr = std::shared_ptr<control_toolbox::Pid>;
+    using FilterPtr = std::shared_ptr<StateSpaceModel>;
 
     MotorPtr m_motor;
     PidPtr m_pid_current;
+
+    // Helps with simulation instability
+    FilterPtr m_input_velocity_filter;
 };
