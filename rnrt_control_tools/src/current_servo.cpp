@@ -94,7 +94,9 @@ void CurrentServo::initMotor(const ros::NodeHandle &n)
 }
 
 double CurrentServo::getEffortResponse(const double &effort_command,
+                                       const double &position,
                                        const double &velocity,
+                                       const double &effort,
                                        ros::Duration period)
 {
     auto current_command{((effort_command / m_gear_ratio) / m_motor->getKm()) - m_current_last};
@@ -103,9 +105,9 @@ double CurrentServo::getEffortResponse(const double &effort_command,
 
     auto rotor_velocity = velocity * m_gear_ratio;
 
-    rotor_velocity = m_input_velocity_filter->getResponse(rotor_velocity,
-                                                          period.toNSec(),
-                                                          SolverType::RUNGEKUTTA);
+    // rotor_velocity = m_input_velocity_filter->getResponse(rotor_velocity,
+    //                                                       period.toNSec(),
+    //                                                       SolverType::RUNGEKUTTA);
 
     voltage_command = std::clamp(voltage_command, -m_u_max, m_u_max);
 

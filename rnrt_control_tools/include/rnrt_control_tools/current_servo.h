@@ -5,16 +5,17 @@
 #include <algorithm>
 
 #include <ros/ros.h>
+#include "rnrt_control_tools/servo_interface.h"
 #include "rnrt_control_tools/pm_motor.h"
 #include <control_toolbox/pid.h>
 
-class CurrentServo
+class CurrentServo : public ServoInterface
 {
 public:
     CurrentServo();
     ~CurrentServo(){};
 
-    bool init(const ros::NodeHandle &nh, std::string &joint_name);
+    bool init(const ros::NodeHandle &nh, std::string &joint_name) override;
 
     void init(double &u_max,
               double &gear_ratio,
@@ -25,10 +26,12 @@ public:
     void initMotor(const ros::NodeHandle &n);
 
     double getEffortResponse(const double &effort_command,
+                             const double &position,
                              const double &velocity,
-                             ros::Duration period);
-    
-    void reset();
+                             const double &effort,
+                             ros::Duration period) override;
+
+    void reset() override;
 
 protected:
     double m_u_max;

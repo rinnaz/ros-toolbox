@@ -64,7 +64,7 @@
 
 // URDF
 #include <urdf/model.h>
-
+#include "rnrt_control_tools/servo_interface.h"
 #include "rnrt_control_tools/current_servo.h"
 
 namespace gazebo_ros_control
@@ -129,7 +129,7 @@ namespace gazebo_ros_control
     std::vector<double> joint_effort_limits_;
     std::vector<ControlMethod> joint_control_methods_;
     std::vector<control_toolbox::Pid> pid_controllers_;
-    std::vector<CurrentServo> servo_drives_;
+    std::vector<std::shared_ptr<ServoInterface>> servo_drives_;
     std::vector<double> joint_position_;
     std::vector<double> joint_velocity_;
     std::vector<double> joint_effort_;

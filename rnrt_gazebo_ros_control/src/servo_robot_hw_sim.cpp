@@ -236,7 +236,8 @@ namespace gazebo_ros_control
       {
         // Initialize the ServoController
         const ros::NodeHandle nh(robot_namespace + "/servo_drive");
-        if (!servo_drives_[j].init(nh, joint_names_[j]))
+        servo_drives_[j] = std::make_shared<CurrentServo>();
+        if (!servo_drives_[j]->init(nh, joint_names_[j]))
         {
           ROS_WARN_STREAM("Failed to initialize Servos from ROS parameter server.");
           return false;
@@ -310,8 +311,10 @@ namespace gazebo_ros_control
       case EFFORT:
       {
         const double effort = e_stop_active_ ? 0 : joint_effort_command_[j];
-        const double effort_servo = servo_drives_[j].getEffortResponse(effort,
+        const double effort_servo = servo_drives_[j]->getEffortResponse(effort,
+                                                                       joint_position_[j],
                                                                        joint_velocity_[j],
+                                                                       joint_effort_[j],
                                                                        period);
         sim_joints_[j]->SetForce(0, effort_servo);
       }
@@ -348,8 +351,10 @@ namespace gazebo_ros_control
         const double effort_limit = joint_effort_limits_[j];
         const double effort = clamp(pid_controllers_[j].computeCommand(error, period),
                                     -effort_limit, effort_limit);
-        const double effort_servo = servo_drives_[j].getEffortResponse(effort,
+        const double effort_servo = servo_drives_[j]->getEffortResponse(effort,
+                                                                       joint_position_[j],
                                                                        joint_velocity_[j],
+                                                                       joint_effort_[j],
                                                                        period);
         sim_joints_[j]->SetForce(0, effort_servo);
       }
@@ -375,8 +380,10 @@ namespace gazebo_ros_control
         const double effort_limit = joint_effort_limits_[j];
         const double effort = clamp(pid_controllers_[j].computeCommand(error, period),
                                     -effort_limit, effort_limit);
-        const double effort_servo = servo_drives_[j].getEffortResponse(effort,
+        const double effort_servo = servo_drives_[j]->getEffortResponse(effort,
+                                                                       joint_position_[j],
                                                                        joint_velocity_[j],
+                                                                       joint_effort_[j],
                                                                        period);
         sim_joints_[j]->SetForce(0, effort_servo);
         break;
