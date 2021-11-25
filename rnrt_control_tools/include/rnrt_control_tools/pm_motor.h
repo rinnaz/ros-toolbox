@@ -1,54 +1,56 @@
 #pragma once
 
+#include <ros/ros.h>
+
 #include <memory>
 #include <vector>
-#include "eigen3/Eigen/Core"
 
-#include <ros/ros.h>
+#include "eigen3/Eigen/Core"
 #include "rnrt_control_tools/state_space_model.h"
 
+namespace control_tools
+{
 class PmMotor
 {
 public:
-    PmMotor();
-    PmMotor(const double &ind,
-            const double &res,
-            const double &km,
-            const uint64_t &pole_pairs = 1);
-    ~PmMotor(){};
+  PmMotor();
+  PmMotor(const double &ind, const double &res, const double &km, const uint64_t &pole_pairs = 1);
+  ~PmMotor(){};
 
-    bool init(const ros::NodeHandle &n);
-    
-    void init(const double &ind,
-              const double &res,
-              const double &km,
+  bool init(const ros::NodeHandle &n);
 
-              const int &pole_pairs = 1);
+  void init(const double &ind, const double &res, const double &km,
 
-    void initStateSpaceModel();
+            const int &pole_pairs = 1);
 
-    void reset();
+  void initStateSpaceModel();
 
-    double getCurrentResponse(const double &input_voltage,
-                              const double &current_velocity,
-                              const uint64_t &dt,
-                              const SolverType = SolverType::EULER);
+  void reset();
 
-    double getTorqueResponse(const double &input_voltage,
-                             const double &current_velocity,
-                             const uint64_t &dt,
-                             const SolverType = SolverType::EULER);
+  double getCurrentResponse(const double &input_voltage, const double &current_velocity, const uint64_t &dt,
+                            const SolverType = SolverType::EULER);
 
-    double getKm() { return m_km; }
-    double getKe() { return m_ke; }
+  double getTorqueResponse(const double &input_voltage, const double &current_velocity, const uint64_t &dt,
+                           const SolverType = SolverType::EULER);
+
+  double getKm()
+  {
+    return m_km;
+  }
+  double getKe()
+  {
+    return m_ke;
+  }
 
 protected:
-    double m_l;  // inductance
-    double m_r;  // resistance
-    double m_te; // electrical time constant
-    double m_km; // torque constant
-    double m_ke; // electromechanical constant
-    int m_pole_pairs;
+  double m_l;   // inductance
+  double m_r;   // resistance
+  double m_te;  // electrical time constant
+  double m_km;  // torque constant
+  double m_ke;  // electromechanical constant
+  int m_pole_pairs;
 
-    std::shared_ptr<StateSpaceModel> m_state_space_model_ptr;
+  std::shared_ptr<StateSpaceModel> m_state_space_model_ptr;
 };
+
+}  // namespace control_tools

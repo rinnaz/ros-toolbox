@@ -37,6 +37,7 @@ add_library(${PROJECT_NAME}
     src/state_space_model.cpp
     src/pm_motor.cpp
     src/current_servo.cpp
+    src/linear_system.cpp
     )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
