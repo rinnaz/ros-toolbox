@@ -153,12 +153,12 @@ double StateSpaceModel::getResponse(const double &input, const uint64_t &dt, Sol
 Eigen::VectorXd StateSpaceModel::rungekuttaCompute(const Eigen::VectorXd &last_state, const double &input,
                                                    const uint64_t &dt) const
 {
-  Eigen::VectorXd k1 = dt / 1e9 * getDerivatives(last_state, input);
-  Eigen::VectorXd k2 = dt / 1e9 * getDerivatives(last_state + k1 / 2.0, input);
-  Eigen::VectorXd k3 = dt / 1e9 * getDerivatives(last_state + k2 / 2.0, input);
-  Eigen::VectorXd k4 = dt / 1e9 * getDerivatives(last_state + k3, input);
+  m_k1 = dt / 1e9 * getDerivatives(last_state, input);
+  m_k2 = dt / 1e9 * getDerivatives(last_state + m_k1 / 2.0, input);
+  m_k3 = dt / 1e9 * getDerivatives(last_state + m_k2 / 2.0, input);
+  m_k4 = dt / 1e9 * getDerivatives(last_state + m_k3, input);
 
-  return last_state + (k1 + 2.0 * k2 + 2.0 * k3 + k4) / 6;
+  return last_state + (m_k1 + 2.0 * m_k2 + 2.0 * m_k3 + m_k4) / 6;
 }
 
 Eigen::VectorXd StateSpaceModel::eulerCompute(const Eigen::VectorXd &last_state, const double &input,

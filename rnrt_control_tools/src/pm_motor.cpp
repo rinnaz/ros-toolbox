@@ -18,7 +18,7 @@ bool PmMotor::init(const ros::NodeHandle &n)
   double l, r, km;
   int pole_pairs;
 
-  // Load PID gains from parameter server
+  // Load motor parameters from parameter server
   if (!nh.getParam("l", l))
   {
     ROS_ERROR("No inductance specified for motor.  Namespace: %s", nh.getNamespace().c_str());

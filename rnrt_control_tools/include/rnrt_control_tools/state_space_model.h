@@ -16,7 +16,7 @@ enum class SolverType
   RUNGEKUTTA = 1
 };
 
-// State space model representation of transfer function
+// State space model representation of transfer function of continous dynamic system
 // Transfer function is defined with numerator and denominator
 //          b_n*s^n + ... + b_1*s + b_0
 //       ---------------------------------
@@ -64,6 +64,9 @@ private:
   Eigen::VectorXd m_B_vector;
   Eigen::RowVectorXd m_C_vector;
   double m_D;
+
+  // Internal variables for RK4 calculations
+  mutable Eigen::VectorXd m_k1, m_k2, m_k3, m_k4;
 
   std::vector<std::function<Eigen::VectorXd(const Eigen::VectorXd &, const double &, const uint64_t &)>> m_integrators;
 };
