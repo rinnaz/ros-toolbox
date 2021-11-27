@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ros/ros.h>
+
 #include <memory>
 #include <vector>
 
@@ -11,12 +13,15 @@ namespace control_tools
 class LinearSystem
 {
 public:
-  LinearSystem(){};
-  LinearSystem(const std::vector<double> &numerator, const std::vector<double> &denominator, SolverType solver);
+  LinearSystem();
+  LinearSystem(const std::vector<double> &numerator, const std::vector<double> &denominator,
+               const SolverType solver = SolverType::EULER);
   ~LinearSystem(){};
 
   void init(const std::vector<double> &numerator, const std::vector<double> &denominator,
-            SolverType solver = SolverType::EULER);
+            const SolverType solver = SolverType::EULER);
+
+  bool init(const ros::NodeHandle &n, const SolverType solver = SolverType::EULER);
 
   double computeResponse(const double &input, const uint64_t &time_step);
 
