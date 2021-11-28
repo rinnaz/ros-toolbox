@@ -106,7 +106,7 @@ double CurrentServo::getEffortResponse(const double &effort_command, const doubl
   voltage_command = std::clamp(voltage_command, -m_u_max, m_u_max);
 
   m_current_last =
-      m_motor->getCurrentResponse(voltage_command, rotor_velocity, period.toNSec(), SolverType::RUNGEKUTTA);
+      m_motor->getCurrentResponse(voltage_command, rotor_velocity, period.toNSec());
 
   // m_current_last = std::clamp(m_current_last, -m_u_max/2, m_u_max/2);
 

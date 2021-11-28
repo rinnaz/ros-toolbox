@@ -2,17 +2,17 @@
 
 namespace control_tools
 {
-PmMotor::PmMotor() : m_l{ 1.0 }, m_r{ 1.0 }, m_te{ m_l / m_r }, m_km{ 1.0 }, m_ke{ 1.0 }, m_pole_pairs{ 1 }
+PmMotor::PmMotor()
 {
-  initStateSpaceModel();
 }
 
-PmMotor::PmMotor(const double &ind, const double &res, const double &km, const uint64_t &pole_pairs)
+PmMotor::PmMotor(const double &ind, const double &res, const double &km, const uint64_t &pole_pairs,
+                 const SolverType solver)
 {
-  init(ind, res, km, pole_pairs);
+  init(ind, res, km, pole_pairs, solver);
 }
 
-bool PmMotor::init(const ros::NodeHandle &n)
+bool PmMotor::init(const ros::NodeHandle &n, const SolverType solver)
 {
   ros::NodeHandle nh(n);
   double l, r, km;
@@ -40,12 +40,13 @@ bool PmMotor::init(const ros::NodeHandle &n)
   // Pole pairs number is optional and default to 1:
   nh.param("pole_pairs", pole_pairs, 1);
 
-  init(l, r, km, pole_pairs);
+  init(l, r, km, pole_pairs, solver);
 
   return true;
 }
 
-void PmMotor::init(const double &ind, const double &res, const double &km, const int &pole_pairs)
+void PmMotor::init(const double &ind, const double &res, const double &km, const int &pole_pairs,
+                   const SolverType solver)
 {
   if (ind <= 0.0 || res <= 0.0 || km <= 0.0 || pole_pairs <= 0)
   {
@@ -58,30 +59,20 @@ void PmMotor::init(const double &ind, const double &res, const double &km, const
   m_te = m_l / m_r;
   m_pole_pairs = pole_pairs;
 
-  initStateSpaceModel();
+  std::vector<double> num{ 1.0 / m_r };
+  std::vector<double> den{ m_te, 1.0 };
+
+  LinearSystem::init(num, den, solver);
 }
 
-void PmMotor::initStateSpaceModel()
+double PmMotor::getCurrentResponse(const double &input_voltage, const double &current_velocity, const uint64_t &dt)
 {
-  TransferFcn tfcn{ { 1.0 / m_r }, { m_te, 1.0 } };
-  m_state_space_model_ptr = std::make_shared<StateSpaceModel>(tfcn);
+  return LinearSystem::computeResponse(input_voltage - current_velocity * m_ke, dt);
 }
 
-double PmMotor::getCurrentResponse(const double &input_voltage, const double &current_velocity, const uint64_t &dt,
-                                   const SolverType solver)
+double PmMotor::getTorqueResponse(const double &input_voltage, const double &current_velocity, const uint64_t &dt)
 {
-  return m_state_space_model_ptr->getResponse(input_voltage - current_velocity * m_ke, dt, solver);
-}
-
-double PmMotor::getTorqueResponse(const double &input_voltage, const double &current_velocity, const uint64_t &dt,
-                                  const SolverType solver)
-{
-  return m_km * getCurrentResponse(input_voltage, current_velocity, dt, solver);
-}
-
-void PmMotor::reset()
-{
-  m_state_space_model_ptr->resetState();
+  return m_km * getCurrentResponse(input_voltage, current_velocity, dt);
 }
 
 }  // namespace control_tools

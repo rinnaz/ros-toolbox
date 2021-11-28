@@ -1,13 +1,9 @@
 #pragma once
 
 #include <exception>
-#include <iomanip>
 #include <iostream>
 #include <limits>
-#include <numeric>
 #include <vector>
-
-#include "eigen3/Eigen/Core"
 
 namespace control_tools
 {

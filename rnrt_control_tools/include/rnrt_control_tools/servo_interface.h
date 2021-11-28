@@ -2,10 +2,6 @@
 
 #include <ros/ros.h>
 
-#include <algorithm>
-#include <memory>
-#include <vector>
-
 namespace control_tools
 {
 class ServoInterface
