@@ -26,6 +26,36 @@ void ButterworthFilter::init(const uint64_t &order, const double &cutoff_frequen
   LinearSystem::init(tfcn.getNumerator(), tfcn.getDenominator(), solver);
 }
 
+bool ButterworthFilter::init(const ros::NodeHandle &n, const SolverType solver)
+{
+  ros::NodeHandle nh(n);
+  int order;
+  double cutoff_frequency;
+
+  // Load system parameters from parameter server
+  if (!nh.getParam("order", order))
+  {
+    ROS_ERROR("No order specified for Butterworth Filter.  Namespace: %s", nh.getNamespace().c_str());
+    return false;
+  }
+
+  if (order <= 0)
+  {
+    ROS_ERROR("Filter order cannot be less or equal to zero.  Namespace: %s", nh.getNamespace().c_str());
+    return false;
+  }
+
+  if (!nh.getParam("cutoff_frequency", cutoff_frequency))
+  {
+    ROS_ERROR("No cutoff frequency specified for Butterworth Filter.  Namespace: %s", nh.getNamespace().c_str());
+    return false;
+  }
+
+  init(order, cutoff_frequency, solver);
+
+  return true;
+}
+
 void ButterworthFilter::initTfcnSelector()
 {
   m_tfcn_selector = { { 1, { 1.0, 1.0 } },

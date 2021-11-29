@@ -21,6 +21,7 @@ public:
   ~ButterworthFilter(){};
 
   void init(const uint64_t &order, const double &cutoff_frequency, const SolverType solver = SolverType::EULER);
+  bool init(const ros::NodeHandle &n, const SolverType solver = SolverType::EULER);
 
 protected:
   double m_order;
