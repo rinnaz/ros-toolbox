@@ -38,6 +38,7 @@ add_library(${PROJECT_NAME}
     src/pm_motor.cpp
     src/current_servo.cpp
     src/linear_system.cpp
+    src/filter.cpp
     )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 

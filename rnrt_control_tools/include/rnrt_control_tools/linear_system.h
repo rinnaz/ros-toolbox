@@ -33,4 +33,6 @@ protected:
   std::shared_ptr<control_tools::StateSpaceModel> m_model;
 };
 
+using Filter = LinearSystem;
+
 }  // namespace control_tools
