@@ -46,6 +46,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <algorithm>
 
 #include "rnrt_control_tools/linear_system.h"
 #include "rnrt_control_tools/transfer_fcn.h"

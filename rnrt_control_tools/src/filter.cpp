@@ -59,7 +59,9 @@ void ButterworthFilter::init(const uint64_t &order, const double &cutoff_frequen
     throw std::invalid_argument("Filter cutoff_frequency cannot be less or equal to zero");
   }
 
-  m_order = order;
+  // Limit order to range from 1 to 10
+  m_order = std::clamp(order, uint64_t(1), uint64_t(10));
+
   m_cutoff_frequency = cutoff_frequency;
   initTfcnSelector();
   control_toolbox::TransferFcn tfcn = constructTfcn();
