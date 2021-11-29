@@ -44,7 +44,6 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
-#include <memory>
 #include <vector>
 
 #include "rnrt_control_tools/linear_system.h"
