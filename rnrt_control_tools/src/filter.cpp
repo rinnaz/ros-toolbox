@@ -34,41 +34,17 @@
 
 /*
   Author: Rinat Nazarov
-  Desc: Implements a continuous Butterworth filter 
+  Desc: Implements a continuous Butterworth filter
 */
-
 
 #include "rnrt_control_tools/filter.h"
 
 namespace control_toolbox
 {
-ButterworthFilter::ButterworthFilter(const uint64_t &order, const double &cutoff_frequency, const SolverType solver)
-{
-  init(order, cutoff_frequency, solver);
-}
 
-void ButterworthFilter::init(const uint64_t &order, const double &cutoff_frequency, const SolverType solver)
-{
-  if (order == 0)
-  {
-    throw std::invalid_argument("Filter order cannot be equal to zero");
-  }
+// ************************** ButterworthFilterBase ****************************
 
-  if (cutoff_frequency <= 0.0)
-  {
-    throw std::invalid_argument("Filter cutoff_frequency cannot be less or equal to zero");
-  }
-
-  // Limit order to range from 1 to 10
-  m_order = std::clamp(order, uint64_t(1), uint64_t(10));
-
-  m_cutoff_frequency = cutoff_frequency;
-  initTfcnSelector();
-  control_toolbox::TransferFcn tfcn = constructTfcn();
-  LinearSystem::init(tfcn.getNumerator(), tfcn.getDenominator(), solver);
-}
-
-bool ButterworthFilter::init(const ros::NodeHandle &n, const SolverType solver)
+bool ButterworthFilterBase::init(const ros::NodeHandle &n, const SolverType solver)
 {
   ros::NodeHandle nh(n);
   int order;
@@ -98,7 +74,7 @@ bool ButterworthFilter::init(const ros::NodeHandle &n, const SolverType solver)
   return true;
 }
 
-void ButterworthFilter::initTfcnSelector()
+void ButterworthFilterBase::initTfcnSelector()
 {
   m_tfcn_selector = { { 1, { 1.0, 1.0 } },
                       { 2, { 1.0, 1.4142, 1.0 } },
@@ -113,7 +89,37 @@ void ButterworthFilter::initTfcnSelector()
                         { 1, 6.3925, 20.4317, 42.8021, 64.8824, 74.2334, 64.8824, 42.8021, 20.4317, 6.3925, 1.0 } } };
 }
 
-control_toolbox::TransferFcn ButterworthFilter::constructTfcn()
+
+// ************************* ButterworthFilterLowPass **************************
+
+ButterworthFilterLowPass::ButterworthFilterLowPass(const uint64_t &order, const double &cutoff_frequency,
+                                                   const SolverType solver)
+{
+  init(order, cutoff_frequency, solver);
+}
+
+void ButterworthFilterLowPass::init(const uint64_t &order, const double &cutoff_frequency, const SolverType solver)
+{
+  if (order == 0)
+  {
+    throw std::invalid_argument("Filter order cannot be equal to zero");
+  }
+
+  if (cutoff_frequency <= 0.0)
+  {
+    throw std::invalid_argument("Filter cutoff_frequency cannot be less or equal to zero");
+  }
+
+  // Limit order to range from 1 to 10
+  m_order = std::clamp(order, uint64_t(1), uint64_t(10));
+
+  m_cutoff_frequency = cutoff_frequency;
+
+  control_toolbox::TransferFcn tfcn = constructTfcn();
+  LinearSystem::init(tfcn.getNumerator(), tfcn.getDenominator(), solver);
+}
+
+control_toolbox::TransferFcn ButterworthFilterLowPass::constructTfcn()
 {
   std::vector<double> num{ pow(m_cutoff_frequency, m_order) };
   std::vector<double> den{ m_tfcn_selector.at(m_order) };
@@ -123,9 +129,53 @@ control_toolbox::TransferFcn ButterworthFilter::constructTfcn()
     den[i] = den[i] * pow(m_cutoff_frequency, i);
   }
 
-  control_toolbox::TransferFcn ret{ num, den };
+  return control_toolbox::TransferFcn(num, den);
+}
 
-  return ret;
+// ************************* ButterworthFilterHighPass *************************
+
+ButterworthFilterHighPass::ButterworthFilterHighPass(const uint64_t &order, const double &cutoff_frequency,
+                                                     const SolverType solver)
+{
+  init(order, cutoff_frequency, solver);
+}
+
+void ButterworthFilterHighPass::init(const uint64_t &order, const double &cutoff_frequency, const SolverType solver)
+{
+  if (order == 0)
+  {
+    throw std::invalid_argument("Filter order cannot be equal to zero");
+  }
+
+  if (cutoff_frequency <= 0.0)
+  {
+    throw std::invalid_argument("Filter cutoff_frequency cannot be less or equal to zero");
+  }
+
+  // Limit order to range from 1 to 10
+  m_order = std::clamp(order, uint64_t(1), uint64_t(10));
+
+  m_cutoff_frequency = cutoff_frequency;
+
+  control_toolbox::TransferFcn tfcn = constructTfcn();
+  LinearSystem::init(tfcn.getNumerator(), tfcn.getDenominator(), solver);
+}
+
+control_toolbox::TransferFcn ButterworthFilterHighPass::constructTfcn()
+{
+  std::vector<double> num(m_tfcn_selector.at(m_order).size(), 0.0); 
+  num[0] = 1.0;
+
+  std::vector<double> den{ m_tfcn_selector.at(m_order) };
+
+  std::reverse(den.begin(), den.end());
+
+  for (auto i{ 1 }; i < den.size(); i++)
+  {
+    den[i] = den[i] * pow(m_cutoff_frequency, i);
+  }
+
+  return control_toolbox::TransferFcn(num, den);
 }
 
 }  // namespace control_toolbox

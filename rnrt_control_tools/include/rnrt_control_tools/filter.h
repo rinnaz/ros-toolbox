@@ -34,34 +34,32 @@
 
 /*
   Author: Rinat Nazarov
-  Desc: Implements a continuous Butterworth filter 
+  Desc: Implements a continuous Butterworth filter
 */
-
 
 #pragma once
 
 #include <ros/ros.h>
 
+#include <algorithm>
 #include <cmath>
 #include <map>
 #include <memory>
 #include <vector>
-#include <algorithm>
 
 #include "rnrt_control_tools/linear_system.h"
 #include "rnrt_control_tools/transfer_fcn.h"
 
 namespace control_toolbox
 {
-
-class ButterworthFilter : public control_toolbox::Filter
+// Base abstract class
+class ButterworthFilterBase : public control_toolbox::Filter
 {
 public:
-  ButterworthFilter(){};
-  ButterworthFilter(const uint64_t &order, const double &cutoff_frequency, const SolverType solver = SolverType::EULER);
-  ~ButterworthFilter(){};
+  ButterworthFilterBase(){ initTfcnSelector(); }
 
-  void init(const uint64_t &order, const double &cutoff_frequency, const SolverType solver = SolverType::EULER);
+  virtual void init(const uint64_t &order, const double &cutoff_frequency,
+                    const SolverType solver = SolverType::EULER) = 0;
   bool init(const ros::NodeHandle &n, const SolverType solver = SolverType::EULER);
 
 protected:
@@ -70,7 +68,40 @@ protected:
   std::map<uint64_t, std::vector<double>> m_tfcn_selector;
 
   void initTfcnSelector();
-  control_toolbox::TransferFcn constructTfcn();
+
+  virtual control_toolbox::TransferFcn constructTfcn() = 0;
+};
+
+// Low-pass filter
+class ButterworthFilterLowPass : public ButterworthFilterBase
+{
+public:
+  ButterworthFilterLowPass(){};
+  ButterworthFilterLowPass(const uint64_t &order, const double &cutoff_frequency,
+                           const SolverType solver = SolverType::EULER);
+  ~ButterworthFilterLowPass(){};
+
+  void init(const uint64_t &order, const double &cutoff_frequency,
+            const SolverType solver = SolverType::EULER) override;
+
+protected:
+  control_toolbox::TransferFcn constructTfcn() override;
+};
+
+// High-pass filter
+class ButterworthFilterHighPass : public ButterworthFilterBase
+{
+public:
+  ButterworthFilterHighPass(){};
+  ButterworthFilterHighPass(const uint64_t &order, const double &cutoff_frequency,
+                            const SolverType solver = SolverType::EULER);
+  ~ButterworthFilterHighPass(){};
+
+  void init(const uint64_t &order, const double &cutoff_frequency,
+            const SolverType solver = SolverType::EULER) override;
+
+protected:
+  control_toolbox::TransferFcn constructTfcn() override;
 };
 
 }  // namespace control_toolbox
