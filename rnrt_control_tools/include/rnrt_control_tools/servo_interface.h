@@ -2,7 +2,7 @@
 
 #include <ros/ros.h>
 
-namespace control_tools
+namespace control_toolbox
 {
 class ServoInterface
 {
@@ -20,4 +20,4 @@ public:
 protected:
 };
 
-}  // namespace control_tools
+}  // namespace control_toolbox

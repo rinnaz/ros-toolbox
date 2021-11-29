@@ -123,7 +123,7 @@ protected:
   std::vector<double> joint_effort_limits_;
   std::vector<ControlMethod> joint_control_methods_;
   std::vector<control_toolbox::Pid> pid_controllers_;
-  std::vector<std::shared_ptr<control_tools::ServoInterface>> servo_drives_;
+  std::vector<std::shared_ptr<control_toolbox::ServoInterface>> servo_drives_;
   std::vector<double> joint_position_;
   std::vector<double> joint_velocity_;
   std::vector<double> joint_effort_;

@@ -9,9 +9,9 @@
 #include "rnrt_control_tools/linear_system.h"
 #include "rnrt_control_tools/state_space_model.h"
 
-namespace control_tools
+namespace control_toolbox
 {
-class PmMotor : public control_tools::LinearSystem
+class PmMotor : public control_toolbox::LinearSystem
 {
 public:
   PmMotor();
@@ -46,4 +46,4 @@ protected:
   int m_pole_pairs;
 };
 
-}  // namespace control_tools
+}  // namespace control_toolbox

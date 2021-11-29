@@ -1,6 +1,6 @@
 #include "rnrt_control_tools/current_servo.h"
 
-namespace control_tools
+namespace control_toolbox
 {
 CurrentServo::CurrentServo() : m_current_last{ 0.0 }
 {
@@ -120,4 +120,4 @@ void CurrentServo::reset()
   m_motor->reset();
 }
 
-}  // namespace control_tools
+}  // namespace control_toolbox

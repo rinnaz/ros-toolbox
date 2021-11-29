@@ -1,6 +1,6 @@
 #include "rnrt_control_tools/pm_motor.h"
 
-namespace control_tools
+namespace control_toolbox
 {
 PmMotor::PmMotor()
 {
@@ -75,4 +75,4 @@ double PmMotor::getTorqueResponse(const double &input_voltage, const double &cur
   return m_km * getCurrentResponse(input_voltage, current_velocity, dt);
 }
 
-}  // namespace control_tools
+}  // namespace control_toolbox

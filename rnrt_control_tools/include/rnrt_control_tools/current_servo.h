@@ -10,7 +10,7 @@
 #include "rnrt_control_tools/pm_motor.h"
 #include "rnrt_control_tools/servo_interface.h"
 
-namespace control_tools
+namespace control_toolbox
 {
 class CurrentServo : public ServoInterface
 {
@@ -47,4 +47,4 @@ protected:
   FilterPtr m_input_velocity_filter;
 };
 
-}  // namespace control_tools
+}  // namespace control_toolbox

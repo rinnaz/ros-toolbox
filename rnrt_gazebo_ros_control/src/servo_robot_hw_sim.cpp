@@ -243,7 +243,7 @@ bool ServoRobotHWSim::initSim(const std::string &robot_namespace, ros::NodeHandl
     {
       // Initialize the ServoController
       const ros::NodeHandle nh(robot_namespace + "/servo_drive");
-      servo_drives_[j] = std::make_shared<control_tools::CurrentServo>();
+      servo_drives_[j] = std::make_shared<control_toolbox::CurrentServo>();
       if (!servo_drives_[j]->init(nh, joint_names_[j]))
       {
         ROS_WARN_STREAM("Failed to initialize Servos from ROS parameter server.");
