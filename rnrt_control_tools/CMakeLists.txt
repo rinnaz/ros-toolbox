@@ -53,6 +53,9 @@ if(CATKIN_ENABLE_TESTING)
 
   catkin_add_gtest(pm_motor_tests test/pm_motor_tests.cpp)
   target_link_libraries(pm_motor_tests ${catkin_LIBRARIES} ${PROJECT_NAME})
+  
+  catkin_add_gtest(linear_system_tests test/linear_system_tests.cpp)
+  target_link_libraries(linear_system_tests ${catkin_LIBRARIES} ${PROJECT_NAME})
 
 endif()
 
