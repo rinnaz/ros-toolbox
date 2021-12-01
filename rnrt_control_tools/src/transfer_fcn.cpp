@@ -74,8 +74,11 @@ void TransferFcn::init(const std::vector<double> &num, const std::vector<double>
 {
   setNumerator(num);
   setDenominator(den);
+  if (!isValid())
+  {
+    throw std::invalid_argument("Invalid transfer function input");
+  }
 }
-
 
 std::vector<double> TransferFcn::getNumerator() const
 {
