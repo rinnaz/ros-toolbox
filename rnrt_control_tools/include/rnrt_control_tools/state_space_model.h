@@ -77,10 +77,10 @@ public:
   void init(const TransferFcn &tfcn);
   void init(const std::vector<double> &numerator, const std::vector<double> &denominator);
 
-  double getResponse(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt,
+  double computeResponse(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt,
                      const SolverType = SolverType::EULER);
 
-  double getResponse(const double &input, const uint64_t &dt, const SolverType = SolverType::EULER);
+  double computeResponse(const double &input, const uint64_t &dt, const SolverType = SolverType::EULER);
 
   void resetState();
 
@@ -90,7 +90,7 @@ private:
   Eigen::MatrixXd calcAMatrix() const;
   Eigen::VectorXd calcBVector() const;
   Eigen::RowVectorXd calcCRowVector() const;
-  Eigen::VectorXd getDerivatives(const Eigen::VectorXd &state, const double &input) const;
+  Eigen::VectorXd computeDerivatives(const Eigen::VectorXd &state, const double &input) const;
 
   Eigen::VectorXd eulerCompute(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt) const;
 

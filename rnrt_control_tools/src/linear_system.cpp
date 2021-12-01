@@ -87,7 +87,7 @@ bool LinearSystem::init(const ros::NodeHandle &n, const SolverType solver)
 
 double LinearSystem::computeResponse(const double &input, const uint64_t &time_step)
 {
-  return m_model->getResponse(input, time_step, m_solver);
+  return m_model->computeResponse(input, time_step, m_solver);
 }
 
 void LinearSystem::reset()

@@ -171,12 +171,12 @@ Eigen::RowVectorXd StateSpaceModel::calcCRowVector() const
   return result;
 }
 
-Eigen::VectorXd StateSpaceModel::getDerivatives(const Eigen::VectorXd &state, const double &input) const
+Eigen::VectorXd StateSpaceModel::computeDerivatives(const Eigen::VectorXd &state, const double &input) const
 {
   return m_A_matrix * state + m_B_vector * input;
 }
 
-double StateSpaceModel::getResponse(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt,
+double StateSpaceModel::computeResponse(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt,
                                     SolverType solver)
 {
   auto i{ static_cast<int>(solver) };
@@ -184,18 +184,18 @@ double StateSpaceModel::getResponse(const Eigen::VectorXd &last_state, const dou
   return m_C_vector * m_current_state + m_D * input;
 }
 
-double StateSpaceModel::getResponse(const double &input, const uint64_t &dt, SolverType solver)
+double StateSpaceModel::computeResponse(const double &input, const uint64_t &dt, SolverType solver)
 {
-  return getResponse(m_current_state, input, dt, solver);
+  return computeResponse(m_current_state, input, dt, solver);
 }
 
 Eigen::VectorXd StateSpaceModel::rungekuttaCompute(const Eigen::VectorXd &last_state, const double &input,
                                                    const uint64_t &dt) const
 {
-  m_k1 = dt / 1e9 * getDerivatives(last_state, input);
-  m_k2 = dt / 1e9 * getDerivatives(last_state + m_k1 / 2.0, input);
-  m_k3 = dt / 1e9 * getDerivatives(last_state + m_k2 / 2.0, input);
-  m_k4 = dt / 1e9 * getDerivatives(last_state + m_k3, input);
+  m_k1 = dt / 1e9 * computeDerivatives(last_state, input);
+  m_k2 = dt / 1e9 * computeDerivatives(last_state + m_k1 / 2.0, input);
+  m_k3 = dt / 1e9 * computeDerivatives(last_state + m_k2 / 2.0, input);
+  m_k4 = dt / 1e9 * computeDerivatives(last_state + m_k3, input);
 
   return last_state + (m_k1 + 2.0 * m_k2 + 2.0 * m_k3 + m_k4) / 6;
 }
@@ -203,7 +203,7 @@ Eigen::VectorXd StateSpaceModel::rungekuttaCompute(const Eigen::VectorXd &last_s
 Eigen::VectorXd StateSpaceModel::eulerCompute(const Eigen::VectorXd &last_state, const double &input,
                                               const uint64_t &dt) const
 {
-  return last_state + dt / 1e9 * getDerivatives(last_state, input);
+  return last_state + dt / 1e9 * computeDerivatives(last_state, input);
 }
 
 void StateSpaceModel::resetState()
