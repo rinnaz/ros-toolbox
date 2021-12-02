@@ -83,7 +83,7 @@ TEST(StateSpaceModelTest, EulerTest)
   EXPECT_TRUE(abs(value - 1.0) < epsilon);
 }
 
-TEST(StateSpaceModelTest, RungeKuttaTest)
+TEST(StateSpaceModelTest, RungeKuttaComputeTest)
 {
   RecordProperty("description", "Check if RungeKutta solver works fine");
 
@@ -94,14 +94,43 @@ TEST(StateSpaceModelTest, RungeKuttaTest)
 
   uint64_t msec = 1 * 1e6;
 
+  SolverType solver{ SolverType::RUNGEKUTTA };
+
   for (auto i{ 0 }; i < 100; i++)
   {
-    value = ssm.computeResponse(1.0, 10 * msec, SolverType::RUNGEKUTTA);
+    value = ssm.computeResponse(1.0, 10 * msec, solver);
   }
 
   double epsilon{ 1.0e-8 };
 
   EXPECT_TRUE(abs(value - 1.0) < epsilon);
+
+  // Check if SSM response equals to precalculated values
+
+  tfcn.init({ 1.0 / 0.8 }, { 0.001 / 0.8, 1.0 });
+
+  ssm.init(tfcn);
+
+  auto result = ssm.computeResponse(48.0, msec, solver);
+  EXPECT_DOUBLE_EQ(result, 32.896);
+
+  result = ssm.computeResponse(48.0, msec, solver);
+  EXPECT_DOUBLE_EQ(result, 47.756219733333330);
+
+  result = ssm.computeResponse(48.0, msec, solver);
+  EXPECT_DOUBLE_EQ(result, 54.469076327537780);
+
+  // Check if SSM resets correctly
+  ssm.resetState();
+
+  result = ssm.computeResponse(48.0, msec, solver);
+  EXPECT_DOUBLE_EQ(result, 32.896);
+
+  result = ssm.computeResponse(48.0, msec, solver);
+  EXPECT_DOUBLE_EQ(result, 47.756219733333330);
+
+  result = ssm.computeResponse(48.0, msec, solver);
+  EXPECT_DOUBLE_EQ(result, 54.469076327537780);
 }
 
 int main(int argc, char **argv)
