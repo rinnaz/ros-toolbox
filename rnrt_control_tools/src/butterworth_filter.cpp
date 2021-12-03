@@ -37,7 +37,7 @@
   Desc: Implements a continuous Butterworth filter
 */
 
-#include "rnrt_control_tools/filter.h"
+#include "rnrt_control_tools/butterworth_filter.h"
 
 namespace control_toolbox
 {

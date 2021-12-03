@@ -38,7 +38,7 @@ add_library(${PROJECT_NAME}
     src/pm_motor.cpp
     src/current_servo.cpp
     src/linear_system.cpp
-    src/filter.cpp
+    src/butterworth_filter.cpp
     src/mass_spring_damper.cpp
     )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
