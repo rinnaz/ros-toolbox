@@ -1,4 +1,4 @@
-# RN ROS Toolbox
+# ROS Toolbox
 Several control tools: continuous domain state space model solvers, effort feed-forward trajectory controller, gravity compensation controller, Gazebo hardware interface plugin to simulate servo drives and etc.
 
 ## Dependencies
