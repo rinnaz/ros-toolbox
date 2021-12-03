@@ -88,7 +88,7 @@ TEST(LinearSystemTest, RK4RunTest)
   TransferFunctionInfo tfcn{ { 1.0 }, { 0.05, 1.0 } };
 
   LinearSystem linsys;
-  linsys.init(tfcn.getNumerator(), tfcn.getDenominator(), SolverType::RUNGEKUTTA);
+  linsys.init(tfcn.getNumerator(), tfcn.getDenominator(), SolverType::RK4);
 
   double value{ 0.0 };
 

@@ -30,7 +30,7 @@ int main(int argc, char **argv)
   ROS_INFO_STREAM("Euler time = " << (ros::Time::now() - start).toSec());
 
   linsys.reset();
-  linsys.init(num, den, control_tools::SolverType::RUNGEKUTTA);
+  linsys.init(num, den, control_tools::SolverType::RK4);
 
   start = ros::Time::now();
   double dump2;
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     dump2 = linsys.computeResponse(1.0+5*sin(i/1000.0), uint64_t(1e6));
   }
 
-  ROS_INFO_STREAM("RUNGEKUTTA time = " << (ros::Time::now() - start).toSec());
+  ROS_INFO_STREAM("RK4 time = " << (ros::Time::now() - start).toSec());
   ROS_INFO_STREAM("Delta = " << dump2-dump);
   ros::waitForShutdown();
   return 0;

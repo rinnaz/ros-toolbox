@@ -101,7 +101,7 @@ double CurrentServo::getEffortResponse(const double &effort_command, const doubl
 
   // rotor_velocity = m_input_velocity_filter->getResponse(rotor_velocity,
   //                                                       period.toNSec(),
-  //                                                       SolverType::RUNGEKUTTA);
+  //                                                       SolverType::RK4);
 
   voltage_command = std::clamp(voltage_command, -m_u_max, m_u_max);
 

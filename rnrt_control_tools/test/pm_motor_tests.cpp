@@ -49,7 +49,7 @@ TEST(PmMotorTest, RunTest)
 
   PmMotor motor;
 
-  motor.init(ind, res, km, 1, SolverType::RUNGEKUTTA);
+  motor.init(ind, res, km, 1, SolverType::RK4);
 
   auto result = motor.getCurrentResponse(48.0, 0.0, 1000000);
   EXPECT_DOUBLE_EQ(result, 32.896);

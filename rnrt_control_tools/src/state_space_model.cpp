@@ -79,10 +79,10 @@ void StateSpaceModel::init(const TransferFunctionInfo &tfcn)
   m_current_state = Eigen::VectorXd::Zero(m_matrix_size);
 
   // Filling the container of integration methods
-  m_integrators.push_back(std::bind(&StateSpaceModel::eulerCompute, this, std::placeholders::_1, std::placeholders::_2,
+  m_integrators.push_back(std::bind(&StateSpaceModel::integrateEuler, this, std::placeholders::_1, std::placeholders::_2,
                                     std::placeholders::_3));
 
-  m_integrators.push_back(std::bind(&StateSpaceModel::rungekuttaCompute, this, std::placeholders::_1,
+  m_integrators.push_back(std::bind(&StateSpaceModel::integrateRK4, this, std::placeholders::_1,
                                     std::placeholders::_2, std::placeholders::_3));
 }
 
@@ -189,7 +189,7 @@ double StateSpaceModel::computeResponse(const double &input, const uint64_t &dt,
   return computeResponse(m_current_state, input, dt, solver);
 }
 
-Eigen::VectorXd StateSpaceModel::rungekuttaCompute(const Eigen::VectorXd &last_state, const double &input,
+Eigen::VectorXd StateSpaceModel::integrateRK4(const Eigen::VectorXd &last_state, const double &input,
                                                    const uint64_t &dt) const
 {
   m_k1 = dt / 1e9 * computeDerivatives(last_state, input);
@@ -200,7 +200,7 @@ Eigen::VectorXd StateSpaceModel::rungekuttaCompute(const Eigen::VectorXd &last_s
   return last_state + (m_k1 + 2.0 * m_k2 + 2.0 * m_k3 + m_k4) / 6;
 }
 
-Eigen::VectorXd StateSpaceModel::eulerCompute(const Eigen::VectorXd &last_state, const double &input,
+Eigen::VectorXd StateSpaceModel::integrateEuler(const Eigen::VectorXd &last_state, const double &input,
                                               const uint64_t &dt) const
 {
   return last_state + dt / 1e9 * computeDerivatives(last_state, input);

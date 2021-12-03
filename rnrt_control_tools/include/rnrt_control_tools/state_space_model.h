@@ -52,7 +52,7 @@ namespace control_toolbox
 enum class SolverType
 {
   EULER = 0,
-  RUNGEKUTTA = 1
+  RK4 = 1
 };
 
 // State space model representation of transfer function of continuous dynamic system
@@ -92,9 +92,9 @@ private:
   Eigen::RowVectorXd calcCRowVector() const;
   Eigen::VectorXd computeDerivatives(const Eigen::VectorXd &state, const double &input) const;
 
-  Eigen::VectorXd eulerCompute(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt) const;
+  Eigen::VectorXd integrateEuler(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt) const;
 
-  Eigen::VectorXd rungekuttaCompute(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt) const;
+  Eigen::VectorXd integrateRK4(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt) const;
 
   Eigen::VectorXd m_numerator, m_denominator;
   uint64_t m_matrix_size;

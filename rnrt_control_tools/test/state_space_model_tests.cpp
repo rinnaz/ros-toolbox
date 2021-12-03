@@ -94,7 +94,7 @@ TEST(StateSpaceModelTest, RungeKuttaComputeTest)
 
   uint64_t msec = 1 * 1e6;
 
-  SolverType solver{ SolverType::RUNGEKUTTA };
+  SolverType solver{ SolverType::RK4 };
 
   for (auto i{ 0 }; i < 100; i++)
   {
