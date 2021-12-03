@@ -74,7 +74,7 @@ bool ButterworthFilterBase::init(const ros::NodeHandle &n, const SolverType solv
   return true;
 }
 
-void ButterworthFilterBase::initTfcnSelector()
+void ButterworthFilterBase::initTransferFunctionSelector()
 {
   m_tfcn_selector = { { 1, { 1.0, 1.0 } },
                       { 2, { 1.0, 1.4142, 1.0 } },
@@ -115,11 +115,11 @@ void ButterworthFilterLowPass::init(const uint64_t &order, const double &cutoff_
 
   m_cutoff_frequency = cutoff_frequency;
 
-  control_toolbox::TransferFcn tfcn = constructTfcn();
+  TransferFunctionInfo tfcn = constructTransferFunction();
   LinearSystem::init(tfcn.getNumerator(), tfcn.getDenominator(), solver);
 }
 
-control_toolbox::TransferFcn ButterworthFilterLowPass::constructTfcn()
+TransferFunctionInfo ButterworthFilterLowPass::constructTransferFunction()
 {
   std::vector<double> num{ pow(m_cutoff_frequency, m_order) };
   std::vector<double> den{ m_tfcn_selector.at(m_order) };
@@ -129,7 +129,7 @@ control_toolbox::TransferFcn ButterworthFilterLowPass::constructTfcn()
     den[i] = den[i] * pow(m_cutoff_frequency, i);
   }
 
-  return control_toolbox::TransferFcn(num, den);
+  return TransferFunctionInfo(num, den);
 }
 
 // ************************* ButterworthFilterHighPass *************************
@@ -157,11 +157,11 @@ void ButterworthFilterHighPass::init(const uint64_t &order, const double &cutoff
 
   m_cutoff_frequency = cutoff_frequency;
 
-  control_toolbox::TransferFcn tfcn = constructTfcn();
+  TransferFunctionInfo tfcn = constructTransferFunction();
   LinearSystem::init(tfcn.getNumerator(), tfcn.getDenominator(), solver);
 }
 
-control_toolbox::TransferFcn ButterworthFilterHighPass::constructTfcn()
+TransferFunctionInfo ButterworthFilterHighPass::constructTransferFunction()
 {
   std::vector<double> num(m_tfcn_selector.at(m_order).size(), 0.0); 
   num[0] = 1.0;
@@ -175,7 +175,7 @@ control_toolbox::TransferFcn ButterworthFilterHighPass::constructTfcn()
     den[i] = den[i] * pow(m_cutoff_frequency, i);
   }
 
-  return control_toolbox::TransferFcn(num, den);
+  return TransferFunctionInfo(num, den);
 }
 
 }  // namespace control_toolbox

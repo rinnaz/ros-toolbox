@@ -33,7 +33,7 @@ catkin_package(
 # Libs
 
 add_library(${PROJECT_NAME} 
-    src/transfer_fcn.cpp
+    src/transfer_function_info.cpp
     src/state_space_model.cpp
     src/pm_motor.cpp
     src/current_servo.cpp
@@ -45,8 +45,8 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
 #   Tests
-  catkin_add_gtest(transfer_fcn_tests test/transfer_fcn_tests.cpp)
-  target_link_libraries(transfer_fcn_tests ${catkin_LIBRARIES} ${PROJECT_NAME})
+  catkin_add_gtest(transfer_function_info_tests test/transfer_function_info_tests.cpp)
+  target_link_libraries(transfer_function_info_tests ${catkin_LIBRARIES} ${PROJECT_NAME})
 
   catkin_add_gtest(state_space_model_tests test/state_space_model_tests.cpp)
   target_link_libraries(state_space_model_tests ${catkin_LIBRARIES} ${PROJECT_NAME})

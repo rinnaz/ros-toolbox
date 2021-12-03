@@ -47,7 +47,7 @@
 #include <vector>
 
 #include "rnrt_control_tools/linear_system.h"
-#include "rnrt_control_tools/transfer_fcn.h"
+#include "rnrt_control_tools/transfer_function_info.h"
 
 namespace control_toolbox
 {
@@ -55,7 +55,7 @@ namespace control_toolbox
 class ButterworthFilterBase : public control_toolbox::Filter
 {
 public:
-  ButterworthFilterBase(){ initTfcnSelector(); }
+  ButterworthFilterBase(){ initTransferFunctionSelector(); }
 
   virtual void init(const uint64_t &order, const double &cutoff_frequency,
                     const SolverType solver = SolverType::EULER) = 0;
@@ -66,9 +66,9 @@ protected:
   double m_cutoff_frequency;
   std::map<uint64_t, std::vector<double>> m_tfcn_selector;
 
-  void initTfcnSelector();
+  void initTransferFunctionSelector();
 
-  virtual control_toolbox::TransferFcn constructTfcn() = 0;
+  virtual TransferFunctionInfo constructTransferFunction() = 0;
 };
 
 // Low-pass filter
@@ -84,7 +84,7 @@ public:
             const SolverType solver = SolverType::EULER) override;
 
 protected:
-  control_toolbox::TransferFcn constructTfcn() override;
+  TransferFunctionInfo constructTransferFunction() override;
 };
 
 // High-pass filter
@@ -100,7 +100,7 @@ public:
             const SolverType solver = SolverType::EULER) override;
 
 protected:
-  control_toolbox::TransferFcn constructTfcn() override;
+  TransferFunctionInfo constructTransferFunction() override;
 };
 
 }  // namespace control_toolbox

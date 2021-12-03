@@ -45,7 +45,7 @@ StateSpaceModel::StateSpaceModel()
 {
 }
 
-StateSpaceModel::StateSpaceModel(const TransferFcn &tfcn)
+StateSpaceModel::StateSpaceModel(const TransferFunctionInfo &tfcn)
 {
   init(tfcn);
 }
@@ -55,7 +55,7 @@ StateSpaceModel::StateSpaceModel(const std::vector<double> &num, const std::vect
   init(num, den);
 }
 
-void StateSpaceModel::init(const TransferFcn &tfcn)
+void StateSpaceModel::init(const TransferFunctionInfo &tfcn)
 {
   if (!tfcn.isProper())
   {
@@ -88,7 +88,7 @@ void StateSpaceModel::init(const TransferFcn &tfcn)
 
 void StateSpaceModel::init(const std::vector<double> &num, const std::vector<double> &den)
 {
-  TransferFcn tfcn{ num, den };
+  TransferFunctionInfo tfcn{ num, den };
   init(tfcn);
 }
 
@@ -96,7 +96,7 @@ StateSpaceModel::~StateSpaceModel()
 {
 }
 
-Eigen::VectorXd StateSpaceModel::makeNumerator(const TransferFcn &tfcn) const
+Eigen::VectorXd StateSpaceModel::makeNumerator(const TransferFunctionInfo &tfcn) const
 {
   auto input{ tfcn.getNumerator() };
   auto divisor{ tfcn.getDenominator().at(0) };
@@ -111,7 +111,7 @@ Eigen::VectorXd StateSpaceModel::makeNumerator(const TransferFcn &tfcn) const
   return ret;
 }
 
-Eigen::VectorXd StateSpaceModel::makeDenominator(const TransferFcn &tfcn) const
+Eigen::VectorXd StateSpaceModel::makeDenominator(const TransferFunctionInfo &tfcn) const
 {
   auto input{ tfcn.getDenominator() };
   auto divisor{ tfcn.getDenominator().at(0) };

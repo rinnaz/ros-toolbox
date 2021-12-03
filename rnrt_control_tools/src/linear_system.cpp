@@ -55,7 +55,7 @@ void LinearSystem::init(const std::vector<double> &numerator, const std::vector<
                         const SolverType solver)
 {
   m_solver = solver;
-  m_tfcn = std::make_shared<TransferFcn>(numerator, denominator);
+  m_tfcn = std::make_shared<TransferFunctionInfo>(numerator, denominator);
 
   m_model = std::make_shared<StateSpaceModel>();
 

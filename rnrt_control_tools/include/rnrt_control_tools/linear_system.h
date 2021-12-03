@@ -45,7 +45,7 @@
 #include <vector>
 
 #include "rnrt_control_tools/state_space_model.h"
-#include "rnrt_control_tools/transfer_fcn.h"
+#include "rnrt_control_tools/transfer_function_info.h"
 
 namespace control_toolbox
 {
@@ -68,8 +68,8 @@ public:
 
 protected:
   SolverType m_solver;
-  std::shared_ptr<control_toolbox::TransferFcn> m_tfcn;
-  std::shared_ptr<control_toolbox::StateSpaceModel> m_model;
+  std::shared_ptr<TransferFunctionInfo> m_tfcn;
+  std::shared_ptr<StateSpaceModel> m_model;
 };
 
 using Filter = LinearSystem;

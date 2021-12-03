@@ -45,7 +45,7 @@
 #include <vector>
 
 #include "eigen3/Eigen/Core"
-#include "rnrt_control_tools/transfer_fcn.h"
+#include "rnrt_control_tools/transfer_function_info.h"
 
 namespace control_toolbox
 {
@@ -70,11 +70,11 @@ class StateSpaceModel
 {
 public:
   StateSpaceModel();
-  StateSpaceModel(const TransferFcn &tfcn);
+  StateSpaceModel(const TransferFunctionInfo &tfcn);
   StateSpaceModel(const std::vector<double> &numerator, const std::vector<double> &denominator);
   ~StateSpaceModel();
 
-  void init(const TransferFcn &tfcn);
+  void init(const TransferFunctionInfo &tfcn);
   void init(const std::vector<double> &numerator, const std::vector<double> &denominator);
 
   double computeResponse(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt,
@@ -85,8 +85,8 @@ public:
   void resetState();
 
 private:
-  Eigen::VectorXd makeNumerator(const TransferFcn &tfcn) const;
-  Eigen::VectorXd makeDenominator(const TransferFcn &tfcn) const;
+  Eigen::VectorXd makeNumerator(const TransferFunctionInfo &tfcn) const;
+  Eigen::VectorXd makeDenominator(const TransferFunctionInfo &tfcn) const;
   Eigen::MatrixXd calcAMatrix() const;
   Eigen::VectorXd calcBVector() const;
   Eigen::RowVectorXd calcCRowVector() const;

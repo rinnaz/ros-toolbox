@@ -5,7 +5,7 @@
 #include "gtest/gtest.h"
 #include "rnrt_control_tools/pm_motor.h"
 #include "rnrt_control_tools/state_space_model.h"
-#include "rnrt_control_tools/transfer_fcn.h"
+#include "rnrt_control_tools/transfer_function_info.h"
 
 using namespace control_toolbox;
 

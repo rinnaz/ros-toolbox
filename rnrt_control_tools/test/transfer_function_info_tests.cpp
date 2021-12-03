@@ -2,60 +2,60 @@
 #include <limits>
 
 #include "gtest/gtest.h"
-#include "rnrt_control_tools/transfer_fcn.h"
+#include "rnrt_control_tools/transfer_function_info.h"
 
 using namespace control_toolbox;
 
-TEST(TransferFcnTest, ConstructorTest)
+TEST(TransferFunctionInfoTest, ConstructorTest)
 {
   RecordProperty("description", "Check if Transfer function validation works fine");
 
-  TransferFcn tfcn;
+  TransferFunctionInfo tfcn;
 
-  EXPECT_NO_THROW(tfcn = TransferFcn({ { 1.0, 1.0 }, { 10.0, 1.0 } }));
+  EXPECT_NO_THROW(tfcn = TransferFunctionInfo({ { 1.0, 1.0 }, { 10.0, 1.0 } }));
 
-  EXPECT_NO_THROW(tfcn = TransferFcn({ { 0.0, 1.0, 1.0 }, { 10.0, 1.0 } }));
+  EXPECT_NO_THROW(tfcn = TransferFunctionInfo({ { 0.0, 1.0, 1.0 }, { 10.0, 1.0 } }));
 
-  EXPECT_NO_THROW(tfcn = TransferFcn({ { 1.0, 1.0, 1.0 }, { 10.0, 1.0 } }));
+  EXPECT_NO_THROW(tfcn = TransferFunctionInfo({ { 1.0, 1.0, 1.0 }, { 10.0, 1.0 } }));
 
-  EXPECT_NO_THROW(tfcn = TransferFcn({ { 1.0, 1.0 }, { 0.0, 1.0 } }));
+  EXPECT_NO_THROW(tfcn = TransferFunctionInfo({ { 1.0, 1.0 }, { 0.0, 1.0 } }));
 
-  EXPECT_THROW(tfcn = TransferFcn({ { 0.0, 0.0 }, { 0.0, 1.0 } }), std::invalid_argument);
+  EXPECT_THROW(tfcn = TransferFunctionInfo({ { 0.0, 0.0 }, { 0.0, 1.0 } }), std::invalid_argument);
 
-  EXPECT_THROW(tfcn = TransferFcn({ { 0.0, 0.0 }, { 0.0, 0.0 } }), std::invalid_argument);
+  EXPECT_THROW(tfcn = TransferFunctionInfo({ { 0.0, 0.0 }, { 0.0, 0.0 } }), std::invalid_argument);
 
-  EXPECT_THROW(tfcn = TransferFcn({ { 1.0, 0.0 }, { 0.0, 0.0 } }), std::invalid_argument);
+  EXPECT_THROW(tfcn = TransferFunctionInfo({ { 1.0, 0.0 }, { 0.0, 0.0 } }), std::invalid_argument);
 
-  EXPECT_THROW(tfcn = TransferFcn({ {}, { 1.0 } }), std::invalid_argument);
+  EXPECT_THROW(tfcn = TransferFunctionInfo({ {}, { 1.0 } }), std::invalid_argument);
 
-  EXPECT_THROW(tfcn = TransferFcn({ { 1.0 }, {} }), std::invalid_argument);
+  EXPECT_THROW(tfcn = TransferFunctionInfo({ { 1.0 }, {} }), std::invalid_argument);
 
-  EXPECT_THROW(tfcn = TransferFcn({ {}, {} }), std::invalid_argument);
+  EXPECT_THROW(tfcn = TransferFunctionInfo({ {}, {} }), std::invalid_argument);
 }
 
-TEST(TransferFcnTest, IsProperTest)
+TEST(TransferFunctionInfoTest, IsProperTest)
 {
   RecordProperty("description", "Check if Transfer function proper check works fine");
 
-  TransferFcn tfcn{ { 1.0, 1.0 }, { 10.0, 1.0 } };
+  TransferFunctionInfo tfcn{ { 1.0, 1.0 }, { 10.0, 1.0 } };
   EXPECT_TRUE(tfcn.isProper());
 
-  tfcn = TransferFcn({ { 0.0, 1.0, 1.0 }, { 10.0, 1.0 } });
+  tfcn = TransferFunctionInfo({ { 0.0, 1.0, 1.0 }, { 10.0, 1.0 } });
   EXPECT_TRUE(tfcn.isProper());
 
-  tfcn = TransferFcn({ { 1.0, 1.0, 1.0 }, { 10.0, 1.0 } });
+  tfcn = TransferFunctionInfo({ { 1.0, 1.0, 1.0 }, { 10.0, 1.0 } });
   EXPECT_FALSE(tfcn.isProper());
 
-  tfcn = TransferFcn({ { 1.0, 1.0 }, { 0.0, 1.0 } });
+  tfcn = TransferFunctionInfo({ { 1.0, 1.0 }, { 0.0, 1.0 } });
 
   EXPECT_FALSE(tfcn.isProper());
 }
 
-TEST(TransferFcnTest, InitTest)
+TEST(TransferFunctionInfoTest, InitTest)
 {
   RecordProperty("description", "Check if initialization is working correctly");
 
-  TransferFcn tfcn;
+  TransferFunctionInfo tfcn;
 
   EXPECT_NO_THROW(tfcn.init({ 1.0, 1.0 }, { 10.0, 1.0 }));
 
@@ -78,11 +78,11 @@ TEST(TransferFcnTest, InitTest)
   EXPECT_THROW(tfcn.init({}, {}), std::invalid_argument);
 }
 
-TEST(TransferFcnTest, RemoveLeadingZeros)
+TEST(TransferFunctionInfoTest, RemoveLeadingZeros)
 {
   RecordProperty("description", "Check if leading zeros in numerator and denominator are removed");
 
-  TransferFcn tfcn;
+  TransferFunctionInfo tfcn;
   tfcn.init({ 0.0, 1.0, 1.0 }, { 10.0, 1.0 });
   
   EXPECT_EQ(std::vector<double>({1.0, 1.0}), tfcn.getNumerator());

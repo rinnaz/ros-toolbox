@@ -46,18 +46,18 @@
 
 namespace control_toolbox
 {
-class TransferFcn
+class TransferFunctionInfo
 {
 public:
   // Default constructor
-  TransferFcn();
+  TransferFunctionInfo();
 
-  TransferFcn(const std::vector<double>& numerator, const std::vector<double>& denominator);
+  TransferFunctionInfo(const std::vector<double>& numerator, const std::vector<double>& denominator);
   
   // Copy constructor
-  TransferFcn(const TransferFcn& tf);
+  TransferFunctionInfo(const TransferFunctionInfo& tf);
 
-  ~TransferFcn(){};
+  ~TransferFunctionInfo(){};
 
   void init(const std::vector<double>& numerator, const std::vector<double>& denominator);
 

@@ -66,7 +66,7 @@ void CurrentServo::init(double &u_max, double &gear_ratio, const ros::NodeHandle
 
   initPid(pid_nh);
   initMotor(motor_nh);
-  TransferFcn tfcn{ { 1.0 }, { 0.01, 1.0 } };
+  TransferFunctionInfo tfcn{ { 1.0 }, { 0.01, 1.0 } };
   m_input_velocity_filter = std::make_shared<StateSpaceModel>(tfcn);
 }
 

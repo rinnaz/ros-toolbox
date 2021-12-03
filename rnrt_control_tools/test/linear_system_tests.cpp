@@ -6,7 +6,7 @@
 #include "gtest/gtest.h"
 #include "rnrt_control_tools/linear_system.h"
 #include "rnrt_control_tools/state_space_model.h"
-#include "rnrt_control_tools/transfer_fcn.h"
+#include "rnrt_control_tools/transfer_function_info.h"
 
 using namespace control_toolbox;
 
@@ -62,7 +62,7 @@ TEST(LinearSystemTest, EulerRunTest)
 {
   RecordProperty("description", "Check if LinearSystem object returns correct response, using Euler solver");
 
-  TransferFcn tfcn{ { 1.0 }, { 0.05, 1.0 } };
+  TransferFunctionInfo tfcn{ { 1.0 }, { 0.05, 1.0 } };
 
   LinearSystem linsys;
   linsys.init(tfcn.getNumerator(), tfcn.getDenominator(), SolverType::EULER);
@@ -85,7 +85,7 @@ TEST(LinearSystemTest, RK4RunTest)
 {
   RecordProperty("description", "Check if LinearSystem object returns correct response, using RK4 solver");
 
-  TransferFcn tfcn{ { 1.0 }, { 0.05, 1.0 } };
+  TransferFunctionInfo tfcn{ { 1.0 }, { 0.05, 1.0 } };
 
   LinearSystem linsys;
   linsys.init(tfcn.getNumerator(), tfcn.getDenominator(), SolverType::RUNGEKUTTA);

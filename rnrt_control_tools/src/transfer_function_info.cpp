@@ -37,15 +37,15 @@
   Desc: Implements a linear dynamic system (ODE) transfer function description
 */
 
-#include "rnrt_control_tools/transfer_fcn.h"
+#include "rnrt_control_tools/transfer_function_info.h"
 
 namespace control_toolbox
 {
-TransferFcn::TransferFcn()
+TransferFunctionInfo::TransferFunctionInfo()
 {
 }
 
-TransferFcn::TransferFcn(const std::vector<double> &num, const std::vector<double> &den)
+TransferFunctionInfo::TransferFunctionInfo(const std::vector<double> &num, const std::vector<double> &den)
   : m_numerator{ removeLeadingZeros(num) }, m_denominator{ removeLeadingZeros(den) }
 {
   if (!isValid())
@@ -54,23 +54,23 @@ TransferFcn::TransferFcn(const std::vector<double> &num, const std::vector<doubl
   }
 }
 
-TransferFcn::TransferFcn(const TransferFcn &tf)
+TransferFunctionInfo::TransferFunctionInfo(const TransferFunctionInfo &tf)
 {
   m_numerator = tf.m_numerator;
   m_denominator = tf.m_denominator;
 }
 
-void TransferFcn::setNumerator(const std::vector<double> &num)
+void TransferFunctionInfo::setNumerator(const std::vector<double> &num)
 {
   m_numerator = removeLeadingZeros(num);
 }
 
-void TransferFcn::setDenominator(const std::vector<double> &den)
+void TransferFunctionInfo::setDenominator(const std::vector<double> &den)
 {
   m_denominator = removeLeadingZeros(den);
 }
 
-void TransferFcn::init(const std::vector<double> &num, const std::vector<double> &den)
+void TransferFunctionInfo::init(const std::vector<double> &num, const std::vector<double> &den)
 {
   setNumerator(num);
   setDenominator(den);
@@ -80,16 +80,16 @@ void TransferFcn::init(const std::vector<double> &num, const std::vector<double>
   }
 }
 
-std::vector<double> TransferFcn::getNumerator() const
+std::vector<double> TransferFunctionInfo::getNumerator() const
 {
   return m_numerator;
 }
-std::vector<double> TransferFcn::getDenominator() const
+std::vector<double> TransferFunctionInfo::getDenominator() const
 {
   return m_denominator;
 }
 
-std::vector<double> TransferFcn::removeLeadingZeros(const std::vector<double> &input) const
+std::vector<double> TransferFunctionInfo::removeLeadingZeros(const std::vector<double> &input) const
 {
   std::vector<double> result;
 
@@ -104,7 +104,7 @@ std::vector<double> TransferFcn::removeLeadingZeros(const std::vector<double> &i
   return result;
 }
 
-bool TransferFcn::isValid() const
+bool TransferFunctionInfo::isValid() const
 {
   if (m_numerator.empty() || m_denominator.empty())
   {
@@ -114,7 +114,7 @@ bool TransferFcn::isValid() const
   return true;
 }
 
-bool TransferFcn::isProper() const
+bool TransferFunctionInfo::isProper() const
 {
   if (m_numerator.size() > m_denominator.size())
   {

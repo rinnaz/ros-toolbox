@@ -3,7 +3,7 @@
 
 #include "gtest/gtest.h"
 #include "rnrt_control_tools/state_space_model.h"
-#include "rnrt_control_tools/transfer_fcn.h"
+#include "rnrt_control_tools/transfer_function_info.h"
 
 using namespace control_toolbox;
 
@@ -11,23 +11,23 @@ TEST(StateSpaceModelTest, ConstructorTest)
 {
   RecordProperty("description", "Check if Constructor throws on incorrect input");
 
-  TransferFcn tfcn{ { 1.0 }, { 0.05, 1.0 } };
+  TransferFunctionInfo tfcn{ { 1.0 }, { 0.05, 1.0 } };
 
   EXPECT_NO_THROW(StateSpaceModel ssm0{ tfcn });
 
-  tfcn = TransferFcn({ { 1.0, 1.0 }, { 0.05, 1.0 } });
+  tfcn = TransferFunctionInfo({ { 1.0, 1.0 }, { 0.05, 1.0 } });
 
   EXPECT_NO_THROW(StateSpaceModel ssm1{ tfcn });
 
-  tfcn = TransferFcn({ { 1.0, 1.0, 1.0 }, { 0.05, 1.0 } });
+  tfcn = TransferFunctionInfo({ { 1.0, 1.0, 1.0 }, { 0.05, 1.0 } });
 
   EXPECT_THROW(StateSpaceModel ssm2{ tfcn }, std::invalid_argument);
 
-  tfcn = TransferFcn({ { 1.0, 1.0, 1.0 }, { 0.0, 0.05, 1.0 } });
+  tfcn = TransferFunctionInfo({ { 1.0, 1.0, 1.0 }, { 0.0, 0.05, 1.0 } });
 
   EXPECT_THROW(StateSpaceModel ssm3{ tfcn }, std::invalid_argument);
 
-  tfcn = TransferFcn({ { 1.0, 1.0, 1.0 }, { 0.0, 0.0, 0.05, 1.0 } });
+  tfcn = TransferFunctionInfo({ { 1.0, 1.0, 1.0 }, { 0.0, 0.0, 0.05, 1.0 } });
 
   EXPECT_THROW(StateSpaceModel ssm4{ tfcn }, std::invalid_argument);
 }
@@ -36,27 +36,27 @@ TEST(StateSpaceModelTest, InitTest)
 {
   RecordProperty("description", "Check if initializer throws on incorrect input");
 
-  TransferFcn tfcn{ { 1.0 }, { 0.05, 1.0 } };
+  TransferFunctionInfo tfcn{ { 1.0 }, { 0.05, 1.0 } };
   StateSpaceModel ssm;
   EXPECT_NO_THROW(ssm.init(tfcn));
   EXPECT_NO_THROW(ssm.init({ 1.0 }, { 0.05, 1.0 }));
 
-  tfcn = TransferFcn({ { 1.0, 1.0 }, { 0.05, 1.0 } });
+  tfcn = TransferFunctionInfo({ { 1.0, 1.0 }, { 0.05, 1.0 } });
 
   EXPECT_NO_THROW(ssm.init(tfcn));
   EXPECT_NO_THROW(ssm.init({ 1.0, 1.0 }, { 0.05, 1.0 }));
 
-  tfcn = TransferFcn({ { 1.0, 1.0, 1.0 }, { 0.05, 1.0 } });
+  tfcn = TransferFunctionInfo({ { 1.0, 1.0, 1.0 }, { 0.05, 1.0 } });
 
   EXPECT_THROW(ssm.init(tfcn), std::invalid_argument);
   EXPECT_THROW(ssm.init({ 1.0, 1.0, 1.0 }, { 0.05, 1.0 }), std::invalid_argument);
 
-  tfcn = TransferFcn({ { 1.0, 1.0, 1.0 }, { 0.0, 0.05, 1.0 } });
+  tfcn = TransferFunctionInfo({ { 1.0, 1.0, 1.0 }, { 0.0, 0.05, 1.0 } });
 
   EXPECT_THROW(ssm.init(tfcn), std::invalid_argument);
   EXPECT_THROW(ssm.init({ 1.0, 1.0, 1.0 }, { 0.0, 0.05, 1.0 }), std::invalid_argument);
 
-  tfcn = TransferFcn({ { 1.0, 1.0, 1.0 }, { 0.0, 0.0, 0.05, 1.0 } });
+  tfcn = TransferFunctionInfo({ { 1.0, 1.0, 1.0 }, { 0.0, 0.0, 0.05, 1.0 } });
 
   EXPECT_THROW(ssm.init(tfcn), std::invalid_argument);
   EXPECT_THROW(ssm.init({ 1.0, 1.0, 1.0 }, { 0.0, 0.0, 0.05, 1.0 }), std::invalid_argument);
@@ -66,7 +66,7 @@ TEST(StateSpaceModelTest, EulerTest)
 {
   RecordProperty("description", "Check if Euler solver works fine");
 
-  TransferFcn tfcn{ { 1.0 }, { 0.05, 1.0 } };
+  TransferFunctionInfo tfcn{ { 1.0 }, { 0.05, 1.0 } };
   StateSpaceModel ssm{ tfcn };
 
   double value{ 0.0 };
@@ -87,7 +87,7 @@ TEST(StateSpaceModelTest, RungeKuttaComputeTest)
 {
   RecordProperty("description", "Check if RungeKutta solver works fine");
 
-  TransferFcn tfcn{ { 1.0 }, { 0.05, 1.0 } };
+  TransferFunctionInfo tfcn{ { 1.0 }, { 0.05, 1.0 } };
   StateSpaceModel ssm{ tfcn };
 
   double value{ 0.0 };
