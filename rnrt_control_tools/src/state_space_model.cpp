@@ -179,7 +179,7 @@ Eigen::VectorXd StateSpaceModel::computeDerivatives(const Eigen::VectorXd &state
 double StateSpaceModel::computeResponse(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt,
                                     SolverType solver)
 {
-  auto i{ static_cast<int>(solver) };
+  auto i{ static_cast<uint>(solver) };
   m_current_state = m_integrators.at(i)(last_state, input, dt);
   return m_C_vector * m_current_state + m_D * input;
 }

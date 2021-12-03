@@ -34,9 +34,8 @@
 
 /*
   Author: Rinat Nazarov
-  Desc: Implements a state space model for solving ODEs 
+  Desc: Implements a state space model for solving ODEs
 */
-
 
 #pragma once
 
@@ -55,31 +54,75 @@ enum class SolverType
   RK4 = 1
 };
 
-// State space model representation of transfer function of continuous dynamic system
-// Transfer function is defined with numerator and denominator
-//          b_n*s^n + ... + b_1*s + b_0
-//       ---------------------------------
-//          a_n*s^n + ... + a_1*s + a_0
-//
-// And state space model form is
-//              x' = A * x + B * u(t)
-//             y(t) = C * x + D * u(t)
-// where "x" is state (vector), "u" is input (scalar), "y" is response (scalar)
-// "A" is matrix, "B" - vector, "C" - row vector, D - scalar
+/*!
+ * \brief State space model representation of transfer function of continuous dynamic system
+ *
+ *    Transfer function is defined with numerator and denominator
+ *            b_n*s^n + ... + b_1*s + b_0
+ *          ---------------------------------
+ *            a_n*s^n + ... + a_1*s + a_0
+ *
+ *    And state space model form is
+ *                x' = A * x + B * u(t)
+ *                y(t) = C * x + D * u(t)
+ *    where "x" is state (vector), "u" is input (scalar), "y" is response (scalar)
+ *    "A" is matrix, "B" - vector, "C" - row vector, D - scalar
+ *
+ */
 class StateSpaceModel
 {
 public:
   StateSpaceModel();
+
+  /*!
+   * \brief Constructor, initializes internal parameters from TransferFunctionInfo object
+   *
+   * \param tfcn  Transfer function description to construct SSM with
+   */
   StateSpaceModel(const TransferFunctionInfo &tfcn);
+
+  /*!
+   * \brief Constructor, initializes internal parameters from numerator and denominator coefficients
+   *
+   * \param numerator  Transfer function numerator
+   * \param denominator  Transfer function denominator
+   */
   StateSpaceModel(const std::vector<double> &numerator, const std::vector<double> &denominator);
   ~StateSpaceModel();
 
+  /*!
+   * \brief Initializes internal parameters from TransferFunctionInfo object
+   *
+   * \param tfcn  Transfer function description to construct SSM with
+   */
   void init(const TransferFunctionInfo &tfcn);
+
+  /*!
+   * \brief Initializes internal parameters from numerator and denominator coefficients
+   *
+   * \param numerator  Transfer function numerator
+   * \param denominator  Transfer function denominator
+   */
   void init(const std::vector<double> &numerator, const std::vector<double> &denominator);
 
+  /*!
+   * \brief Compute new state vector
+   *
+   * \param last_state  State vector from previous step
+   * \param input  Model input
+   * \param dt  Time step in nanoseconds
+   * \param solver  ODE solver type
+   */
   double computeResponse(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt,
-                     const SolverType = SolverType::EULER);
+                         const SolverType = SolverType::EULER);
 
+  /*!
+   * \brief Compute system output
+   *
+   * \param input  Model input
+   * \param dt  Time step in nanoseconds
+   * \param solver  ODE solver type
+   */
   double computeResponse(const double &input, const uint64_t &dt, const SolverType = SolverType::EULER);
 
   void resetState();

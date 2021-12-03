@@ -51,7 +51,7 @@
 
 namespace control_toolbox
 {
-// Base abstract class
+// ButterworthFilterBase abstract class
 class ButterworthFilterBase : public control_toolbox::Filter
 {
 public:
