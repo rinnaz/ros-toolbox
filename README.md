@@ -1,7 +1,7 @@
 # RN ROS Toolbox
 Several control tools: continuous domain state space model solvers, effort feed-forward trajectory controller, gravity compensation controller, Gazebo hardware interface plugin to simulate servo drives and etc.
 
-## Dependecies
+## Dependencies
 All packages are built against ROS Noetic. You should have installed: moveit, gazebo_ros packages, ros_controll and ros_controllers packages (**TBD**)
 
 External dependencies: Eigen, OpenCV
