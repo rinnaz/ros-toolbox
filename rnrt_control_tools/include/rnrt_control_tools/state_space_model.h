@@ -55,7 +55,7 @@ enum class SolverType
 };
 
 /*!
- * \brief State space model representation of transfer function of continuous dynamic system
+ * \brief State space model representation of transfer function of continuous dynamical system
  *
  *    Transfer function is defined with numerator and denominator
  *            b_n*s^n + ... + b_1*s + b_0

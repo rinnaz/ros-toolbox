@@ -49,19 +49,55 @@
 
 namespace control_toolbox
 {
+/*!
+ * \brief Represents continuous domain linear dynamical system
+ *
+ *      Contains transfer function description and its state space representation,
+ *      takes input and returns system response
+ */
 class LinearSystem
 {
 public:
   LinearSystem();
+
+  /*!
+   * \brief Constructor, initializes transfer function description and state space model
+   *        from numerator and denominator coefficients
+   *
+   * \param numerator  Transfer function numerator
+   * \param denominator  Transfer function denominator
+   * \param solver  ODE solver type
+   */
   LinearSystem(const std::vector<double> &numerator, const std::vector<double> &denominator,
                const SolverType solver = SolverType::EULER);
   ~LinearSystem(){};
 
+  /*!
+   * \brief Initializes transfer function description and state space model
+   *        from numerator and denominator coefficients
+   *
+   * \param numerator  Transfer function numerator
+   * \param denominator  Transfer function denominator
+   * \param solver  ODE solver type
+   */
   void init(const std::vector<double> &numerator, const std::vector<double> &denominator,
             const SolverType solver = SolverType::EULER);
 
+  /*!
+   * \brief Initializes transfer function description and state space model
+   *        from ROS parameter server
+   *
+   * \param n  The NodeHandle which should be used to query parameters
+   * \param solver  ODE solver type
+   */
   bool init(const ros::NodeHandle &n, const SolverType solver = SolverType::EULER);
 
+  /*!
+   * \brief Computes system response based on input
+   *
+   * \param input  System input
+   * \param time_step  Time step, change in time since last call
+   */
   double computeResponse(const double &input, const uint64_t &time_step);
 
   void reset();

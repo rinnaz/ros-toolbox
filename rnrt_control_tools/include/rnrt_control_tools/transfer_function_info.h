@@ -47,7 +47,7 @@
 namespace control_toolbox
 {
 /*!
- * \brief Describes transfer function of linear dynamic system
+ * \brief Describes transfer function of linear dynamical system
  *
  *    Transfer function is defined with numerator and denominator
  *            b_n*s^n + ... + b_1*s + b_0
