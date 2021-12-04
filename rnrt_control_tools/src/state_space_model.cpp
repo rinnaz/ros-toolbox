@@ -63,27 +63,27 @@ void StateSpaceModel::init(const TransferFunctionInfo &tfcn)
   }
 
   m_matrix_size = tfcn.getDenominator().size() - 1;
-  
+
   // converting from std::vector to Eigen::VectorXd
   // and dividing dy denominator's highest power value
   m_numerator = makeNumerator(tfcn);
   m_denominator = makeDenominator(tfcn);
 
   // Setting state model matrices and vectors
-  m_A_matrix = calcAMatrix();
-  m_B_vector = calcBVector();
-  m_C_vector = calcCRowVector();
-  m_D = m_numerator(0);
+  m_A_matrix = calcMatrixA();
+  m_B_matrix = calcMatrixB();
+  m_C_matrix = calcMatrixC();
+  m_D_matrix = calcMatrixD();
 
   // Setting
   m_current_state = Eigen::VectorXd::Zero(m_matrix_size);
 
   // Filling the container of integration methods
-  m_integrators.push_back(std::bind(&StateSpaceModel::integrateEuler, this, std::placeholders::_1, std::placeholders::_2,
-                                    std::placeholders::_3));
-
-  m_integrators.push_back(std::bind(&StateSpaceModel::integrateRK4, this, std::placeholders::_1,
+  m_integrators.push_back(std::bind(&StateSpaceModel::integrateEuler, this, std::placeholders::_1,
                                     std::placeholders::_2, std::placeholders::_3));
+
+  m_integrators.push_back(std::bind(&StateSpaceModel::integrateRK4, this, std::placeholders::_1, std::placeholders::_2,
+                                    std::placeholders::_3));
 }
 
 void StateSpaceModel::init(const std::vector<double> &num, const std::vector<double> &den)
@@ -125,7 +125,7 @@ Eigen::VectorXd StateSpaceModel::makeDenominator(const TransferFunctionInfo &tfc
   return ret;
 }
 
-Eigen::MatrixXd StateSpaceModel::calcAMatrix() const
+Eigen::MatrixXd StateSpaceModel::calcMatrixA() const
 {
   // "A" matrix looks like
   //
@@ -151,7 +151,7 @@ Eigen::MatrixXd StateSpaceModel::calcAMatrix() const
   return result;
 }
 
-Eigen::VectorXd StateSpaceModel::calcBVector() const
+Eigen::MatrixXd StateSpaceModel::calcMatrixB() const
 {
   // "B" is [0, 0, ... 0, 1].T
   Eigen::VectorXd result{ Eigen::VectorXd::Zero(m_matrix_size) };
@@ -159,7 +159,7 @@ Eigen::VectorXd StateSpaceModel::calcBVector() const
   return result;
 }
 
-Eigen::RowVectorXd StateSpaceModel::calcCRowVector() const
+Eigen::MatrixXd StateSpaceModel::calcMatrixC() const
 {
   // "C" is [b0-a0*bn, b1-a1*bn ... b(n-1)-a(n-1)*bn]
   Eigen::RowVectorXd result{ Eigen::RowVectorXd::Zero(m_matrix_size) };
@@ -171,17 +171,26 @@ Eigen::RowVectorXd StateSpaceModel::calcCRowVector() const
   return result;
 }
 
+Eigen::MatrixXd StateSpaceModel::calcMatrixD() const
+{
+  // "C" is [b0-a0*bn, b1-a1*bn ... b(n-1)-a(n-1)*bn]
+  Eigen::MatrixXd result{ Eigen::MatrixXd::Zero(1, 1) };
+  result(0) = m_numerator(0);
+
+  return result;
+}
+
 Eigen::VectorXd StateSpaceModel::computeDerivatives(const Eigen::VectorXd &state, const double &input) const
 {
-  return m_A_matrix * state + m_B_vector * input;
+  return m_A_matrix * state + m_B_matrix * input;
 }
 
 double StateSpaceModel::computeResponse(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt,
-                                    SolverType solver)
+                                        SolverType solver)
 {
   auto i{ static_cast<uint>(solver) };
-  m_current_state = m_integrators.at(i)(last_state, input, dt);
-  return m_C_vector * m_current_state + m_D * input;
+  m_current_state = m_integrators[i](last_state, input, dt);
+  return (m_C_matrix * m_current_state + m_D_matrix * input)(0);
 }
 
 double StateSpaceModel::computeResponse(const double &input, const uint64_t &dt, SolverType solver)
@@ -190,7 +199,7 @@ double StateSpaceModel::computeResponse(const double &input, const uint64_t &dt,
 }
 
 Eigen::VectorXd StateSpaceModel::integrateRK4(const Eigen::VectorXd &last_state, const double &input,
-                                                   const uint64_t &dt) const
+                                              const uint64_t &dt) const
 {
   m_k1 = dt / 1e9 * computeDerivatives(last_state, input);
   m_k2 = dt / 1e9 * computeDerivatives(last_state + m_k1 / 2.0, input);
@@ -201,7 +210,7 @@ Eigen::VectorXd StateSpaceModel::integrateRK4(const Eigen::VectorXd &last_state,
 }
 
 Eigen::VectorXd StateSpaceModel::integrateEuler(const Eigen::VectorXd &last_state, const double &input,
-                                              const uint64_t &dt) const
+                                                const uint64_t &dt) const
 {
   return last_state + dt / 1e9 * computeDerivatives(last_state, input);
 }
@@ -209,6 +218,16 @@ Eigen::VectorXd StateSpaceModel::integrateEuler(const Eigen::VectorXd &last_stat
 void StateSpaceModel::resetState()
 {
   m_current_state = Eigen::VectorXd::Zero(m_matrix_size);
+}
+
+Eigen::MatrixXd StateSpaceModel::getMatrixA()
+{
+  return m_A_matrix;
+}
+
+Eigen::MatrixXd StateSpaceModel::getMatrixB()
+{
+  return m_B_matrix;
 }
 
 }  // namespace control_toolbox

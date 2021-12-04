@@ -66,7 +66,7 @@ enum class SolverType
  *                x' = A * x + B * u(t)
  *                y(t) = C * x + D * u(t)
  *    where "x" is state (vector), "u" is input (scalar), "y" is response (scalar)
- *    "A" is matrix, "B" - vector, "C" - row vector, D - scalar
+ *    "A" is state matrix, "B" - input matrix, "C" - output matrix, D - feedforward matrix
  *
  */
 class StateSpaceModel
@@ -125,14 +125,21 @@ public:
    */
   double computeResponse(const double &input, const uint64_t &dt, const SolverType = SolverType::EULER);
 
+  /*!
+   * \brief Resets current state vector
+   */
   void resetState();
+
+  Eigen::MatrixXd getMatrixA();
+  Eigen::MatrixXd getMatrixB();
 
 private:
   Eigen::VectorXd makeNumerator(const TransferFunctionInfo &tfcn) const;
   Eigen::VectorXd makeDenominator(const TransferFunctionInfo &tfcn) const;
-  Eigen::MatrixXd calcAMatrix() const;
-  Eigen::VectorXd calcBVector() const;
-  Eigen::RowVectorXd calcCRowVector() const;
+  Eigen::MatrixXd calcMatrixA() const;
+  Eigen::MatrixXd calcMatrixB() const;
+  Eigen::MatrixXd calcMatrixC() const;
+  Eigen::MatrixXd calcMatrixD() const;
   Eigen::VectorXd computeDerivatives(const Eigen::VectorXd &state, const double &input) const;
 
   Eigen::VectorXd integrateEuler(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt) const;
@@ -143,9 +150,9 @@ private:
   uint64_t m_matrix_size;
   Eigen::VectorXd m_current_state;
   Eigen::MatrixXd m_A_matrix;
-  Eigen::VectorXd m_B_vector;
-  Eigen::RowVectorXd m_C_vector;
-  double m_D;
+  Eigen::MatrixXd m_B_matrix;
+  Eigen::MatrixXd m_C_matrix;
+  Eigen::MatrixXd m_D_matrix;
 
   // Internal variables for RK4 calculations
   mutable Eigen::VectorXd m_k1, m_k2, m_k3, m_k4;
