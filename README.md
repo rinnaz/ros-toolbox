@@ -30,3 +30,18 @@ Robot-level controllers. Currently has:
 
 ### rnrt_gazebo_ros_control
 Hardware interface plugin to simulate servo motor actuator
+
+#### Usage
+
+Modify your URDF file:
+
+```xml
+<gazebo>
+  <plugin name="gazebo_ros_control" 
+          filename="libgazebo_ros_control.so">
+    <robotNamespace>/your_robot_namespace</robotNamespace>
+    <robotSimType>gazebo_ros_control/ServoRobotHWSim</robotSimType>
+    <!--robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType-->
+  </plugin>
+</gazebo>
+```
