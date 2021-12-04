@@ -46,44 +46,96 @@
 
 namespace control_toolbox
 {
+/*!
+ * \brief Describes transfer function of linear dynamic system
+ *
+ *    Transfer function is defined with numerator and denominator
+ *            b_n*s^n + ... + b_1*s + b_0
+ *          ---------------------------------
+ *            a_n*s^n + ... + a_1*s + a_0
+ *
+ */
 class TransferFunctionInfo
 {
 public:
   // Default constructor
   TransferFunctionInfo();
 
+  /*!
+   * \brief Constructor, initializes numerator and denominator of transfer function
+   *
+   * \param numerator  Vector of numerator polinomial coefficients
+   * \param denominator  Vector of denominator polinomial coefficients
+   */
   TransferFunctionInfo(const std::vector<double>& numerator, const std::vector<double>& denominator);
-  
-  // Copy constructor
-  TransferFunctionInfo(const TransferFunctionInfo& tf);
+
+  /*!
+   * \brief Copy Constructor
+   *
+   * \param tfcn  Transfer function to make copy of
+   */
+  TransferFunctionInfo(const TransferFunctionInfo& tfcn);
 
   ~TransferFunctionInfo(){};
 
+  /*!
+   * \brief Constructor, initializes numerator and denominator of transfer function
+   *
+   * \param numerator  Vector of numerator polinomial coefficients
+   * \param denominator  Vector of denominator polinomial coefficients
+   */
   void init(const std::vector<double>& numerator, const std::vector<double>& denominator);
 
-  // For numerator defined as b_n*s^n + ... + b_1*s + b_0
-  // vector values should be {b_n, ..., b_1, b_0}
+  /*!
+   * \brief Sets numerator
+   *
+   *    For numerator defined as b_n*s^n + ... + b_1*s + b_0
+   *    vector values should be {b_n, ..., b_1, b_0}
+   *
+   * \param numerator  Vector of numerator polinomial coefficients
+   */
   void setNumerator(const std::vector<double>& numerator);
 
-  // For denominator defined as a_n*s^n + ... + a_1*s + a_0
-  // vector values should be {a_n, ..., a_1, a_0}
+  /*!
+   * \brief Sets numerator
+   *
+   *    For denominator defined as a_n*s^n + ... + a_1*s + a_0
+   *    vector values should be {a_n, ..., a_1, a_0}
+   *
+   * \param denominator  Vector of denominator polinomial coefficients
+   */
   void setDenominator(const std::vector<double>& denominator);
 
-  // Check if transfer function is proper, whick means that
-  // numerator size is less or equal to denominator size
+  /*!
+   * \brief Check if transfer function is proper
+   *
+   *    Which means that numerator size is less or equal to denominator size
+   */
   bool isProper() const;
 
+  /*!
+   * \brief Check that numerator and denominator are not empty vectors
+   */
   // Check that numerator and denominator are not empty vectors
   bool isValid() const;
 
+  /*!
+   * \brief Returns vector of numerator polinomial coefficients
+   */
   std::vector<double> getNumerator() const;
+
+  /*!
+   * \brief Returns vector of denominator polinomial coefficients
+   */
   std::vector<double> getDenominator() const;
 
 protected:
   std::vector<double> m_numerator;
   std::vector<double> m_denominator;
-  
-  // Check if highest order values are zeros and remove them if they are
+
+  /*!
+   * \brief Removes highest order polinomial coefficients set by zeros
+   */
   std::vector<double> removeLeadingZeros(const std::vector<double>&) const;
 };
 
