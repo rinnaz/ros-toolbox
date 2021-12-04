@@ -32,6 +32,7 @@ Robot-level controllers. Currently has:
 Hardware interface plugin to simulate servo motor actuator
 
 #### Usage
+Load parameters to parameter server, [see config example](rnrt_gazebo_ros_control/config/robot_servo_config.yaml)
 
 Modify your URDF file:
 
