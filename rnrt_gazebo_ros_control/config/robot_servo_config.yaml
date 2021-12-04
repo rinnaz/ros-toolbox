@@ -1,5 +1,5 @@
 robot_ns:
-  servo_drive:
+  servo_motor:
     type: pm_motor
     joints:
       - joint_a1

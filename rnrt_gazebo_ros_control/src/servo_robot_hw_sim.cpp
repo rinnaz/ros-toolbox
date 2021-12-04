@@ -75,7 +75,7 @@ bool ServoRobotHWSim::initSim(const std::string &robot_namespace, ros::NodeHandl
   joint_effort_command_.resize(n_dof_);
   joint_position_command_.resize(n_dof_);
   joint_velocity_command_.resize(n_dof_);
-  servo_drives_.resize(n_dof_);
+  servo_motors_.resize(n_dof_);
 
   // Initialize values
   for (unsigned int j = 0; j < n_dof_; j++)
@@ -242,9 +242,9 @@ bool ServoRobotHWSim::initSim(const std::string &robot_namespace, ros::NodeHandl
     else
     {
       // Initialize the ServoController
-      const ros::NodeHandle nh(robot_namespace + "/servo_drive");
-      servo_drives_[j] = std::make_shared<control_toolbox::CurrentServo>();
-      if (!servo_drives_[j]->init(nh, joint_names_[j]))
+      const ros::NodeHandle nh(robot_namespace + "/servo_motor");
+      servo_motors_[j] = std::make_shared<control_toolbox::CurrentServo>();
+      if (!servo_motors_[j]->init(nh, joint_names_[j]))
       {
         ROS_WARN_STREAM("Failed to initialize Servos from ROS parameter server.");
         return false;
@@ -317,7 +317,7 @@ void ServoRobotHWSim::writeSim(ros::Time time, ros::Duration period)
       case EFFORT:
       {
         const double effort = e_stop_active_ ? 0 : joint_effort_command_[j];
-        const double effort_servo = servo_drives_[j]->getEffortResponse(effort, joint_position_[j], joint_velocity_[j],
+        const double effort_servo = servo_motors_[j]->getEffortResponse(effort, joint_position_[j], joint_velocity_[j],
                                                                         joint_effort_[j], period);
         sim_joints_[j]->SetForce(0, effort_servo);
       }
@@ -349,7 +349,7 @@ void ServoRobotHWSim::writeSim(ros::Time time, ros::Duration period)
 
         const double effort_limit = joint_effort_limits_[j];
         const double effort = clamp(pid_controllers_[j].computeCommand(error, period), -effort_limit, effort_limit);
-        const double effort_servo = servo_drives_[j]->getEffortResponse(effort, joint_position_[j], joint_velocity_[j],
+        const double effort_servo = servo_motors_[j]->getEffortResponse(effort, joint_position_[j], joint_velocity_[j],
                                                                         joint_effort_[j], period);
         sim_joints_[j]->SetForce(0, effort_servo);
       }
@@ -374,7 +374,7 @@ void ServoRobotHWSim::writeSim(ros::Time time, ros::Duration period)
           error = joint_velocity_command_[j] - joint_velocity_[j];
         const double effort_limit = joint_effort_limits_[j];
         const double effort = clamp(pid_controllers_[j].computeCommand(error, period), -effort_limit, effort_limit);
-        const double effort_servo = servo_drives_[j]->getEffortResponse(effort, joint_position_[j], joint_velocity_[j],
+        const double effort_servo = servo_motors_[j]->getEffortResponse(effort, joint_position_[j], joint_velocity_[j],
                                                                         joint_effort_[j], period);
         sim_joints_[j]->SetForce(0, effort_servo);
         break;
