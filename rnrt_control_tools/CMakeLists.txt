@@ -43,6 +43,14 @@ add_library(${PROJECT_NAME}
     )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
+add_executable(test_node src/main.cpp)
+
+target_link_libraries(test_node
+  ${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
+
+
 if(CATKIN_ENABLE_TESTING)
 #   Tests
   catkin_add_gtest(transfer_function_info_tests test/transfer_function_info_tests.cpp)
