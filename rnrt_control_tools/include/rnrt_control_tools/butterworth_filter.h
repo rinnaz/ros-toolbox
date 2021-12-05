@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the Willow Garage nor the names of its
+ *   * Neither the name of the copyright holder nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -51,14 +51,40 @@
 
 namespace control_toolbox
 {
-// ButterworthFilterBase abstract class
+/*!
+ * \brief ButterworthFilterBase abstract class
+ *
+ *        Base class for continuous domain Butterworth filter
+ */
 class ButterworthFilterBase : public control_toolbox::Filter
 {
 public:
-  ButterworthFilterBase(){ initTransferFunctionSelector(); }
+  /*!
+   * \brief Constructor, initializes transfer m_tfcn_selector
+   *        which maps filter order to vector of denominator coefficients
+   *
+   */
+  ButterworthFilterBase()
+  {
+    initTransferFunctionSelector();
+  }
 
+  /*!
+   * \brief Virtual initialization method
+   *
+   * \param order  Filter order
+   * \param cutoff_frequency  Filter cutoff frequency
+   * \param solver  ODE solver type
+   */
   virtual void init(const uint64_t &order, const double &cutoff_frequency,
                     const SolverType solver = SolverType::EULER) = 0;
+
+  /*!
+   * \brief Initializes filter from ROS parameter server
+   *
+   * \param n  The NodeHandle which should be used to query parameters
+   * \param solver  ODE solver type
+   */
   bool init(const ros::NodeHandle &n, const SolverType solver = SolverType::EULER);
 
 protected:
@@ -71,7 +97,10 @@ protected:
   virtual TransferFunctionInfo constructTransferFunction() = 0;
 };
 
-// Low-pass filter
+/*!
+ * \brief Butterworth Low-Pass filter
+ *
+ */
 class ButterworthFilterLowPass : public ButterworthFilterBase
 {
 public:
@@ -79,7 +108,14 @@ public:
   ButterworthFilterLowPass(const uint64_t &order, const double &cutoff_frequency,
                            const SolverType solver = SolverType::EULER);
   ~ButterworthFilterLowPass(){};
-
+  
+  /*!
+   * \brief Initializes Low-Pass filter, overrides virtual method
+   *
+   * \param order  Filter order
+   * \param cutoff_frequency  Filter cutoff frequency
+   * \param solver  ODE solver type
+   */
   void init(const uint64_t &order, const double &cutoff_frequency,
             const SolverType solver = SolverType::EULER) override;
 
@@ -87,7 +123,10 @@ protected:
   TransferFunctionInfo constructTransferFunction() override;
 };
 
-// High-pass filter
+/*!
+ * \brief Butterworth High-Pass filter
+ *
+ */
 class ButterworthFilterHighPass : public ButterworthFilterBase
 {
 public:
@@ -95,7 +134,14 @@ public:
   ButterworthFilterHighPass(const uint64_t &order, const double &cutoff_frequency,
                             const SolverType solver = SolverType::EULER);
   ~ButterworthFilterHighPass(){};
-
+  
+  /*!
+   * \brief Initializes High-Pass filter, overrides virtual method
+   *
+   * \param order  Filter order
+   * \param cutoff_frequency  Filter cutoff frequency
+   * \param solver  ODE solver type
+   */
   void init(const uint64_t &order, const double &cutoff_frequency,
             const SolverType solver = SolverType::EULER) override;
 

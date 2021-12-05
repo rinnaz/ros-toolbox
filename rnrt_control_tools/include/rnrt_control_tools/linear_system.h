@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the Willow Garage nor the names of its
+ *   * Neither the name of the copyright holder nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -93,10 +93,13 @@ public:
   bool init(const ros::NodeHandle &n, const SolverType solver = SolverType::EULER);
 
   /*!
-   * \brief Computes system response based on input
+   * \brief Computes system response based on input with nonuniform
+   *        time step size
    *
    * \param input  System input
    * \param time_step  Time step, change in time since last call
+   *
+   * \returns System response
    */
   double computeResponse(const double &input, const uint64_t &time_step);
 

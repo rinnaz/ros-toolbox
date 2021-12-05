@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the Willow Garage nor the names of its
+ *   * Neither the name of the copyright holder nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -106,22 +106,28 @@ public:
   void init(const std::vector<double> &numerator, const std::vector<double> &denominator);
 
   /*!
-   * \brief Compute new state vector
+   * \brief Compute new state vector and system output with nonuniform
+   *        time step size
    *
    * \param last_state  State vector from previous step
    * \param input  Model input
    * \param dt  Time step in nanoseconds
    * \param solver  ODE solver type
+   * 
+   * \returns System response
    */
   double computeResponse(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt,
                          const SolverType = SolverType::EULER);
 
   /*!
-   * \brief Compute system output
+   * \brief Compute system output with nonuniform
+   *        time step size
    *
    * \param input  Model input
    * \param dt  Time step in nanoseconds
    * \param solver  ODE solver type
+   * 
+   * \returns System response
    */
   double computeResponse(const double &input, const uint64_t &dt, const SolverType = SolverType::EULER);
 
