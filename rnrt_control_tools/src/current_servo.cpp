@@ -2,7 +2,7 @@
 
 namespace control_toolbox
 {
-CurrentServo::CurrentServo() : m_current_last{ 0.0 }
+CurrentServo::CurrentServo() : current_last_{ 0.0 }
 {
 }
 
@@ -51,14 +51,14 @@ void CurrentServo::init(double &u_max, double &gear_ratio, const ros::NodeHandle
     return;
   }
 
-  m_u_max = u_max;
-  m_gear_ratio = gear_ratio;
-  m_efficiency = efficiency;
+  u_max_ = u_max;
+  gear_ratio_ = gear_ratio;
+  efficiency_ = efficiency;
 
   if (efficiency > 1.0 || efficiency <= 0.0)
   {
     ROS_WARN_STREAM("Efficiency is out of range, setting to 1.0");
-    m_efficiency = 1.0;
+    efficiency_ = 1.0;
   }
 
   ros::NodeHandle motor_nh(nh, "motor_parameters/" + joint_name);
@@ -67,13 +67,13 @@ void CurrentServo::init(double &u_max, double &gear_ratio, const ros::NodeHandle
   initPid(pid_nh);
   initMotor(motor_nh);
   TransferFunctionInfo tfcn{ { 1.0 }, { 0.01, 1.0 } };
-  m_input_velocity_filter = std::make_shared<StateSpaceModel>(tfcn);
+  input_velocity_filter_ = std::make_shared<StateSpaceModel>(tfcn);
 }
 
 void CurrentServo::initPid(const ros::NodeHandle &n)
 {
-  m_pid_current = std::make_shared<control_toolbox::Pid>();
-  if (!m_pid_current->init(n))
+  pid_current_ = std::make_shared<control_toolbox::Pid>();
+  if (!pid_current_->init(n))
   {
     ROS_WARN_STREAM("Failed to initialize PID gains from ROS parameter server.");
     return;
@@ -82,8 +82,8 @@ void CurrentServo::initPid(const ros::NodeHandle &n)
 
 void CurrentServo::initMotor(const ros::NodeHandle &n)
 {
-  m_motor = std::make_shared<PmMotor>();
-  if (!m_motor->init(n))
+  motor_ = std::make_shared<PmMotor>();
+  if (!motor_->init(n))
   {
     ROS_WARN_STREAM("Failed to initialize motor from ROS parameter server.");
     return;
@@ -93,31 +93,30 @@ void CurrentServo::initMotor(const ros::NodeHandle &n)
 double CurrentServo::getEffortResponse(const double &effort_command, const double &position, const double &velocity,
                                        const double &effort, ros::Duration period)
 {
-  auto current_command{ ((effort_command / m_gear_ratio) / m_motor->getKm()) - m_current_last };
+  auto current_command{ ((effort_command / gear_ratio_) / motor_->getKm()) - current_last_ };
 
-  auto voltage_command{ m_pid_current->computeCommand(current_command, period) };
+  auto voltage_command{ pid_current_->computeCommand(current_command, period) };
 
-  auto rotor_velocity = velocity * m_gear_ratio;
+  auto rotor_velocity = velocity * gear_ratio_;
 
-  // rotor_velocity = m_input_velocity_filter->getResponse(rotor_velocity,
+  // rotor_velocity = input_velocity_filter_->getResponse(rotor_velocity,
   //                                                       period.toNSec(),
   //                                                       SolverType::RK4);
 
-  voltage_command = std::clamp(voltage_command, -m_u_max, m_u_max);
+  voltage_command = std::clamp(voltage_command, -u_max_, u_max_);
 
-  m_current_last =
-      m_motor->getCurrentResponse(voltage_command, rotor_velocity, period.toNSec());
+  current_last_ = motor_->getCurrentResponse(voltage_command, rotor_velocity, period.toNSec());
 
-  // m_current_last = std::clamp(m_current_last, -m_u_max/2, m_u_max/2);
+  // current_last_ = std::clamp(current_last_, -u_max_/2, u_max_/2);
 
-  return m_current_last * m_motor->getKm() * m_gear_ratio * m_efficiency;
+  return current_last_ * motor_->getKm() * gear_ratio_ * efficiency_;
 }
 
 void CurrentServo::reset()
 {
-  m_current_last = 0.0;
-  m_pid_current->reset();
-  m_motor->reset();
+  current_last_ = 0.0;
+  pid_current_->reset();
+  motor_->reset();
 }
 
 }  // namespace control_toolbox

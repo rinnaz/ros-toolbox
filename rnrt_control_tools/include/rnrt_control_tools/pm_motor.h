@@ -30,20 +30,20 @@ public:
 
   double getKm()
   {
-    return m_km;
+    return km_;
   }
   double getKe()
   {
-    return m_ke;
+    return ke_;
   }
 
 protected:
-  double m_l;   // inductance
-  double m_r;   // resistance
-  double m_te;  // electrical time constant
-  double m_km;  // torque constant
-  double m_ke;  // electromechanical constant
-  int m_pole_pairs;
+  double l_;   // inductance
+  double r_;   // resistance
+  double te_;  // electrical time constant
+  double km_;  // torque constant
+  double ke_;  // electromechanical constant
+  int pole_pairs_;
 };
 
 }  // namespace control_toolbox

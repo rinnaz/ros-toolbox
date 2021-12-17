@@ -60,7 +60,7 @@ class ButterworthFilterBase : public control_toolbox::Filter
 {
 public:
   /*!
-   * \brief Constructor, initializes transfer m_tfcn_selector
+   * \brief Constructor, initializes transfer tfcn_selector
    *        which maps filter order to vector of denominator coefficients
    *
    */
@@ -88,9 +88,9 @@ public:
   bool init(const ros::NodeHandle &n, const SolverType solver = SolverType::EULER);
 
 protected:
-  double m_order;
-  double m_cutoff_frequency;
-  std::map<uint64_t, std::vector<double>> m_tfcn_selector;
+  double order_;
+  double cutoff_frequency_;
+  std::map<uint64_t, std::vector<double>> tfcn_selector_;
 
   void initTransferFunctionSelector();
 

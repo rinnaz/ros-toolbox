@@ -54,12 +54,12 @@ LinearSystem::LinearSystem(const std::vector<double> &numerator, const std::vect
 void LinearSystem::init(const std::vector<double> &numerator, const std::vector<double> &denominator,
                         const SolverType solver)
 {
-  m_solver = solver;
-  m_tfcn = std::make_shared<TransferFunctionInfo>(numerator, denominator);
+  solver_ = solver;
+  tfcn_ = std::make_shared<TransferFunctionInfo>(numerator, denominator);
 
-  m_model = std::make_shared<StateSpaceModel>();
+  model_ = std::make_shared<StateSpaceModel>();
 
-  m_model->init(*m_tfcn);
+  model_->init(*tfcn_);
 }
 
 bool LinearSystem::init(const ros::NodeHandle &n, const SolverType solver)
@@ -87,12 +87,12 @@ bool LinearSystem::init(const ros::NodeHandle &n, const SolverType solver)
 
 double LinearSystem::computeResponse(const double &input, const uint64_t &time_step)
 {
-  return m_model->computeResponse(input, time_step, m_solver);
+  return model_->computeResponse(input, time_step, solver_);
 }
 
 void LinearSystem::reset()
 {
-  m_model->resetState();
+  model_->resetState();
 }
 
 }  // namespace control_toolbox

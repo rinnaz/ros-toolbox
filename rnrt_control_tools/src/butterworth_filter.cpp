@@ -76,7 +76,7 @@ bool ButterworthFilterBase::init(const ros::NodeHandle &n, const SolverType solv
 
 void ButterworthFilterBase::initTransferFunctionSelector()
 {
-  m_tfcn_selector = { { 1, { 1.0, 1.0 } },
+  tfcn_selector_ = { { 1, { 1.0, 1.0 } },
                       { 2, { 1.0, 1.4142, 1.0 } },
                       { 3, { 1.0, 2.0, 2.0, 1.0 } },
                       { 4, { 1.0, 2.6131, 3.4142, 2.6131, 1.0 } },
@@ -111,9 +111,9 @@ void ButterworthFilterLowPass::init(const uint64_t &order, const double &cutoff_
   }
 
   // Limit order to range from 1 to 10
-  m_order = std::clamp(order, uint64_t(1), uint64_t(10));
+  order_ = std::clamp(order, uint64_t(1), uint64_t(10));
 
-  m_cutoff_frequency = cutoff_frequency;
+  cutoff_frequency_ = cutoff_frequency;
 
   TransferFunctionInfo tfcn = constructTransferFunction();
   LinearSystem::init(tfcn.getNumerator(), tfcn.getDenominator(), solver);
@@ -121,12 +121,12 @@ void ButterworthFilterLowPass::init(const uint64_t &order, const double &cutoff_
 
 TransferFunctionInfo ButterworthFilterLowPass::constructTransferFunction()
 {
-  std::vector<double> num{ pow(m_cutoff_frequency, m_order) };
-  std::vector<double> den{ m_tfcn_selector.at(m_order) };
+  std::vector<double> num{ pow(cutoff_frequency_, order_) };
+  std::vector<double> den{ tfcn_selector_.at(order_) };
 
   for (auto i{ 1 }; i < den.size(); i++)
   {
-    den[i] = den[i] * pow(m_cutoff_frequency, i);
+    den[i] = den[i] * pow(cutoff_frequency_, i);
   }
 
   return TransferFunctionInfo(num, den);
@@ -153,9 +153,9 @@ void ButterworthFilterHighPass::init(const uint64_t &order, const double &cutoff
   }
 
   // Limit order to range from 1 to 10
-  m_order = std::clamp(order, uint64_t(1), uint64_t(10));
+  order_ = std::clamp(order, uint64_t(1), uint64_t(10));
 
-  m_cutoff_frequency = cutoff_frequency;
+  cutoff_frequency_ = cutoff_frequency;
 
   TransferFunctionInfo tfcn = constructTransferFunction();
   LinearSystem::init(tfcn.getNumerator(), tfcn.getDenominator(), solver);
@@ -163,16 +163,16 @@ void ButterworthFilterHighPass::init(const uint64_t &order, const double &cutoff
 
 TransferFunctionInfo ButterworthFilterHighPass::constructTransferFunction()
 {
-  std::vector<double> num(m_tfcn_selector.at(m_order).size(), 0.0); 
+  std::vector<double> num(tfcn_selector_.at(order_).size(), 0.0); 
   num[0] = 1.0;
 
-  std::vector<double> den{ m_tfcn_selector.at(m_order) };
+  std::vector<double> den{ tfcn_selector_.at(order_) };
 
   std::reverse(den.begin(), den.end());
 
   for (auto i{ 1 }; i < den.size(); i++)
   {
-    den[i] = den[i] * pow(m_cutoff_frequency, i);
+    den[i] = den[i] * pow(cutoff_frequency_, i);
   }
 
   return TransferFunctionInfo(num, den);

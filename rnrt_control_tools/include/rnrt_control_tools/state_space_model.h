@@ -113,7 +113,7 @@ public:
    * \param input  Model input
    * \param dt  Time step in nanoseconds
    * \param solver  ODE solver type
-   * 
+   *
    * \returns System response
    */
   double computeResponse(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt,
@@ -126,7 +126,7 @@ public:
    * \param input  Model input
    * \param dt  Time step in nanoseconds
    * \param solver  ODE solver type
-   * 
+   *
    * \returns System response
    */
   double computeResponse(const double &input, const uint64_t &dt, const SolverType = SolverType::EULER);
@@ -152,18 +152,18 @@ private:
 
   Eigen::VectorXd integrateRK4(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt) const;
 
-  Eigen::VectorXd m_numerator, m_denominator;
-  uint64_t m_matrix_size;
-  Eigen::VectorXd m_current_state;
-  Eigen::MatrixXd m_A_matrix;
-  Eigen::MatrixXd m_B_matrix;
-  Eigen::MatrixXd m_C_matrix;
-  Eigen::MatrixXd m_D_matrix;
+  Eigen::VectorXd numerator_, denominator_;
+  uint64_t matrix_size_;
+  Eigen::VectorXd current_state_;
+  Eigen::MatrixXd A_matrix_;
+  Eigen::MatrixXd B_matrix_;
+  Eigen::MatrixXd C_matrix_;
+  Eigen::MatrixXd D_matrix_;
 
   // Internal variables for RK4 calculations
-  mutable Eigen::VectorXd m_k1, m_k2, m_k3, m_k4;
+  mutable Eigen::VectorXd k1_, k2_, k3_, k4_;
 
-  std::vector<std::function<Eigen::VectorXd(const Eigen::VectorXd &, const double &, const uint64_t &)>> m_integrators;
+  std::vector<std::function<Eigen::VectorXd(const Eigen::VectorXd &, const double &, const uint64_t &)>> integrators_;
 };
 
 }  // namespace control_toolbox

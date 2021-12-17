@@ -130,8 +130,8 @@ public:
   std::vector<double> getDenominator() const;
 
 protected:
-  std::vector<double> m_numerator;
-  std::vector<double> m_denominator;
+  std::vector<double> numerator_;
+  std::vector<double> denominator_;
 
   /*!
    * \brief Removes highest order polinomial coefficients set by zeros

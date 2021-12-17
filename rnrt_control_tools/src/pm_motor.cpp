@@ -52,27 +52,27 @@ void PmMotor::init(const double &ind, const double &res, const double &km, const
   {
     throw std::range_error("Negative input is not allowed");
   }
-  m_l = ind;
-  m_r = res;
-  m_km = km;
-  m_ke = km;
-  m_te = m_l / m_r;
-  m_pole_pairs = pole_pairs;
+  l_ = ind;
+  r_ = res;
+  km_ = km;
+  ke_ = km;
+  te_ = l_ / r_;
+  pole_pairs_ = pole_pairs;
 
-  std::vector<double> num{ 1.0 / m_r };
-  std::vector<double> den{ m_te, 1.0 };
+  std::vector<double> num{ 1.0 / r_ };
+  std::vector<double> den{ te_, 1.0 };
 
   LinearSystem::init(num, den, solver);
 }
 
 double PmMotor::getCurrentResponse(const double &input_voltage, const double &current_velocity, const uint64_t &dt)
 {
-  return LinearSystem::computeResponse(input_voltage - current_velocity * m_ke, dt);
+  return LinearSystem::computeResponse(input_voltage - current_velocity * ke_, dt);
 }
 
 double PmMotor::getTorqueResponse(const double &input_voltage, const double &current_velocity, const uint64_t &dt)
 {
-  return m_km * getCurrentResponse(input_voltage, current_velocity, dt);
+  return km_ * getCurrentResponse(input_voltage, current_velocity, dt);
 }
 
 }  // namespace control_toolbox

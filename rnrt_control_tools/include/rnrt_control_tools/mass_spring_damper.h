@@ -23,9 +23,9 @@ public:
   void init(const double &m, const double &k, const double &zeta, const SolverType = SolverType::EULER);
 
 protected:
-  double m_mass;
-  double m_damping_ratio;
-  double m_stiffnes;
+  double mass_;
+  double damping_ratio_;
+  double stiffnes_;
 };
 
 }  // namespace control_toolbox

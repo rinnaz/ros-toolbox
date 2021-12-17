@@ -46,7 +46,7 @@ TransferFunctionInfo::TransferFunctionInfo()
 }
 
 TransferFunctionInfo::TransferFunctionInfo(const std::vector<double> &num, const std::vector<double> &den)
-  : m_numerator{ removeLeadingZeros(num) }, m_denominator{ removeLeadingZeros(den) }
+  : numerator_{ removeLeadingZeros(num) }, denominator_{ removeLeadingZeros(den) }
 {
   if (!isValid())
   {
@@ -56,18 +56,18 @@ TransferFunctionInfo::TransferFunctionInfo(const std::vector<double> &num, const
 
 TransferFunctionInfo::TransferFunctionInfo(const TransferFunctionInfo &tf)
 {
-  m_numerator = tf.m_numerator;
-  m_denominator = tf.m_denominator;
+  numerator_ = tf.numerator_;
+  denominator_ = tf.denominator_;
 }
 
 void TransferFunctionInfo::setNumerator(const std::vector<double> &num)
 {
-  m_numerator = removeLeadingZeros(num);
+  numerator_ = removeLeadingZeros(num);
 }
 
 void TransferFunctionInfo::setDenominator(const std::vector<double> &den)
 {
-  m_denominator = removeLeadingZeros(den);
+  denominator_ = removeLeadingZeros(den);
 }
 
 void TransferFunctionInfo::init(const std::vector<double> &num, const std::vector<double> &den)
@@ -82,11 +82,11 @@ void TransferFunctionInfo::init(const std::vector<double> &num, const std::vecto
 
 std::vector<double> TransferFunctionInfo::getNumerator() const
 {
-  return m_numerator;
+  return numerator_;
 }
 std::vector<double> TransferFunctionInfo::getDenominator() const
 {
-  return m_denominator;
+  return denominator_;
 }
 
 std::vector<double> TransferFunctionInfo::removeLeadingZeros(const std::vector<double> &input) const
@@ -106,7 +106,7 @@ std::vector<double> TransferFunctionInfo::removeLeadingZeros(const std::vector<d
 
 bool TransferFunctionInfo::isValid() const
 {
-  if (m_numerator.empty() || m_denominator.empty())
+  if (numerator_.empty() || denominator_.empty())
   {
     return false;
   }
@@ -116,7 +116,7 @@ bool TransferFunctionInfo::isValid() const
 
 bool TransferFunctionInfo::isProper() const
 {
-  if (m_numerator.size() > m_denominator.size())
+  if (numerator_.size() > denominator_.size())
   {
     return false;
   }

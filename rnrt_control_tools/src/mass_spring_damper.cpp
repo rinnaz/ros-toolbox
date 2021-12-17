@@ -47,14 +47,14 @@ void MassSpringDamper::init(const double &m, const double &k, const double &zeta
     throw std::range_error("Negative input is not allowed");
   }
 
-  m_mass = m;
-  m_damping_ratio = zeta;
-  m_stiffnes = k;
+  mass_ = m;
+  damping_ratio_ = zeta;
+  stiffnes_ = k;
 
-  double damping{ 2 * sqrt(m_mass * m_stiffnes) * m_damping_ratio };
+  double damping{ 2 * sqrt(mass_ * stiffnes_) * damping_ratio_ };
 
   std::vector<double> num{ 1.0 };
-  std::vector<double> den{ m_mass, damping, m_stiffnes };
+  std::vector<double> den{ mass_, damping, stiffnes_ };
 
   LinearSystem::init(num, den, solver);
 }

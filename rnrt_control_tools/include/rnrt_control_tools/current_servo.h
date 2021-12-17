@@ -31,20 +31,20 @@ public:
   void reset() override;
 
 protected:
-  double m_u_max;
-  double m_current_last;
-  double m_gear_ratio;
-  double m_efficiency;
+  double u_max_;
+  double current_last_;
+  double gear_ratio_;
+  double efficiency_;
 
   using MotorPtr = std::shared_ptr<PmMotor>;
   using PidPtr = std::shared_ptr<control_toolbox::Pid>;
   using FilterPtr = std::shared_ptr<StateSpaceModel>;
 
-  MotorPtr m_motor;
-  PidPtr m_pid_current;
+  MotorPtr motor_;
+  PidPtr pid_current_;
 
   // Helps with simulation instability
-  FilterPtr m_input_velocity_filter;
+  FilterPtr input_velocity_filter_;
 };
 
 }  // namespace control_toolbox

@@ -106,9 +106,9 @@ public:
   void reset();
 
 protected:
-  SolverType m_solver;
-  std::shared_ptr<TransferFunctionInfo> m_tfcn;
-  std::shared_ptr<StateSpaceModel> m_model;
+  SolverType solver_;
+  std::shared_ptr<TransferFunctionInfo> tfcn_;
+  std::shared_ptr<StateSpaceModel> model_;
 };
 
 using Filter = LinearSystem;
