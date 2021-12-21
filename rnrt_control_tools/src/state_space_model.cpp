@@ -62,6 +62,12 @@ void StateSpaceModel::init(const TransferFunctionInfo &tfcn)
     throw std::invalid_argument("Not proper transfer function input");
   }
 
+  if (tfcn.getDenominator().size() > eigen_matrix_size_limit)
+  {
+    throw std::length_error("Transfer function deniminator size should not exceed " +
+                            std::to_string(eigen_matrix_size_limit));
+  }
+
   matrix_size_ = tfcn.getDenominator().size() - 1;
 
   // converting from std::vector to VectorXdL
@@ -79,11 +85,11 @@ void StateSpaceModel::init(const TransferFunctionInfo &tfcn)
   current_state_ = VectorXdL::Zero(matrix_size_);
 
   // Filling the container of integration methods
-  integrators_.push_back(std::bind(&StateSpaceModel::integrateEuler, this, std::placeholders::_1,
-                                    std::placeholders::_2, std::placeholders::_3));
+  integrators_.push_back(std::bind(&StateSpaceModel::integrateEuler, this, std::placeholders::_1, std::placeholders::_2,
+                                   std::placeholders::_3));
 
   integrators_.push_back(std::bind(&StateSpaceModel::integrateRK4, this, std::placeholders::_1, std::placeholders::_2,
-                                    std::placeholders::_3));
+                                   std::placeholders::_3));
 }
 
 void StateSpaceModel::init(const std::vector<double> &num, const std::vector<double> &den)
@@ -198,8 +204,7 @@ double StateSpaceModel::computeResponse(const double &input, const uint64_t &dt,
   return computeResponse(current_state_, input, dt, solver);
 }
 
-VectorXdL StateSpaceModel::integrateRK4(const VectorXdL &last_state, const double &input,
-                                              const uint64_t &dt) const
+VectorXdL StateSpaceModel::integrateRK4(const VectorXdL &last_state, const double &input, const uint64_t &dt) const
 {
   k1_ = dt / 1e9 * computeDerivatives(last_state, input);
   k2_ = dt / 1e9 * computeDerivatives(last_state + k1_ / 2.0, input);
@@ -209,8 +214,7 @@ VectorXdL StateSpaceModel::integrateRK4(const VectorXdL &last_state, const doubl
   return last_state + (k1_ + 2.0 * k2_ + 2.0 * k3_ + k4_) / 6;
 }
 
-VectorXdL StateSpaceModel::integrateEuler(const VectorXdL &last_state, const double &input,
-                                                const uint64_t &dt) const
+VectorXdL StateSpaceModel::integrateEuler(const VectorXdL &last_state, const double &input, const uint64_t &dt) const
 {
   return last_state + dt / 1e9 * computeDerivatives(last_state, input);
 }

@@ -69,8 +69,10 @@ enum class SolverType
  *    "A" is state matrix, "B" - input matrix, "C" - output matrix, D - feedforward matrix
  *
  */
-using MatrixXdL = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::AutoAlign, 20, 20>;
-using VectorXdL = Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::AutoAlign, 20, 1>;
+const uint64_t eigen_matrix_size_limit{ 20 }; // supposedly you don't need a system with order higher than 20
+using MatrixXdL = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::AutoAlign, eigen_matrix_size_limit,
+                                eigen_matrix_size_limit>;
+using VectorXdL = Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::AutoAlign, eigen_matrix_size_limit, 1>;
 
 class StateSpaceModel
 {

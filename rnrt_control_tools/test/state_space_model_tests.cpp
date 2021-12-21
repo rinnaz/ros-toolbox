@@ -60,6 +60,20 @@ TEST(StateSpaceModelTest, InitTest)
 
   EXPECT_THROW(ssm.init(tfcn), std::invalid_argument);
   EXPECT_THROW(ssm.init({ 1.0, 1.0, 1.0 }, { 0.0, 0.0, 0.05, 1.0 }), std::invalid_argument);
+
+  tfcn = TransferFunctionInfo({ { 1.0, 1.0, 1.0 },
+                                {
+                                    0.0, 0.0, 0.05, 1.0, 0.0, 0.0, 0.05, 1.0, 0.0, 0.0, 0.05, 1.0,
+                                    0.0, 0.0, 0.05, 1.0, 0.0, 0.0, 0.05, 1.0, 0.0, 0.0, 0.05, 1.0,
+                                } });
+
+  EXPECT_THROW(ssm.init(tfcn), std::length_error);
+  EXPECT_THROW(ssm.init({ 1.0, 1.0, 1.0 },
+                        {
+                            0.0, 0.0, 0.05, 1.0, 0.0, 0.0, 0.05, 1.0, 0.0, 0.0, 0.05, 1.0,
+                            0.0, 0.0, 0.05, 1.0, 0.0, 0.0, 0.05, 1.0, 0.0, 0.0, 0.05, 1.0,
+                        }),
+               std::length_error);
 }
 
 TEST(StateSpaceModelTest, EulerTest)
