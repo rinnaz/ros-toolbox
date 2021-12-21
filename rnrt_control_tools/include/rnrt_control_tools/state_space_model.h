@@ -69,6 +69,9 @@ enum class SolverType
  *    "A" is state matrix, "B" - input matrix, "C" - output matrix, D - feedforward matrix
  *
  */
+using MatrixXdL = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::AutoAlign, 20, 20>;
+using VectorXdL = Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::AutoAlign, 20, 1>;
+
 class StateSpaceModel
 {
 public:
@@ -116,7 +119,7 @@ public:
    *
    * \returns System response
    */
-  double computeResponse(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt,
+  double computeResponse(const VectorXdL &last_state, const double &input, const uint64_t &dt,
                          const SolverType = SolverType::EULER);
 
   /*!
@@ -136,34 +139,34 @@ public:
    */
   void resetState();
 
-  Eigen::MatrixXd getMatrixA();
-  Eigen::MatrixXd getMatrixB();
+  MatrixXdL getMatrixA();
+  MatrixXdL getMatrixB();
 
 private:
-  Eigen::VectorXd makeNumerator(const TransferFunctionInfo &tfcn) const;
-  Eigen::VectorXd makeDenominator(const TransferFunctionInfo &tfcn) const;
-  Eigen::MatrixXd calcMatrixA() const;
-  Eigen::MatrixXd calcMatrixB() const;
-  Eigen::MatrixXd calcMatrixC() const;
-  Eigen::MatrixXd calcMatrixD() const;
-  Eigen::VectorXd computeDerivatives(const Eigen::VectorXd &state, const double &input) const;
+  VectorXdL makeNumerator(const TransferFunctionInfo &tfcn) const;
+  VectorXdL makeDenominator(const TransferFunctionInfo &tfcn) const;
+  MatrixXdL calcMatrixA() const;
+  MatrixXdL calcMatrixB() const;
+  MatrixXdL calcMatrixC() const;
+  MatrixXdL calcMatrixD() const;
+  VectorXdL computeDerivatives(const VectorXdL &state, const double &input) const;
 
-  Eigen::VectorXd integrateEuler(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt) const;
+  VectorXdL integrateEuler(const VectorXdL &last_state, const double &input, const uint64_t &dt) const;
 
-  Eigen::VectorXd integrateRK4(const Eigen::VectorXd &last_state, const double &input, const uint64_t &dt) const;
+  VectorXdL integrateRK4(const VectorXdL &last_state, const double &input, const uint64_t &dt) const;
 
-  Eigen::VectorXd numerator_, denominator_;
+  VectorXdL numerator_, denominator_;
   uint64_t matrix_size_;
-  Eigen::VectorXd current_state_;
-  Eigen::MatrixXd A_matrix_;
-  Eigen::MatrixXd B_matrix_;
-  Eigen::MatrixXd C_matrix_;
-  Eigen::MatrixXd D_matrix_;
+  VectorXdL current_state_;
+  MatrixXdL A_matrix_;
+  MatrixXdL B_matrix_;
+  MatrixXdL C_matrix_;
+  MatrixXdL D_matrix_;
 
   // Internal variables for RK4 calculations
-  mutable Eigen::VectorXd k1_, k2_, k3_, k4_;
+  mutable VectorXdL k1_, k2_, k3_, k4_;
 
-  std::vector<std::function<Eigen::VectorXd(const Eigen::VectorXd &, const double &, const uint64_t &)>> integrators_;
+  std::vector<std::function<VectorXdL(const VectorXdL &, const double &, const uint64_t &)>> integrators_;
 };
 
 }  // namespace control_toolbox
