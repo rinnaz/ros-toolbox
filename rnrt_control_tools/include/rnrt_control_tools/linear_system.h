@@ -111,6 +111,4 @@ protected:
   std::shared_ptr<StateSpaceModel> model_;
 };
 
-using Filter = LinearSystem;
-
 }  // namespace control_toolbox

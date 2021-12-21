@@ -49,14 +49,16 @@
 #include "rnrt_control_tools/linear_system.h"
 #include "rnrt_control_tools/transfer_function_info.h"
 
-namespace control_toolbox
+namespace filters
 {
+using namespace control_toolbox;
+using Filter = LinearSystem;
 /*!
  * \brief ButterworthFilterBase abstract class
  *
  *        Base class for continuous domain Butterworth filter
  */
-class ButterworthFilterBase : public control_toolbox::Filter
+class ButterworthFilterBase : public Filter
 {
 public:
   /*!
@@ -108,7 +110,7 @@ public:
   ButterworthFilterLowPass(const uint64_t &order, const double &cutoff_frequency,
                            const SolverType solver = SolverType::EULER);
   ~ButterworthFilterLowPass(){};
-  
+
   /*!
    * \brief Initializes Low-Pass filter, overrides virtual method
    *
@@ -134,7 +136,7 @@ public:
   ButterworthFilterHighPass(const uint64_t &order, const double &cutoff_frequency,
                             const SolverType solver = SolverType::EULER);
   ~ButterworthFilterHighPass(){};
-  
+
   /*!
    * \brief Initializes High-Pass filter, overrides virtual method
    *
@@ -149,4 +151,4 @@ protected:
   TransferFunctionInfo constructTransferFunction() override;
 };
 
-}  // namespace control_toolbox
+}  // namespace filters
