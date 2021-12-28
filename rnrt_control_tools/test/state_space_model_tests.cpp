@@ -89,7 +89,7 @@ TEST(StateSpaceModelTest, EulerTest)
 
   for (auto i{ 0 }; i < 100; i++)
   {
-    value = ssm.computeResponse(1.0, 10 * msec, SolverType::EULER);
+    value = ssm.computeResponse(1.0, 10 * msec);
   }
 
   double epsilon{ 1.0e-8 };
@@ -102,17 +102,15 @@ TEST(StateSpaceModelTest, RungeKuttaComputeTest)
   RecordProperty("description", "Check if RungeKutta solver works fine");
 
   TransferFunctionInfo tfcn{ { 1.0 }, { 0.05, 1.0 } };
-  StateSpaceModel ssm{ tfcn };
+  StateSpaceModel ssm{ tfcn, SolverType::RK4 };
 
   double value{ 0.0 };
 
   uint64_t msec = 1 * 1e6;
 
-  SolverType solver{ SolverType::RK4 };
-
   for (auto i{ 0 }; i < 100; i++)
   {
-    value = ssm.computeResponse(1.0, 10 * msec, solver);
+    value = ssm.computeResponse(1.0, 10 * msec);
   }
 
   double epsilon{ 1.0e-8 };
@@ -123,31 +121,31 @@ TEST(StateSpaceModelTest, RungeKuttaComputeTest)
 
   tfcn.init({ 1.0 / 0.8 }, { 0.001 / 0.8, 1.0 });
 
-  ssm.init(tfcn);
+  ssm.init(tfcn, SolverType::RK4);
 
-  auto result = ssm.computeResponse(48.0, msec, solver);
+  auto result = ssm.computeResponse(48.0, msec);
   EXPECT_DOUBLE_EQ(result, 32.896);
 
-  result = ssm.computeResponse(48.0, msec, solver);
+  result = ssm.computeResponse(48.0, msec);
   EXPECT_DOUBLE_EQ(result, 47.756219733333330);
 
-  result = ssm.computeResponse(48.0, msec, solver);
+  result = ssm.computeResponse(48.0, msec);
   EXPECT_DOUBLE_EQ(result, 54.469076327537780);
 
   // Check if SSM resets correctly
   ssm.resetState();
 
-  result = ssm.computeResponse(48.0, msec, solver);
+  result = ssm.computeResponse(48.0, msec);
   EXPECT_DOUBLE_EQ(result, 32.896);
 
-  result = ssm.computeResponse(48.0, msec, solver);
+  result = ssm.computeResponse(48.0, msec);
   EXPECT_DOUBLE_EQ(result, 47.756219733333330);
 
-  result = ssm.computeResponse(48.0, msec, solver);
+  result = ssm.computeResponse(48.0, msec);
   EXPECT_DOUBLE_EQ(result, 54.469076327537780);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
