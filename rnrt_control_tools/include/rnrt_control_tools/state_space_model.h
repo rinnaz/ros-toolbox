@@ -39,9 +39,8 @@
 
 #pragma once
 
-#include <functional>
-#include <iostream>
 #include <vector>
+#include <memory>
 
 #include "eigen3/Eigen/Core"
 #include "rnrt_control_tools/transfer_function_info.h"
@@ -69,11 +68,12 @@ enum class SolverType
  *    "A" is state matrix, "B" - input matrix, "C" - output matrix, D - feedforward matrix
  *
  */
-const uint64_t eigen_matrix_size_limit{ 20 }; // supposedly you don't need a system with order higher than 20
+const uint64_t eigen_matrix_size_limit{ 12 };  // supposedly you don't need a system with order higher than 12
 using MatrixXdL = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::AutoAlign, eigen_matrix_size_limit,
                                 eigen_matrix_size_limit>;
 using VectorXdL = Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::AutoAlign, eigen_matrix_size_limit, 1>;
 
+class SolverInterface;
 class StateSpaceModel
 {
 public:
@@ -84,7 +84,7 @@ public:
    *
    * \param tfcn  Transfer function description to construct SSM with
    */
-  StateSpaceModel(const TransferFunctionInfo &tfcn);
+  StateSpaceModel(const TransferFunctionInfo& tfcn, const SolverType = SolverType::EULER);
 
   /*!
    * \brief Constructor, initializes internal parameters from numerator and denominator coefficients
@@ -92,7 +92,8 @@ public:
    * \param numerator  Transfer function numerator
    * \param denominator  Transfer function denominator
    */
-  StateSpaceModel(const std::vector<double> &numerator, const std::vector<double> &denominator);
+  StateSpaceModel(const std::vector<double>& numerator, const std::vector<double>& denominator,
+                  const SolverType = SolverType::EULER);
   ~StateSpaceModel();
 
   /*!
@@ -100,7 +101,7 @@ public:
    *
    * \param tfcn  Transfer function description to construct SSM with
    */
-  void init(const TransferFunctionInfo &tfcn);
+  void init(const TransferFunctionInfo& tfcn, const SolverType = SolverType::EULER);
 
   /*!
    * \brief Initializes internal parameters from numerator and denominator coefficients
@@ -108,7 +109,8 @@ public:
    * \param numerator  Transfer function numerator
    * \param denominator  Transfer function denominator
    */
-  void init(const std::vector<double> &numerator, const std::vector<double> &denominator);
+  void init(const std::vector<double>& numerator, const std::vector<double>& denominator,
+            const SolverType = SolverType::EULER);
 
   /*!
    * \brief Compute new state vector and system output with nonuniform
@@ -121,8 +123,7 @@ public:
    *
    * \returns System response
    */
-  double computeResponse(const VectorXdL &last_state, const double &input, const uint64_t &dt,
-                         const SolverType = SolverType::EULER);
+  double computeResponse(const VectorXdL& last_state, const double& input, const uint64_t& dt);
 
   /*!
    * \brief Compute system output with nonuniform
@@ -134,8 +135,17 @@ public:
    *
    * \returns System response
    */
-  double computeResponse(const double &input, const uint64_t &dt, const SolverType = SolverType::EULER);
-
+  double computeResponse(const double& input, const uint64_t& dt);
+  
+  /*!
+   * \brief Compute derivative of state vector
+   *
+   * \param state  Model state from the last step
+   * \param input  Model input
+   *
+   * \returns Derivative of state vector
+   */
+  VectorXdL computeDerivatives(const VectorXdL& state, const double& input) const;
   /*!
    * \brief Resets current state vector
    */
@@ -144,18 +154,13 @@ public:
   MatrixXdL getMatrixA();
   MatrixXdL getMatrixB();
 
-private:
-  VectorXdL makeNumerator(const TransferFunctionInfo &tfcn) const;
-  VectorXdL makeDenominator(const TransferFunctionInfo &tfcn) const;
+protected:
+  VectorXdL makeNumerator(const TransferFunctionInfo& tfcn) const;
+  VectorXdL makeDenominator(const TransferFunctionInfo& tfcn) const;
   MatrixXdL calcMatrixA() const;
   MatrixXdL calcMatrixB() const;
   MatrixXdL calcMatrixC() const;
   MatrixXdL calcMatrixD() const;
-  VectorXdL computeDerivatives(const VectorXdL &state, const double &input) const;
-
-  VectorXdL integrateEuler(const VectorXdL &last_state, const double &input, const uint64_t &dt) const;
-
-  VectorXdL integrateRK4(const VectorXdL &last_state, const double &input, const uint64_t &dt) const;
 
   VectorXdL numerator_, denominator_;
   uint64_t matrix_size_;
@@ -165,10 +170,39 @@ private:
   MatrixXdL C_matrix_;
   MatrixXdL D_matrix_;
 
-  // Internal variables for RK4 calculations
-  mutable VectorXdL k1_, k2_, k3_, k4_;
-
-  std::vector<std::function<VectorXdL(const VectorXdL &, const double &, const uint64_t &)>> integrators_;
+  std::unique_ptr<SolverInterface> solver_;
 };
+
+// class SolverInterface
+// {
+// public:
+//   virtual VectorXdL integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
+//                               const uint64_t& dt) = 0;
+// };
+
+// class EulerSolver : public SolverInterface
+// {
+// public:
+//   EulerSolver(){};
+//   VectorXdL integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
+//                       const uint64_t& dt) override;
+// };
+
+// class RK4Solver : public SolverInterface
+// {
+// public:
+//   RK4Solver(){};
+//   VectorXdL integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
+//                       const uint64_t& dt) override;
+
+// protected:
+//   mutable VectorXdL k1_, k2_, k3_, k4_;
+// };
+
+// class SolverFactory
+// {
+// public:
+//   static std::unique_ptr<SolverInterface> createSolver(const SolverType& solver);
+// };
 
 }  // namespace control_toolbox
