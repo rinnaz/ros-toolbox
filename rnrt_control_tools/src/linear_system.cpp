@@ -45,13 +45,13 @@ LinearSystem::LinearSystem()
 {
 }
 
-LinearSystem::LinearSystem(const std::vector<double> &numerator, const std::vector<double> &denominator,
+LinearSystem::LinearSystem(const std::vector<double>& numerator, const std::vector<double>& denominator,
                            const SolverType solver)
 {
   init(numerator, denominator, solver);
 }
 
-void LinearSystem::init(const std::vector<double> &numerator, const std::vector<double> &denominator,
+void LinearSystem::init(const std::vector<double>& numerator, const std::vector<double>& denominator,
                         const SolverType solver)
 {
   solver_ = solver;
@@ -59,14 +59,14 @@ void LinearSystem::init(const std::vector<double> &numerator, const std::vector<
 
   model_ = std::make_shared<StateSpaceModel>();
 
-  model_->init(*tfcn_);
+  model_->init(*tfcn_, solver);
 }
 
-bool LinearSystem::init(const ros::NodeHandle &n, const SolverType solver)
+bool LinearSystem::init(const ros::NodeHandle& n, const SolverType solver)
 {
   ros::NodeHandle nh(n);
   std::vector<double> num, den;
-  
+
   // Load system parameters from parameter server
   if (!nh.getParam("numerator", num))
   {
@@ -85,9 +85,9 @@ bool LinearSystem::init(const ros::NodeHandle &n, const SolverType solver)
   return true;
 }
 
-double LinearSystem::computeResponse(const double &input, const uint64_t &time_step)
+double LinearSystem::computeResponse(const double& input, const uint64_t& time_step)
 {
-  return model_->computeResponse(input, time_step, solver_);
+  return model_->computeResponse(input, time_step);
 }
 
 void LinearSystem::reset()
