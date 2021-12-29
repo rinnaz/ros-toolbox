@@ -41,14 +41,14 @@
 
 namespace control_toolbox
 {
-VectorXdL EulerSolver::integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
-                                 const uint64_t& dt)
+VectorXdL Euler::integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
+                           const uint64_t& dt)
 {
   return last_state + dt / 1e9 * model.computeDerivatives(last_state, input);
 }
 
-VectorXdL RK4Solver::integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
-                               const uint64_t& dt)
+VectorXdL RK4::integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
+                         const uint64_t& dt)
 {
   k1_ = dt / 1e9 * model.computeDerivatives(last_state, input);
   k2_ = dt / 1e9 * model.computeDerivatives(last_state + k1_ / 2.0, input);
@@ -58,16 +58,17 @@ VectorXdL RK4Solver::integrate(const StateSpaceModel& model, const VectorXdL& la
   return last_state + (k1_ + 2.0 * k2_ + 2.0 * k3_ + k4_) / 6;
 }
 
-std::unique_ptr<SolverInterface> SolverFactory::createSolver(const SolverType& solver)
+std::unique_ptr<Solver> SolverFactory::create(const SolverType& solver)
 {
   switch (solver)
   {
+    default:
+      return std::make_unique<Euler>();
     case SolverType::EULER:
-      return std::unique_ptr<SolverInterface>(new EulerSolver());
+      return std::make_unique<Euler>();
     case SolverType::RK4:
-      return std::unique_ptr<SolverInterface>(new RK4Solver());
+      return std::make_unique<RK4>();
   }
-  return std::unique_ptr<SolverInterface>(new EulerSolver());
 }
 
 }  // namespace control_toolbox

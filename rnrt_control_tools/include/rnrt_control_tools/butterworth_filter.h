@@ -71,6 +71,8 @@ public:
     initTransferFunctionSelector();
   }
 
+  virtual ~ButterworthFilterBase() = default;
+
   /*!
    * \brief Virtual initialization method
    *

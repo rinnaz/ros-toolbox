@@ -73,7 +73,7 @@ using MatrixXdL = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::A
                                 eigen_matrix_size_limit>;
 using VectorXdL = Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::AutoAlign, eigen_matrix_size_limit, 1>;
 
-class SolverInterface;
+class Solver;
 class StateSpaceModel
 {
 public:
@@ -170,39 +170,7 @@ protected:
   MatrixXdL C_matrix_;
   MatrixXdL D_matrix_;
 
-  std::unique_ptr<SolverInterface> solver_;
+  std::unique_ptr<Solver> solver_;
 };
-
-// class SolverInterface
-// {
-// public:
-//   virtual VectorXdL integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
-//                               const uint64_t& dt) = 0;
-// };
-
-// class EulerSolver : public SolverInterface
-// {
-// public:
-//   EulerSolver(){};
-//   VectorXdL integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
-//                       const uint64_t& dt) override;
-// };
-
-// class RK4Solver : public SolverInterface
-// {
-// public:
-//   RK4Solver(){};
-//   VectorXdL integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
-//                       const uint64_t& dt) override;
-
-// protected:
-//   mutable VectorXdL k1_, k2_, k3_, k4_;
-// };
-
-// class SolverFactory
-// {
-// public:
-//   static std::unique_ptr<SolverInterface> createSolver(const SolverType& solver);
-// };
 
 }  // namespace control_toolbox

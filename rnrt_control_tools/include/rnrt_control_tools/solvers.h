@@ -49,21 +49,22 @@
 namespace control_toolbox
 {
 
-class SolverInterface
+class Solver
 {
 public:
+  virtual ~Solver() = default;
   virtual VectorXdL integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
                               const uint64_t& dt) = 0;
 };
 
-class EulerSolver : public SolverInterface
+class Euler : public Solver
 {
 public:
   VectorXdL integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
                       const uint64_t& dt) override;
 };
 
-class RK4Solver : public SolverInterface
+class RK4 : public Solver
 {
 public:
   VectorXdL integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
@@ -76,7 +77,7 @@ protected:
 class SolverFactory
 {
 public:
-  static std::unique_ptr<SolverInterface> createSolver(const SolverType& solver);
+  static std::unique_ptr<Solver> create(const SolverType& solver);
 };
 
 }  // namespace control_toolbox
