@@ -34,65 +34,41 @@
 
 /*
   Author: Rinat Nazarov
-  Desc: Implements a wrapper for state space model and transfer function info
+  Desc: Implements ODEs solvers
 */
 
-#include "rnrt_control_tools/linear_system.h"
+#include "rnrt_control_tools/solvers.h"
 
 namespace control_toolbox
 {
-LinearSystem::LinearSystem()
+VectorXdL Euler::integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
+                           const uint64_t& dt)
 {
+  return last_state + dt / 1e9 * model.computeDerivatives(last_state, input);
 }
 
-LinearSystem::LinearSystem(const std::vector<double>& numerator, const std::vector<double>& denominator,
-                           const SolverType solver)
+VectorXdL RK4::integrate(const StateSpaceModel& model, const VectorXdL& last_state, const double& input,
+                         const uint64_t& dt)
 {
-  init(numerator, denominator, solver);
+  k1_ = dt / 1e9 * model.computeDerivatives(last_state, input);
+  k2_ = dt / 1e9 * model.computeDerivatives(last_state + k1_ / 2.0, input);
+  k3_ = dt / 1e9 * model.computeDerivatives(last_state + k2_ / 2.0, input);
+  k4_ = dt / 1e9 * model.computeDerivatives(last_state + k3_, input);
+
+  return last_state + (k1_ + 2.0 * k2_ + 2.0 * k3_ + k4_) / 6;
 }
 
-void LinearSystem::init(const std::vector<double>& numerator, const std::vector<double>& denominator,
-                        const SolverType solver)
+std::unique_ptr<Solver> SolverFactory::create(const SolverType& solver)
 {
-  solver_ = solver;
-  tfcn_ = std::make_shared<TransferFunctionInfo>(numerator, denominator);
-
-  model_ = std::make_shared<StateSpaceModel>();
-
-  model_->init(*tfcn_, solver);
-}
-
-bool LinearSystem::init(const ros::NodeHandle& n, const SolverType solver)
-{
-  ros::NodeHandle nh(n);
-  std::vector<double> num, den;
-
-  // Load system parameters from parameter server
-  if (!nh.getParam("numerator", num))
+  switch (solver)
   {
-    ROS_ERROR("No numerator specified for transfer function.  Namespace: %s", nh.getNamespace().c_str());
-    return false;
+    default:
+      return std::make_unique<Euler>();
+    case SolverType::EULER:
+      return std::make_unique<Euler>();
+    case SolverType::RK4:
+      return std::make_unique<RK4>();
   }
-
-  if (!nh.getParam("denominator", den))
-  {
-    ROS_ERROR("No denominator specified for transfer function.  Namespace: %s", nh.getNamespace().c_str());
-    return false;
-  }
-
-  init(num, den, solver);
-
-  return true;
-}
-
-double LinearSystem::computeResponse(const double& input, const uint64_t& time_step)
-{
-  return model_->computeResponse(input, time_step);
-}
-
-void LinearSystem::reset()
-{
-  model_->resetState();
 }
 
 }  // namespace control_toolbox

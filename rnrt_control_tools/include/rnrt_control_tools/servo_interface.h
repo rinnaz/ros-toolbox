@@ -7,8 +7,7 @@ namespace control_toolbox
 class ServoInterface
 {
 public:
-  ServoInterface(){};
-  ~ServoInterface(){};
+  virtual ~ServoInterface() = default;
 
   virtual bool init(const ros::NodeHandle &nh, std::string &joint_name) = 0;
 

@@ -38,6 +38,7 @@
 */
 
 #include "rnrt_control_tools/state_space_model.h"
+#include "rnrt_control_tools/solvers.h"
 
 namespace control_toolbox
 {
@@ -45,17 +46,17 @@ StateSpaceModel::StateSpaceModel()
 {
 }
 
-StateSpaceModel::StateSpaceModel(const TransferFunctionInfo &tfcn)
+StateSpaceModel::StateSpaceModel(const TransferFunctionInfo& tfcn, SolverType solver)
 {
-  init(tfcn);
+  init(tfcn, solver);
 }
 
-StateSpaceModel::StateSpaceModel(const std::vector<double> &num, const std::vector<double> &den)
+StateSpaceModel::StateSpaceModel(const std::vector<double>& num, const std::vector<double>& den, SolverType solver)
 {
-  init(num, den);
+  init(num, den, solver);
 }
 
-void StateSpaceModel::init(const TransferFunctionInfo &tfcn)
+void StateSpaceModel::init(const TransferFunctionInfo& tfcn, SolverType solver)
 {
   if (!tfcn.isProper())
   {
@@ -84,25 +85,20 @@ void StateSpaceModel::init(const TransferFunctionInfo &tfcn)
   // Setting
   current_state_ = VectorXdL::Zero(matrix_size_);
 
-  // Filling the container of integration methods
-  integrators_.push_back(std::bind(&StateSpaceModel::integrateEuler, this, std::placeholders::_1, std::placeholders::_2,
-                                   std::placeholders::_3));
-
-  integrators_.push_back(std::bind(&StateSpaceModel::integrateRK4, this, std::placeholders::_1, std::placeholders::_2,
-                                   std::placeholders::_3));
+  solver_ = SolverFactory::create(solver);
 }
 
-void StateSpaceModel::init(const std::vector<double> &num, const std::vector<double> &den)
+void StateSpaceModel::init(const std::vector<double>& num, const std::vector<double>& den, SolverType solver)
 {
   TransferFunctionInfo tfcn{ num, den };
-  init(tfcn);
+  init(tfcn, solver);
 }
 
 StateSpaceModel::~StateSpaceModel()
 {
 }
 
-VectorXdL StateSpaceModel::makeNumerator(const TransferFunctionInfo &tfcn) const
+VectorXdL StateSpaceModel::makeNumerator(const TransferFunctionInfo& tfcn) const
 {
   auto input{ tfcn.getNumerator() };
   auto divisor{ tfcn.getDenominator().at(0) };
@@ -117,7 +113,7 @@ VectorXdL StateSpaceModel::makeNumerator(const TransferFunctionInfo &tfcn) const
   return ret;
 }
 
-VectorXdL StateSpaceModel::makeDenominator(const TransferFunctionInfo &tfcn) const
+VectorXdL StateSpaceModel::makeDenominator(const TransferFunctionInfo& tfcn) const
 {
   auto input{ tfcn.getDenominator() };
   auto divisor{ tfcn.getDenominator().at(0) };
@@ -186,37 +182,20 @@ MatrixXdL StateSpaceModel::calcMatrixD() const
   return result;
 }
 
-VectorXdL StateSpaceModel::computeDerivatives(const VectorXdL &state, const double &input) const
+VectorXdL StateSpaceModel::computeDerivatives(const VectorXdL& state, const double& input) const
 {
   return A_matrix_ * state + B_matrix_ * input;
 }
 
-double StateSpaceModel::computeResponse(const VectorXdL &last_state, const double &input, const uint64_t &dt,
-                                        SolverType solver)
+double StateSpaceModel::computeResponse(const VectorXdL& last_state, const double& input, const uint64_t& dt)
 {
-  auto i{ static_cast<uint>(solver) };
-  current_state_ = integrators_[i](last_state, input, dt);
+  current_state_ = solver_->integrate(*this, last_state, input, dt);
   return (C_matrix_ * current_state_ + D_matrix_ * input)(0);
 }
 
-double StateSpaceModel::computeResponse(const double &input, const uint64_t &dt, SolverType solver)
+double StateSpaceModel::computeResponse(const double& input, const uint64_t& dt)
 {
-  return computeResponse(current_state_, input, dt, solver);
-}
-
-VectorXdL StateSpaceModel::integrateRK4(const VectorXdL &last_state, const double &input, const uint64_t &dt) const
-{
-  k1_ = dt / 1e9 * computeDerivatives(last_state, input);
-  k2_ = dt / 1e9 * computeDerivatives(last_state + k1_ / 2.0, input);
-  k3_ = dt / 1e9 * computeDerivatives(last_state + k2_ / 2.0, input);
-  k4_ = dt / 1e9 * computeDerivatives(last_state + k3_, input);
-
-  return last_state + (k1_ + 2.0 * k2_ + 2.0 * k3_ + k4_) / 6;
-}
-
-VectorXdL StateSpaceModel::integrateEuler(const VectorXdL &last_state, const double &input, const uint64_t &dt) const
-{
-  return last_state + dt / 1e9 * computeDerivatives(last_state, input);
+  return computeResponse(current_state_, input, dt);
 }
 
 void StateSpaceModel::resetState()

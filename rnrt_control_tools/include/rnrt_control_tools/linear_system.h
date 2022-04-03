@@ -68,7 +68,7 @@ public:
    * \param denominator  Transfer function denominator
    * \param solver  ODE solver type
    */
-  LinearSystem(const std::vector<double> &numerator, const std::vector<double> &denominator,
+  LinearSystem(const std::vector<double>& numerator, const std::vector<double>& denominator,
                const SolverType solver = SolverType::EULER);
   ~LinearSystem(){};
 
@@ -80,7 +80,7 @@ public:
    * \param denominator  Transfer function denominator
    * \param solver  ODE solver type
    */
-  void init(const std::vector<double> &numerator, const std::vector<double> &denominator,
+  void init(const std::vector<double>& numerator, const std::vector<double>& denominator,
             const SolverType solver = SolverType::EULER);
 
   /*!
@@ -90,7 +90,7 @@ public:
    * \param n  The NodeHandle which should be used to query parameters
    * \param solver  ODE solver type
    */
-  bool init(const ros::NodeHandle &n, const SolverType solver = SolverType::EULER);
+  bool init(const ros::NodeHandle& n, const SolverType solver = SolverType::EULER);
 
   /*!
    * \brief Computes system response based on input with nonuniform
@@ -101,7 +101,7 @@ public:
    *
    * \returns System response
    */
-  double computeResponse(const double &input, const uint64_t &time_step);
+  double computeResponse(const double& input, const uint64_t& time_step);
 
   void reset();
 

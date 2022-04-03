@@ -40,6 +40,7 @@ add_library(${PROJECT_NAME}
     src/linear_system.cpp
     src/butterworth_filter.cpp
     src/mass_spring_damper.cpp
+    src/solvers.cpp
     )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
